@@ -4,12 +4,12 @@ const RealImage = () => {
   const slides = [
     {
       src: "/images/slide1.png",
-      caption: "Trang trại của Farmblock tại Lâm Đồng",
+      caption: "Trang trại của ALPHACINEMA tại Lâm Đồng",
     },
     {
       src: "/images/slide2.png",
       caption:
-        "Giống Robusta xanh lùn được sử dụng tại một số vùng trồng của Farmblock tại Lâm Đồng",
+        "Giống Robusta xanh lùn được sử dụng tại một số vùng trồng của ALPHACINEMA tại Lâm Đồng",
     },
     {
       src: "/images/slide3.png",
@@ -22,12 +22,12 @@ const RealImage = () => {
       <div className="max-w-7xl mx-auto text-center">
         {/* Title */}
         <h2 className="text-3xl md:text-4xl font-extrabold text-green-900 mb-4">
-          Những hình ảnh thực tế từ các <br /> vùng trồng của Farmblock
+          Những hình ảnh thực tế từ các <br /> vùng trồng của ALPHACINEMA
         </h2>
 
         {/* Description */}
         <p className="text-gray-700 max-w-3xl mx-auto mb-10">
-          Những hình ảnh dưới đây được ghi nhận tại các vùng trồng trong hệ thống Farmblock – nơi các mô hình sản xuất, giống cây và hạ tầng công nghệ đang từng bước được áp dụng, giám sát và phát triển.
+          Những hình ảnh dưới đây được ghi nhận tại các vùng trồng trong hệ thống ALPHACINEMA – nơi các mô hình sản xuất, giống cây và hạ tầng công nghệ đang từng bước được áp dụng, giám sát và phát triển.
         </p>
 
         {/* Carousel */}

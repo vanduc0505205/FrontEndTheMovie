@@ -79,17 +79,17 @@ const Info = () => {
           <div className="flex flex-nowrap overflow-hidden lg:flex-row justify-center gap-10">
             <img
               src={logo}
-              alt="Farmblock"
+              alt="ALPHACINEMA"
               className="w-15 h-10 object-contain"
             />
             <img
               src={logo}
-              alt="Farmblock"
+              alt="ALPHACINEMA"
               className="w-15 h-10 object-contain"
             />
             <img
               src={logo}
-              alt="Farmblock"
+              alt="ALPHACINEMA"
               className="w-15 h-10 object-contain"
             />
           </div>
@@ -97,22 +97,22 @@ const Info = () => {
             <div className="flex flex-nowrap overflow-hidden lg:flex-row justify-center gap-10">
               <img
                 src={logo}
-                alt="Farmblock"
+                alt="ALPHACINEMA"
                 className="w-15 h-10 object-contain"
               />
               <img
                 src={logo}
-                alt="Farmblock"
+                alt="ALPHACINEMA"
                 className="w-15 h-10 object-contain"
               />
               <img
                 src={logo}
-                alt="Farmblock"
+                alt="ALPHACINEMA"
                 className="w-15 h-10 object-contain"
               />
               <img
                 src={logo}
-                alt="Farmblock"
+                alt="ALPHACINEMA"
                 className="w-15 h-10 object-contain"
               />
             </div>

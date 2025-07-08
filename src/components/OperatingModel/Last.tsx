@@ -24,11 +24,11 @@ const Last = () => {
             {/* Logo */}
             <div className="flex items-center gap-2 mb-2">
               <img
-                src="/icons/farmblock-logo.png"
-                alt="Farmblock"
+                src="/icons/alphacinema-logo.png"
+                alt="ALPHACINEMA"
                 className="w-6 h-6"
               />
-              <span className="font-bold text-lg">FARMBLOCK</span>
+              <span className="font-bold text-lg">ALPHACINEMA</span>
             </div>
 
             {/* Heading */}
@@ -38,7 +38,7 @@ const Last = () => {
 
             {/* Description */}
             <p className="text-sm md:text-base text-gray-100 mb-4 leading-relaxed">
-              Farmblock cho phép bạn theo dõi trực tiếp các hoạt động canh tác
+              ALPHACINEMA cho phép bạn theo dõi trực tiếp các hoạt động canh tác
               thực tế – từ tiến độ gieo trồng, tưới tiêu, đến dữ liệu môi trường
               và hình ảnh thực tế tại các vùng trồng. Tất cả được cập nhật liên
               tục từ thông cảm biến và camera tại nông trại.

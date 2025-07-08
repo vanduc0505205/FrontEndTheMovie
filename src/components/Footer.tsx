@@ -15,7 +15,7 @@ const Footer = () => {
           <div className="relative flex items-center mb-10">
             <img src={logo} alt="nen"  className="w-12 h-12 object-contain"/>
             <h2 className="text-xl md:text-2xl font-medium text-white ml-3">
-              FARMBLOCK
+              ALPHACINEMA
             </h2>
           </div>
           <h2 className="text-2xl md:text-4xl font-bold text-primary-green-100 flex gap-4">
@@ -60,7 +60,7 @@ const Footer = () => {
                 Nam
               </p>
               <p className="text-white/90">Số điện thoại: +841-900-247-05</p>
-              <p className="text-white/90">E-Mail: Gmail@Farmblock.com</p>
+              <p className="text-white/90">E-Mail: Gmail@ALPHACINEMA.com</p>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ const Footer = () => {
 
       <div className="absolute bottom-0 left-0 w-full bg-[#B4E27E] h-[40px] flex items-center justify-center">
         <p className="text-sm text-black text-center">
-          Bản quyền © 2025 Thuộc về Farmblock
+          Bản quyền © 2025 Thuộc về ALPHACINEMA
         </p>
       </div>
     </footer>

@@ -37,20 +37,19 @@ const ContactForm = () => {
             <div className="flex items-center mb-6">
               <img src={logo} alt="logo" className="h-12 w-auto" />
               <h2 className="text-2xl lg:text-3xl font-semibold ml-3">
-                FarmBlock
+                CineMax
               </h2>
             </div>
 
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-primary-green-100 !leading-snug">
-              Hãy cùng chúng tôi viết tiếp câu chuyện về Tây Nguyên
+              Kết nối với chúng tôi
             </h2>
 
             <p className="text-sm lg:text-sm mb-6 text-white/90 leading-relaxed">
-              Dự án nông nghiệp công nghệ cao FarmBlock là nơi thiên nhiên, con
-              người và công nghệ cùng tạo nên những giá trị bền vững.
+              CineMax là điểm đến lý tưởng cho những ai đam mê điện ảnh. Chúng tôi mang đến những bộ phim 
+              chất lượng nhất từ khắp nơi trên thế giới.
               <br /> <br />
-              Hãy liên hệ với chúng tôi để cùng khám phá những cách để bạn có
-              thể trở thành một phần của hành trình này.
+              Hãy liên hệ với chúng tôi để được tư vấn và hỗ trợ tốt nhất về dịch vụ xem phim trực tuyến.
             </p>
 
             {/* Form */}
@@ -77,7 +76,7 @@ const ContactForm = () => {
                 </Select>
                 <Input
                   type="text"
-                  placeholder="Họ và tên *"
+                  placeholder="Tên đăng nhập *"
                   className="rounded-none h-12 p-3 bg-primary-green-50 text-sm w-full"
                   required
                 />
@@ -90,14 +89,14 @@ const ContactForm = () => {
 
                 <Input
                   type="email"
-                  placeholder="E-Mail *"
+                  placeholder="Email *"
                   className="rounded-none h-12 p-3 bg-primary-green-50 text-sm w-full"
                   required
                 />
               </div>
 
               <Textarea
-                placeholder="Tin nhắn"
+                placeholder="Ghi chú thêm (nếu có)"
                 className="w-full p-3 rounded-none bg-primary-green-50 text-sm"
                 rows={5}
               ></Textarea>
@@ -106,7 +105,7 @@ const ContactForm = () => {
                 type="submit"
                 className="rounded-sm w-full py-3 flex  items-center justify-center gap-2 bg-custom-gradient-button text-white font-semibold hover:brightness-110 transition"
               >
-                Liên hệ <ChevronRight className="w-5 h-5" />
+                Đăng ký ngay <ChevronRight className="w-5 h-5" />
               </button>
             </form>
           </div>
