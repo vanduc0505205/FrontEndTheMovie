@@ -50,7 +50,7 @@ const ContentContact = () => {
                   </p>
                   <p>
                     Từ 30 ha hôm nay đến 200 ha ngày mai, hành trình của
-                    Farmblock đang rộng mở – và chúng tôi mời bạn cùng viết tiếp
+                    ALPHACINEMA đang rộng mở – và chúng tôi mời bạn cùng viết tiếp
                     câu chuyện phát triển bền vững ấy, từ từng góc cây đến những
                     giá trị thật.
                   </p>
@@ -140,7 +140,7 @@ const ContentContact = () => {
                   <strong>Số điện thoại:</strong> +841-900-247-05
                 </p>
                 <p className="text-primary-green-50">
-                  <strong>E-Mail:</strong> Gmail@Farmblock.com
+                  <strong>E-Mail:</strong> Gmail@ALPHACINEMA.com
                 </p>
               </div>
             </div>

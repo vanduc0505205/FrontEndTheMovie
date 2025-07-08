@@ -12,89 +12,90 @@ import iconAboutUs3 from "@/assets/images/about-us/icons-about-us04.png";
 export const slideData = [
   {
     image: imagehome11,
-    title: "Kết nối từ bất kì đâu",
-    desc: "Ứng dụng di động kết nối cánh đồng đến với bạn bất kì khi nào, tại bất kì đâu — hiển thị tiến độ phát triển, thông số kĩ thuật – mọi thứ đều nằm trong tầm tay bạn,",
+    title: "Phim mới cập nhật",
+    desc: "Khám phá những bộ phim mới nhất, hot nhất hiện nay với chất lượng hình ảnh sắc nét, âm thanh sống động. Cập nhật liên tục để bạn không bỏ lỡ bất kỳ bộ phim nào.",
   },
   {
     image: imagehome04,
-    title: "Minh bạch từ gốc",
-    desc: "Mỗi hạt cà phê, mỗi trái sầu riêng kể câu chuyện của mình qua các mã QR. Công nghệ blockchain lưu giữ niềm tin, từ đất đỏ Tây Nguyên đến tận tay khách hàng.",
+    title: "Đa dạng thể loại",
+    desc: "Từ hành động, tình cảm, hài hước đến kinh dị, viễn tưởng - kho phim đồ sộ với đa dạng thể loại đáp ứng mọi sở thích của khán giả.",
   },
   {
     image: imagehome05,
-    title: "Giám sát thông minh",
-    desc: "Drone lượn trên cánh đồng, hệ thống cảm biến theo dõi đất và cây — công nghệ giúp nông dân chăm sóc vụ mùa một cách chính xác để đất đai mãi trù phú.",
+    title: "Xem phim chất lượng cao",
+    desc: "Trải nghiệm xem phim mượt mà với chất lượng Full HD, 4K cùng hệ thống âm thanh vòm sống động, mang đến cho bạn những giây phút giải trí tuyệt vời nhất.",
   },
   {
     image: imagehome06,
-    title: "Chăm sóc thông minh",
-    desc: "Với hệ thống pin mặt trời và mạng lưới tưới tiêu tự động, tuân thủ các tiêu chí bảo vệ thiên nhiên chuẩn quốc tế, chúng tôi mãi gìn giữ thiên nhiên cho thế hệ mai sau.",
+    title: "Xem mọi lúc mọi nơi",
+    desc: "Xem phim không giới hạn trên mọi thiết bị: điện thoại, máy tính bảng, smart TV. Đồng bộ tiến độ xem giữa các thiết bị một cách dễ dàng.",
   },
   {
     image: imagehome11,
-    title: "Kết nối từ bất kì đâu",
-    desc: "Ứng dụng di động kết nối cánh đồng đến với bạn bất kì khi nào, tại bất kì đâu — hiển thị tiến độ phát triển, thông số kĩ thuật – mọi thứ đều nằm trong tầm tay bạn,",
+    title: "Phim bộ hấp dẫn",
+    desc: "Tổng hợp những bộ phim bộ dài tập hấp dẫn, cập nhật tập mới nhanh chóng, đảm bảo bạn luôn theo kịp những tình tiết mới nhất.",
   },
   {
     image: imagehome04,
-    title: "Minh bạch từ gốc",
-    desc: "Mỗi hạt cà phê, mỗi trái sầu riêng kể câu chuyện của mình qua các mã QR. Công nghệ blockchain lưu giữ niềm tin, từ đất đỏ Tây Nguyên đến tận tay khách hàng.",
+    title: "Phim chiếu rạp",
+    desc: "Cập nhật nhanh nhất những bộ phim đang chiếu tại rạp với chất lượng HD, mang đến cho bạn trải nghiệm xem phim như đang ngồi tại rạp.",
   },
   {
     image: imagehome05,
-    title: "Giám sát thông minh",
-    desc: "Drone lượn trên cánh đồng, hệ thống cảm biến theo dõi đất và cây — công nghệ giúp nông dân chăm sóc vụ mùa một cách chính xác để đất đai mãi trù phú.",
+    title: "Phim bộ nước ngoài",
+    desc: "Kho phim bộ nước ngoài đa dạng phong phú, từ những bộ phim Hàn Quốc lãng mạn đến những phim hành động Mỹ đình đám.",
   },
   {
     image: imagehome06,
-    title: "Chăm sóc thông minh",
-    desc: "Với hệ thống pin mặt trời và mạng lưới tưới tiêu tự động, tuân thủ các tiêu chí bảo vệ thiên nhiên chuẩn quốc tế, chúng tôi mãi gìn giữ thiên nhiên cho thế hệ mai sau.",
+    title: "Phim Việt Nam",
+    desc: "Tuyển tập những bộ phim Việt Nam đặc sắc, phản ánh chân thực cuộc sống, con người Việt Nam với những câu chuyện gần gũi, ý nghĩa.",
   },
 ];
 
 export const itemsData = [
   {
-    title: "Nhà đầu tư",
+    title: "Khán giả phim",
     content:
-      "Tiếp cận thị trường nông nghiệp thông qua các danh mục đầu tư đa dạng, với cơ chế pháp lý rõ ràng, dòng tiền ổn định và hệ thống theo dõi minh bạch.",
+      "Khám phá kho phim đa dạng thể loại, chất lượng cao với giao diện thân thiện, dễ sử dụng. Xem phim mọi lúc mọi nơi trên nhiều thiết bị khác nhau.",
   },
   {
-    title: "Farmblock & các đơn vị sản xuất nông nghiệp",
+    title: "Nhà sản xuất phim",
     content:
-      "Quản lý và vận hành dự án, áp dụng công nghệ blockchain để truy xuất nguồn gốc, sử dụng hệ thống AI để tối ưu năng suất và mở rộng quy mô vùng trồng.",
+      "Tiếp cận hàng triệu khán giả tiềm năng, quảng bá tác phẩm của bạn đến với đông đảo công chúng yêu điện ảnh.",
   },
   {
-    title: "Comblock & Các đối tác tổ chức thương mại",
+    title: "Đối tác phân phối",
     content:
-      "Tối ưu hoạt động logistics và thúc đẩy thương mại để phân phối nông sản tại hệ thống siêu thị châu Âu và châu Á.",
+      "Hợp tác phân phối nội dung phim ảnh chất lượng cao, mở rộng thị trường và tăng doanh thu từ việc cấp phép nội dung.",
   },
   {
-    title: "Tổ chức nghiên cứu & giáo dục",
+    title: "Nhà quảng cáo",
     content:
-      "Thử nghiệm sản phẩm, dịch vụ hoặc ý tưởng mới ngay trên vùng trồng thật – từ công nghệ nông nghiệp đến du lịch trải nghiệm, truyền thông, giáo dục.",
+      "Tiếp cận đối tượng khán giả mục tiêu thông qua các gói quảng cáo được cá nhân hóa, tối ưu hóa hiệu quả chiến dịch.",
   },
   {
-    title: "Các đối tác phát triển nông nghiệp trong nước",
+    title: "Đơn vị bản quyền",
     content:
-      "Trao đổi, tiếp nhận chuyển giao công nghệ cao cùng đội ngũ Israel Agrotech và các chuyên gia đến từ châu Âu.",
+      "Hợp tác trong việc mua bán bản quyền phim, đảm bảo quyền lợi cho tất cả các bên liên quan.",
   },
 ];
 export const accordionData = [
     {
-      title: "Nông dân Tây Nguyên",
-      content: `Dành cả cuộc đời gắn bó với miền đất đỏ bazan, họ là linh hồn của vùng đất Tây Nguyên. 
-        Với kinh nghiệm dày dặn và tình yêu bản năng dành cho thiên nhiên, người nông dân tại đây 
-        chăm sóc từng cây cà phê, từng trái sầu riêng, mang đến vụ mùa trù phú.`,
+      title: "Đạo diễn tài năng",
+      content: `Đội ngũ đạo diễn tài năng với nhiều năm kinh nghiệm trong ngành điện ảnh, 
+        luôn mang đến những tác phẩm chất lượng, sáng tạo và đầy cảm xúc. 
+        Mỗi bộ phim là một câu chuyện được kể bằng ngôn ngữ hình ảnh đặc sắc.`,
     },
     {
-      title: "Chuyên gia nông nghiệp",
-      content: `Những người mang tri thức hiện đại vào nông thôn, hướng dẫn kỹ thuật và giải pháp để tối ưu hóa canh tác 
-        và phát triển bền vững cho từng hecta đất.`,
+      title: "Diễn viên chuyên nghiệp",
+      content: `Dàn diễn viên tài năng, chuyên nghiệp với khả năng diễn xuất xuất sắc, 
+        hóa thân hoàn hảo vào từng nhân vật, mang đến những màn trình diễn ấn tượng 
+        và chân thực nhất cho khán giả.`,
     },
     {
-      title: "Đội ngũ công nghệ",
-      content: `Họ là cầu nối giữa nông nghiệp và chuyển đổi số. Bằng phần mềm, cảm biến và dữ liệu, họ nâng tầm trải nghiệm 
-        và năng suất cho người nông dân.`,
+      title: "Ekip sản xuất chuyên nghiệp",
+      content: `Đội ngũ sản xuất giàu kinh nghiệm, làm việc chuyên nghiệp với hệ thống trang thiết bị 
+        hiện đại, đảm bảo mỗi cảnh quay đều đạt chất lượng hình ảnh và âm thanh tốt nhất.`,
     },
   ];
 
@@ -103,57 +104,56 @@ export const accordionData = [
   export const blogItems = [
   {
     image: imageBlogAboutUs1,
-    title: "Đây là tiêu đề của một bài viết, sẽ dài tầm khoảng hai đến ba dòng như thế này",
+    title: "Hậu trường thú vị của bộ phim đình đám mùa hè",
     link: "#",
   },
   {
     image: imageBlogAboutUs2,
-    title: "Đây là tiêu đề của một bài viết, sẽ dài tầm khoảng hai đến ba dòng như thế này",
+    title: "Phỏng vấn đạo diễn: Hành trình thực hiện bộ phim triệu đô",
     link: "#",
   },
   {
     image: imageBlogAboutUs3,
-    title: "Đây là tiêu đề của một bài viết, sẽ dài tầm khoảng hai đến ba dòng như thế này",
+    title: "Khám phá bối cảnh quay phim tại Đà Lạt mộng mơ",
     link: "#",
   },
   {
     image: imageBlogAboutUs1,
-    title: "Đây là tiêu đề của một bài viết, sẽ dài tầm khoảng hai đến ba dòng như thế này",
+    title: "Dàn diễn viên trẻ đầy triển vọng trong phim mới",
     link: "#",
   },
   {
     image: imageBlogAboutUs2,
-    title: "Đây là tiêu đề của một bài viết, sẽ dài tầm khoảng hai đến ba dòng như thế này",
+    title: "Công nghệ CGI đỉnh cao trong điện ảnh Việt",
     link: "#",
   },
   {
     image: imageBlogAboutUs3,
-    title: "Đây là tiêu đề của một bài viết, sẽ dài tầm khoảng hai đến ba dòng như thế này",
+    title: "Những bộ phim đáng chờ đợi nhất năm 2025",
     link: "#",
   },
-  
 ];
 
 export const milestones = [
   {
-    title: "Mốc 1: 2025",
-    subtitle: "30ha khởi đầu",
+    title: "Mốc 1: 2010",
+    subtitle: "Khởi đầu khiêm tốn",
     description:
-      "Trên 30ha đất đỏ Gia Lai, chúng tôi gieo những hạt giống đầu tiên, kết hợp truyền thống Tây Nguyên với công nghệ tự động hóa hiện đại.",
+      "Ra mắt bộ phim đầu tay với kinh phí khiêm tốn nhưng nhận được sự đón nhận nồng nhiệt từ khán giả trẻ.",
     image: iconAboutUs1,
   },
   {
-    title: "Mốc 2: 2023",
-    subtitle: "200ha thông minh",
+    title: "Mốc 2: 2018",
+    subtitle: "Bước đột phá",
     description:
-      "Mở rộng lên 200ha, chúng tôi xây dựng những trang trại thông minh, nơi drone, hệ thống cảm biến, và công nghệ blockchain minh bạch hóa nông nghiệp.",
+      "Đạt giải thưởng Điện ảnh Quốc tế với bộ phim nghệ thuật, đưa tên tuổi đạo diễn lên tầm cao mới.",
     image: iconAboutUs2,
   },
   {
-    title: "Mốc 3: Tương lai",
-    subtitle: "Nông sản toàn cầu",
+    title: "Tương lai",
+    subtitle: "Vươn tầm quốc tế",
     description:
-      "Mang cà phê và sầu riêng chất lượng cao của Việt Nam đến bữa ăn mọi gia đình trên thế giới, chúng tôi viết tiếp câu chuyện về miền đất đỏ và những con người nơi đây.",
+      "Hợp tác sản xuất với các hãng phim lớn trên thế giới, mang điện ảnh Việt Nam đến gần hơn với khán giả quốc tế.",
     image: iconAboutUs3,
   },
 ];

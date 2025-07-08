@@ -1,9 +1,6 @@
 
 import {
   Content,
-  EcosystemInvestment,
-  PartnerSection,
-  FoundingTeam,
   ContactForm,
   Hero,
 } from "@/components/IndexPage";
@@ -16,15 +13,6 @@ const Index = () => {
 
       {/* Content Section */}
       <Content />
-
-      {/* Ecosystem Investment Section */}
-      <EcosystemInvestment />
-
-      {/* Partnership Section */}
-      <PartnerSection />
-
-      {/* Founding Team Section */}
-      <FoundingTeam />
 
       {/* Contact Form Section */}
       <ContactForm />

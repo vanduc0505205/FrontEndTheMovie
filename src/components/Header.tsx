@@ -3,16 +3,38 @@ import { ArrowRight } from "lucide-react";
 import logo from "@/assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Header = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-50 py-4 bg-custom-gradient-2">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-black/80 backdrop-blur-sm shadow-lg' 
+          : 'bg-custom-gradient-2'
+      }`}
+    >
       <nav className="container flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Link
@@ -21,7 +43,7 @@ const Header = () => {
             className="flex items-center space-x-2"
           >
             <img src={logo} alt="logo.png" className="w-10 h-10" />
-            <span className="text-2xl font-bold text-white">FARMBLOCK</span>
+            <span className="text-2xl font-bold text-white">ALPHACINEMA</span>
           </Link>
         </div>
 
@@ -38,11 +60,11 @@ const Header = () => {
             {isMenuOpen && (
               <div
                 className="fixed inset-0 z-50 flex flex-col items-start justify-start p-6 bg-custom-gradient-header-menu"
-                style={{ paddingTop: "60px" }} // Adds 10px + header height (approx 50px)
+                style={{ paddingTop: "60px" }}
                 onClick={toggleMenu}
               >
                 <button
-                  className="absolute top-14 right-4 text-white" // Adjusted top to 14 (10px + header height)
+                  className="absolute top-14 right-4 text-white"
                   onClick={toggleMenu}
                 >
                   ✕
@@ -82,16 +104,24 @@ const Header = () => {
                 >
                   Liên hệ
                 </Link>
-                <div className="block text-base text-primary-green-50 mb-4">VN</div>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-200 text-primary-green-100 w-full"
-                  onClick={toggleMenu}
-                >
-                  Truy cập ứng dụng
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+                <div className="flex flex-col w-full gap-3 mt-4">
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 w-full"
+                    onClick={toggleMenu}
+                  >
+                    Đăng nhập
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-2 border-primary-green-100 bg-transparent hover:bg-primary-green-100/20 text-primary-green-100 w-full"
+                    onClick={toggleMenu}
+                  >
+                    Đăng ký
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -143,14 +173,22 @@ const Header = () => {
                 EN
               </Link>
             </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="border-2 border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-200 text-primary-green-100"
-            >
-              Truy cập ứng dụng
-              <ArrowRight className="h-2 w-2" />
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-2 border-primary-green-100 bg-transparent hover:bg-primary-green-100/20 text-primary-green-100 h-9"
+              >
+                Đăng nhập
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+              >
+                Đăng ký
+              </Button>
+            </div>
           </div>
         )}
       </nav>

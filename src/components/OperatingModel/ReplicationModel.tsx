@@ -19,8 +19,8 @@ const ReplicationModel = () => {
         
         <div className="max-w-4xl mx-auto mb-8">
           <p className="text-lg md:text-xl text-white/90 mb-6 leading-relaxed">
-            Các vùng trồng trong hệ thống Farmblock được thiết kế như các mô hình trai mẫu – với quy trình sản xuất bài bản, hạ tầng công nghệ 
-            tích hợp và tiêu chuẩn chất lượng rõ ràng. Đây là nền tảng để Farmblock có thể nhân rộng, chuyển giao kỹ thuật và mở rộng hợp tác 
+            Các vùng trồng trong hệ thống ALPHACINEMA được thiết kế như các mô hình trai mẫu – với quy trình sản xuất bài bản, hạ tầng công nghệ 
+            tích hợp và tiêu chuẩn chất lượng rõ ràng. Đây là nền tảng để ALPHACINEMA có thể nhân rộng, chuyển giao kỹ thuật và mở rộng hợp tác 
             đầu tư, sản xuất hoặc nghiên cứu theo từng khu vực cụ thể.
           </p>
           
