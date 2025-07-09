@@ -31,28 +31,25 @@ const ContentContact = () => {
             <div className="flex flex-col justify-between h-full">
               <div>
                 <h1 className="text-4xl md:text-5xl text-primary-green-100 font-bold mb-6 leading-tight">
-                  Hãy bắt đầu hành trình cùng chúng tôi!
+                  Hãy cùng tạo nên kiệt tác điện ảnh!
                 </h1>
                 <div className="space-y-4 text-sm text-primary-green-50 leading-relaxed">
                   <p>
-                    Bạn yêu thiên nhiên, quan tâm đến đầu tư bền vững, đam mê
-                    các mô hình công nghệ tiên tiến?
+                    Bạn có ý tưởng phim hay, kịch bản hấp dẫn hay đơn giản là mong muốn
+                    hợp tác sản xuất phim chất lượng cao?
                   </p>
                   <p>
-                    Bạn muốn hiểu cách chúng tôi kết nối đất đỏ Tây Nguyên với
-                    những tiến bộ công nghệ mới nhất – hoặc đơn giản là mong một
-                    lần đứng giữa cánh đồng cà phê, lắng nghe câu chuyện của
-                    người nông dân bản địa?
+                    Đội ngũ ALPHACINEMA luôn tìm kiếm những cơ hội hợp tác mới, những ý tưởng
+                    sáng tạo và những đối tác cùng chí hướng trong ngành công nghiệp điện ảnh.
                   </p>
                   <p>
-                    Hãy chia sẻ điều bạn tìm kiếm – chúng tôi luôn sẵn sàng lắng
-                    nghe và đồng hành.
+                    Dù bạn là đạo diễn, biên kịch, diễn viên hay đơn vị sản xuất, chúng tôi
+                    đều sẵn sàng lắng nghe và cùng bạn hiện thực hóa những giấc mơ điện ảnh.
                   </p>
                   <p>
-                    Từ 30 ha hôm nay đến 200 ha ngày mai, hành trình của
-                    ALPHACINEMA đang rộng mở – và chúng tôi mời bạn cùng viết tiếp
-                    câu chuyện phát triển bền vững ấy, từ từng góc cây đến những
-                    giá trị thật.
+                    Hãy điền vào mẫu liên hệ bên cạnh, đội ngũ của chúng tôi sẽ phản hồi
+                    trong thời gian sớm nhất. Cùng nhau, chúng ta sẽ tạo nên những tác phẩm
+                    để đời, ghi dấu ấn trong lòng khán giả.
                   </p>
                 </div>
               </div>
@@ -70,13 +67,19 @@ const ContentContact = () => {
                         value="1"
                         className="h-12 bg-primary-background !hover:bg-primary-green-100"
                       >
-                        Anh
+                        Ông
                       </SelectItem>
                       <SelectItem
                         value="0"
                         className="h-12 bg-primary-background !hover:bg-primary-green-100"
                       >
-                        Chị
+                        Bà
+                      </SelectItem>
+                      <SelectItem
+                        value="2"
+                        className="h-12 bg-primary-background !hover:bg-primary-green-100"
+                      >
+                        Công ty
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -102,9 +105,10 @@ const ContentContact = () => {
                 </div>
 
                 <Textarea
-                  placeholder="Tin nhắn"
+                  placeholder="Nội dung chi tiết về dự án/yêu cầu của bạn *"
                   className="w-full p-3 rounded-none bg-primary-green-50 text-sm"
                   rows={5}
+                  required
                 ></Textarea>
 
                 <button
@@ -133,14 +137,19 @@ const ContentContact = () => {
               </h3>
               <div className="space-y-2 text-sm sm:text-base">
                 <p className="text-primary-green-50">
-                  <strong>Địa chỉ:</strong> 120 phố A, Phường B, Quận C, Thành
-                  phố Đ, Hà Nội, Việt Nam
+                  <strong>Trụ sở chính:</strong> Tòa nhà Alpha, Số 1 Lương Yên, Quận Hai Bà Trưng, Hà Nội
                 </p>
                 <p className="text-primary-green-50">
-                  <strong>Số điện thoại:</strong> +841-900-247-05
+                  <strong>Văn phòng đại diện:</strong> Tầng 10, Tòa nhà Bitexco, 2 Hải Triều, Quận 1, TP.HCM
                 </p>
                 <p className="text-primary-green-50">
-                  <strong>E-Mail:</strong> Gmail@ALPHACINEMA.com
+                  <strong>Điện thoại:</strong> +84 24 7300 5555 - Ext: 1234
+                </p>
+                <p className="text-primary-green-50">
+                  <strong>Email:</strong> info@alphacinema.vn
+                </p>
+                <p className="text-primary-green-50">
+                  <strong>Giờ làm việc:</strong> Thứ 2 - Thứ 6: 8:30 - 18:00
                 </p>
               </div>
             </div>
