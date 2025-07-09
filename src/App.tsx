@@ -1,38 +1,35 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import AboutUs from "./pages/AboutUs";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
-import DefaultLayout from "@/layouts/DefaultLayout";
-import OperatingModel from "./pages/OperatingModel";
+import { Routes, Route, Navigate } from 'react-router-dom'
+import MainLayout from './admin/layoutAdmin/MainLayout'
+import ShowtimeList from './admin/componentAdmin/ShowtimeAdmin'
+import SeatList from './admin/componentAdmin/SeatAdmin'
+import DefaultLayout from './layouts/DefaultLayout'
+import Index from './pages/Index'
+import AboutUs from './pages/AboutUs'
+import Contact from './pages/Contact'
+import OperatingModel from './pages/OperatingModel'
+import NotFound from './pages/NotFound'
 
-const queryClient = new QueryClient();
+function App() {
+  return (
+    <Routes>
+      {/* Giao diện landing */}
+      <Route element={<DefaultLayout />}>
+        <Route index element={<Index />} />
+        <Route path="/ve-chung-toi" element={<AboutUs />} />
+        <Route path="/lien-he" element={<Contact />} />
+        <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
+      </Route>
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Route dùng layout chung */}
-          <Route element={<DefaultLayout />}>
-            <Route index element={<Index />} />
-            <Route path="/ve-chung-toi" element={<AboutUs />} />
-            <Route path="/lien-he" element={<Contact />} />
-            <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
-          </Route>
+      {/* Giao diện admin */}
+      <Route path='admin' element={<MainLayout/>}>
+        <Route path="showtimes" element={<ShowtimeList />} />
+        <Route path="seats" element={<SeatList />} />
+      </Route>
 
-          {/* Route không dùng layout */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  )
+}
 
 export default App;
