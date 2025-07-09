@@ -13,19 +13,19 @@ const Hero = () => {
 
         <div className="absolute bottom-0 flex justify-center right-0 w-full z-40 primary-green-50 pb-16">
           <div className="container px-4 text-center flex flex-col items-center space-y-8">
-            <p className="text-lg font-semibold text-primary-green-100">Liên hệ</p>
+            <p className="text-lg font-semibold text-primary-green-100">Liên hệ với chúng tôi</p>
 
             <div>
               <h1 className="text-4xl text-primary-green-50 md:text-6xl font-bold leading-tight space-y-5">
-                <span className="block">Kết nối với Tây Nguyên,</span>
-                <span className="block">nơi đất đỏ kể chuyện</span>
+                <span className="block">Kết nối với thế giới</span>
+                <span className="block">điện ảnh đỉnh cao</span>
               </h1>
             </div>
 
             <p className="text-base md:text-lg opacity-90 leading-relaxed max-w-3xl text-primary-green-50">
-              Chúng tôi ở đây để lắng nghe câu chuyện của bạn, chia sẻ tầm nhìn
-              về một nền nông nghiệp bền vững, và cùng bạn chạm đến giá trị
-              trường tồn từ miền đất đỏ bazan trù phú.
+              Chúng tôi luôn lắng nghe ý kiến từ khán giả, đối tác và những người yêu điện ảnh.
+              Hãy chia sẻ với chúng tôi những đánh giá, góp ý hoặc cơ hội hợp tác để cùng
+              tạo nên những tác phẩm điện ảnh chất lượng nhất.
             </p>
           </div>
         </div>

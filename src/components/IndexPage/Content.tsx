@@ -8,17 +8,10 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import coffeeImage from "@/assets/images/index/image-home01.png";
-import hoa from "@/assets/icons/icon-flower.png";
-import emergingIndustries from "@/assets/icons/emerging-industries.png";
-import friendship from "@/assets/icons/friendship.png";
-import modeling from "@/assets/icons/modeling.png";
-import imageHome02 from "@/assets/images/index/image-home02.png";
-import imageHome03 from "@/assets/images/index/image-home03.png";
-import imageHome07 from "@/assets/images/index/image-home07.png";
-import { itemsData, slideData } from "@/config";
+import { slideData } from "@/config";
 
 const Content = () => {
-  const autoplay = Autoplay({ delay: 3000, stopOnInteraction: false });
+  const autoplay = Autoplay({ delay: 2000, stopOnInteraction: false });
 
   return (
     <div>
