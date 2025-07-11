@@ -27,12 +27,11 @@ const Header = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-black/80 backdrop-blur-sm shadow-lg' 
-          : 'bg-custom-gradient-2'
-      }`}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${isScrolled
+        ? 'bg-black/80 backdrop-blur-sm shadow-lg'
+        : 'bg-custom-gradient-2'
+        }`}
     >
       <nav className="container flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -173,20 +172,33 @@ const Header = () => {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-2 border-primary-green-100 bg-transparent hover:bg-primary-green-100/20 text-primary-green-100 h-9"
-              >
-                Đăng nhập
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
-              >
-                Đăng ký
-              </Button>
+              <Link to="/dang-nhap">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+                >
+                  Đăng Nhập
+                </Button>
+              </Link>
+              <Link to="/dang-ky">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+                >
+                  Đăng ký
+                </Button>
+              </Link>
+              <Link to="/dang-xuat">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+                >
+                  đăng xuất
+                </Button>
+              </Link>
             </div>
           </div>
         )}
