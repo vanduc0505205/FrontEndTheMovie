@@ -19,16 +19,23 @@ const Login: React.FC = () => {
           email: values.email,
           password: values.password,
         }),
-        credentials: "include", // nếu backend dùng cookie
+        credentials: "include",
       });
 
       const data = await res.json();
 
       if (res.ok) {
         message.success("Đăng nhập thành công!");
-        // Lưu token nếu có
+        // Lưu token và role
         localStorage.setItem("token", data.accessToken || "");
-        navigate("/"); // hoặc dashboard theo role
+        localStorage.setItem("role", data.user?.role || "user");
+
+        // Điều hướng theo quyền
+        if (data.user?.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
         message.error(data.message || "Đăng nhập thất bại.");
       }
@@ -43,7 +50,7 @@ const Login: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-start min-h-[calc(100vh-64px)] p-6">
       <div className="flex w-full max-w-6xl bg-white rounded-xl overflow-hidden shadow-lg">
-        {/* Bên trái: ảnh y hệt đăng ký */}
+
         <div
           className="w-1/2 hidden md:block bg-cover bg-center"
           style={{
@@ -51,7 +58,6 @@ const Login: React.FC = () => {
           }}
         />
 
-        {/* Bên phải: form login */}
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
           <div className="text-center mb-6">
             <Title level={3}>🎥 Alpha Cinema</Title>
