@@ -32,7 +32,7 @@ const Login: React.FC = () => {
 
         // Điều hướng theo quyền
         if (data.user?.role === "admin") {
-          navigate("/admin/dashboard");
+          navigate("/admin");
         } else {
           navigate("/");
         }
