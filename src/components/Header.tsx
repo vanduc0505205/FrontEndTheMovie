@@ -8,33 +8,43 @@ const Header = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const loadUser = () => {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    };
+
+    loadUser();
+    window.addEventListener("login-success", loadUser);
+
+    return () => {
+      window.removeEventListener("login-success", loadUser);
+    };
+  }, []);
+
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 10);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-black/80 backdrop-blur-sm shadow-lg' 
-          : 'bg-custom-gradient-2'
-      }`}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${isScrolled
+        ? "bg-black/80 backdrop-blur-sm shadow-lg"
+        : "bg-custom-gradient-2"
+        }`}
     >
       <nav className="container flex items-center justify-between">
+        {/* Logo */}
         <div className="flex items-center space-x-2">
           <Link
             to="/"
@@ -62,64 +72,57 @@ const Header = () => {
                 style={{ paddingTop: "60px" }}
                 onClick={toggleMenu}
               >
-                <button
-                  className="absolute top-14 right-4 text-white"
-                  onClick={toggleMenu}
-                >
+                <button className="absolute top-14 right-4 text-white">
                   ✕
                 </button>
-                <Link
-                  to="/"
-                  className="block text-base text-primary-green-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/" className="block text-base text-primary-green-50 mb-4">
                   Trang chủ
                 </Link>
-                <Link
-                  to="/ve-chung-toi"
-                  className="block text-base text-primary-green-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/ve-chung-toi" className="block text-base text-primary-green-50 mb-4">
                   Về chúng tôi
                 </Link>
-                <Link
-                  to="/mo-hinh-van-hanh"
-                  className="block text-base text-primary-green-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/mo-hinh-van-hanh" className="block text-base text-primary-green-50 mb-4">
                   Mô hình
                 </Link>
-                <Link
-                  to="/cong-nghe"
-                  className="block text-base text-primary-green-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/cong-nghe" className="block text-base text-primary-green-50 mb-4">
                   Công nghệ
                 </Link>
-                <Link
-                  to="/lien-he"
-                  className="block text-base text-primary-green-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/lien-he" className="block text-base text-primary-green-50 mb-4">
                   Liên hệ
                 </Link>
+
                 <div className="flex flex-col w-full gap-3 mt-4">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 w-full"
-                    onClick={toggleMenu}
-                  >
-                    Đăng nhập
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-primary-green-100 bg-transparent hover:bg-primary-green-100/20 text-primary-green-100 w-full"
-                    onClick={toggleMenu}
-                  >
-                    Đăng ký
-                  </Button>
+                  {user ? (
+                    <>
+                      <span className="text-white">👋 {user.username}</span>
+                      <Link to="/dang-xuat">
+                        <Button variant="outline" size="lg" className="text-red-500 w-full">
+                          Đăng xuất
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/dang-nhap">
+                        <Button
+                          variant="secondary"
+                          size="lg"
+                          className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 w-full"
+                        >
+                          Đăng nhập
+                        </Button>
+                      </Link>
+                      <Link to="/dang-ky">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="border-2 border-primary-green-100 bg-transparent hover:bg-primary-green-100/20 text-primary-green-100 w-full"
+                        >
+                          Đăng ký
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -130,63 +133,59 @@ const Header = () => {
               Trang chủ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/ve-chung-toi"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/ve-chung-toi" className="relative group text-white px-4">
               Về chúng tôi
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/mo-hinh-van-hanh"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/mo-hinh-van-hanh" className="relative group text-white px-4">
               Mô hình
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/cong-nghe"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/cong-nghe" className="relative group text-white px-4">
               Công nghệ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/lien-he"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/lien-he" className="relative group text-white px-4">
               Liên hệ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <div className="space-x-2 mx-4">
-              <Link
-                to="#"
-                className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full"
-              >
-                VN
-              </Link>
-              <Link
-                to="#"
-                className="relative group text-white/30 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full"
-              >
-                EN
-              </Link>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-2 border-primary-green-100 bg-transparent hover:bg-primary-green-100/20 text-primary-green-100 h-9"
-              >
-                Đăng nhập
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
-              >
-                Đăng ký
-              </Button>
+
+            <div className="flex items-center gap-3 ml-4">
+              {user ? (
+                <>
+                  <span className="text-white">👋 {user.username}</span>
+                  <Link to="/dang-xuat">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border border-red-500 text-red-500 hover:bg-red-500/10 h-9"
+                    >
+                      Đăng xuất
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/dang-nhap">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+                    >
+                      Đăng Nhập
+                    </Button>
+                  </Link>
+                  <Link to="/dang-ky">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+                    >
+                      Đăng ký
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

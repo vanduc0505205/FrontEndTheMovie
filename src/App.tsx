@@ -8,6 +8,9 @@ import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
+import Register from './pages/Register'
+import Login from './pages/Login'
+import Logout from './pages/Logout'
 
 function App() {
   return (
@@ -18,10 +21,13 @@ function App() {
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
+        <Route path="/dang-ky" element={<Register />} />
+        <Route path="/dang-nhap" element={<Login />} />
+        <Route path="/dang-xuat" element={<Logout />} />
       </Route>
 
       {/* Giao diện admin */}
-      <Route path='admin' element={<MainLayout/>}>
+      <Route path='admin' element={<MainLayout />}>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
       </Route>
