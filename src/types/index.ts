@@ -43,3 +43,34 @@ export interface Category {
   taoLuc?: string;
   capNhatLuc?: string;
 }
+
+export interface Cinema {
+  _id: string;
+  name: string;
+  address: string;
+  createdAt: string; // hoặc Date nếu bạn parse
+  updatedAt: string;
+}
+
+export interface Room {
+  _id: string;
+  name: string;
+  rows: number;  
+  columns: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ISeat {
+  _id: string;
+  roomId: string; // hoặc là { _id: string, name: string } nếu populate
+  row: string;
+  column: number;
+  seatCode: string;
+  type: 'NORMAL' | 'VIP';
+  status: 'available' | 'booked' | 'maintenance';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+
