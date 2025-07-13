@@ -7,15 +7,25 @@ import {
   deleteCategory,
 } from '@/services/category.service';
 import { Category } from '@/types/index';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  Card,
+  Input,
+  Button,
+  List,
+  Form,
+  Typography,
+  Space,
+  message,
+} from 'antd';
+
+const { TextArea } = Input;
+const { Title } = Typography;
 
 export default function CategoryAdmin() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [form, setForm] = useState({ categoryName: '', description: '' });
+  const [form] = Form.useForm();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -24,31 +34,39 @@ export default function CategoryAdmin() {
   const fetchCategories = async () => {
     try {
       const list = await getCategories();
-      console.log('Danh sách danh mục:', list);
       setCategories(list);
     } catch (err) {
       console.error('Lỗi lấy danh sách danh mục:', err);
+      message.error('Không thể lấy danh sách danh mục');
     }
   };
 
-  const handleSubmit = async () => {
-    if (!form.categoryName.trim()) return;
+  const handleSubmit = async (values: { categoryName: string; description?: string }) => {
+    if (!values.categoryName.trim()) {
+      return message.warning('Tên danh mục không được để trống');
+    }
 
+    setLoading(true);
     try {
       if (editingId) {
-        await updateCategory(editingId, form);
+        await updateCategory(editingId, values);
+        message.success('Cập nhật danh mục thành công');
       } else {
-        await createCategory(form);
+        await createCategory(values);
+        message.success('Tạo danh mục mới thành công');
       }
       resetForm();
       fetchCategories();
     } catch (err) {
-      console.error('Lỗi submit:', err);
+      console.error('Lỗi khi submit:', err);
+      message.error('Đã xảy ra lỗi khi lưu danh mục');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleEdit = (cat: Category) => {
-    setForm({
+    form.setFieldsValue({
       categoryName: cat.categoryName,
       description: cat.description,
     });
@@ -56,78 +74,69 @@ export default function CategoryAdmin() {
   };
 
   const handleDelete = async (id: string) => {
-    await deleteCategory(id);
-    fetchCategories();
+    try {
+      await deleteCategory(id);
+      message.success('Xóa danh mục thành công');
+      fetchCategories();
+    } catch (err) {
+      console.error('Lỗi khi xóa:', err);
+      message.error('Không thể xóa danh mục');
+    }
   };
 
   const resetForm = () => {
-    setForm({ categoryName: '', description: '' });
+    form.resetFields();
     setEditingId(null);
   };
 
   return (
-    <Card className="max-w-2xl mx-auto mt-8">
-      <CardContent className="p-6">
-        <h2 className="text-xl font-bold mb-4">
-          {editingId ? 'Cập nhật danh mục' : 'Thêm danh mục'}
-        </h2>
+    <Card title={<Title level={4}>Quản lý danh mục</Title>} style={{ maxWidth: 800, margin: '24px auto' }}>
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form.Item
+          label="Tên danh mục"
+          name="categoryName"
+          rules={[{ required: true, message: 'Vui lòng nhập tên danh mục' }]}
+        >
+          <Input placeholder="Tên danh mục" />
+        </Form.Item>
 
-        <div className="space-y-4 mb-6">
-          <Input
-            placeholder="Tên danh mục"
-            value={form.categoryName}
-            onChange={(e) =>
-              setForm({ ...form, categoryName: e.target.value })
-            }
-          />
-          <Textarea
-            placeholder="Mô tả (tuỳ chọn)"
-            value={form.description}
-            onChange={(e) =>
-              setForm({ ...form, description: e.target.value })
-            }
-          />
-          <div className="flex gap-2">
-            <Button onClick={handleSubmit}>
+        <Form.Item label="Mô tả" name="description">
+          <TextArea placeholder="Mô tả danh mục (tuỳ chọn)" autoSize={{ minRows: 2, maxRows: 4 }} />
+        </Form.Item>
+
+        <Form.Item>
+          <Space>
+            <Button type="primary" htmlType="submit" loading={loading}>
               {editingId ? 'Cập nhật' : 'Thêm'}
             </Button>
             {editingId && (
-              <Button variant="outline" onClick={resetForm}>
+              <Button onClick={resetForm} disabled={loading}>
                 Hủy
               </Button>
             )}
-          </div>
-        </div>
+          </Space>
+        </Form.Item>
+      </Form>
 
-        <h3 className="text-lg font-semibold mb-2">Danh sách danh mục</h3>
-        <ul className="space-y-2">
-          {categories.map((cat) => (
-            <li
-              key={cat._id}
-              className="flex justify-between items-start border-b py-2"
-            >
-              <div>
-                <div className="font-medium">{cat.categoryName}</div>
-                {cat.description && (
-                  <div className="text-sm text-gray-600">{cat.description}</div>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => handleEdit(cat)}>
-                  Sửa
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => handleDelete(cat._id)}
-                >
-                  Xoá
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
+      <Title level={5}>Danh sách danh mục</Title>
+      <List
+        dataSource={categories}
+        bordered
+        locale={{ emptyText: 'Chưa có danh mục nào' }}
+        renderItem={(cat) => (
+          <List.Item
+            actions={[
+              <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>,
+              <Button size="small" danger onClick={() => handleDelete(cat._id)}>Xoá</Button>,
+            ]}
+          >
+            <List.Item.Meta
+              title={cat.categoryName}
+              description={cat.description}
+            />
+          </List.Item>
+        )}
+      />
     </Card>
   );
 }

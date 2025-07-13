@@ -8,8 +8,9 @@ import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
-import MovieAdmin from './admin/componentAdmin/movie.admin'
 import CategoryAdmin from './admin/componentAdmin/category.admin'
+import MovieList from './admin/componentAdmin/movieAdmin/movieList'
+import 'antd/dist/reset.css';
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
       <Route path='admin' element={<MainLayout/>}>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
-        <Route path="movies" element={<MovieAdmin />} />
+        <Route path="movies" element={<MovieList />} />
         <Route path="categories" element={<CategoryAdmin />} />
       </Route>
       {/* 404 */}
