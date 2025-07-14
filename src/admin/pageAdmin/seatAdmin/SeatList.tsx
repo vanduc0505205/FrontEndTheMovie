@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Form,
@@ -8,6 +8,8 @@ import {
   message,
   Table,
   Tag,
+  Pagination,
+  Divider,
 } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRooms } from "@/api/room.api";
@@ -16,8 +18,10 @@ import {
   getSeatsByRoom,
   updateSeat,
 } from "@/api/seat.api";
+import { ISeat } from "@/types";
 
 const SeatList = () => {
+  const [hasSeats, setHasSeats] = useState(false);
   const [roomRows, setRoomRows] = useState<number>(0);
   const [roomCols, setRoomCols] = useState<number>(0);
   const [form] = Form.useForm();
@@ -37,6 +41,12 @@ const SeatList = () => {
     queryFn: () => getSeatsByRoom(selectedRoom!),
     enabled: !!selectedRoom,
   });
+
+  useEffect(() => {
+    if (selectedRoom) {
+      setHasSeats((seats || []).length > 0);
+    }
+  }, [selectedRoom, seats]);
 
   const { mutateAsync: createSeats, isPending } = useMutation({
     mutationFn: bulkCreateSeats,
@@ -85,12 +95,25 @@ const SeatList = () => {
     editSeat({ id: seat._id, updates: { status: nextStatus } });
   };
 
+  //Phân trang
+  const groupedSeats = seats.reduce((acc, seat) => {
+    const row = seat.seatCode.charAt(0); 
+    if (!acc[row]) acc[row] = [];
+    acc[row].push(seat);
+    return acc;
+  }, {} as Record<string, ISeat[]>);
+  const rowKeys = Object.keys(groupedSeats).sort(); 
+  const pageSize = 1; 
+  const [currentPage, setCurrentPage] = useState(1);
+  const currentRow = rowKeys[currentPage - 1];
+  const currentSeats = groupedSeats[currentRow] || [];
+
   const columns = [
     {
       title: "Mã ghế",
       dataIndex: "seatCode",
       key: "seatCode",
-      render: (text) => <Tag>{text}</Tag>,
+      render: (text: string) => <Tag>{text}</Tag>,
     },
     {
       title: "Loại",
@@ -116,13 +139,18 @@ const SeatList = () => {
           booked: "red",
           maintenance: "orange",
         };
+        const statusLabel = {
+          available: "Còn trống",
+          booked: "Đã đặt",
+          maintenance: "Bảo trì",
+        };
         return (
           <Tag
             color={colorMap[seat.status]}
             onClick={() => handleStatusToggle(seat)}
             style={{ cursor: "pointer" }}
           >
-            {seat.status}
+            {statusLabel[seat.status]}
           </Tag>
         );
       },
@@ -149,8 +177,7 @@ const SeatList = () => {
                 });
               }
             }}
-
-
+            value={selectedRoom}
           >
             {rooms.map((room) => (
               <Select.Option key={room._id} value={room._id}>
@@ -160,29 +187,56 @@ const SeatList = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item name="rows" label="Số hàng (tối đa 26)" rules={[{ required: true }]}>
-          <InputNumber min={1} max={26} className="w-full" />
-        </Form.Item>
+        {!hasSeats && (
+          <>
+            <div className="flex gap-4">
+              <Form.Item
+                name="rows"
+                label="Số hàng (Không thể thay đổi)"
+                rules={[{ required: true }]}
+                className="flex-1"
+              >
+                <InputNumber min={1} max={26} className="w-full" disabled />
+              </Form.Item>
 
-        <Form.Item name="columns" label="Số cột" rules={[{ required: true }]}>
-          <InputNumber min={1} className="w-full" />
-        </Form.Item>
+              <Form.Item
+                name="columns"
+                label="Số cột (Không thể thay đổi)"
+                rules={[{ required: true }]}
+                className="flex-1"
+              >
+                <InputNumber min={1} className="w-full" disabled />
+              </Form.Item>
+            </div>
 
-        <Form.Item name="vipRows" label="Hàng VIP (phân cách bằng dấu phẩy, ví dụ: A,B)">
-          <Input placeholder="A,B,C" />
-        </Form.Item>
+            <Form.Item name="vipRows" label="Hàng VIP (phân cách bằng dấu phẩy, ví dụ: A,B)">
+              <Input placeholder="A,B,C" />
+            </Form.Item>
 
-        <Form.Item name="vipSeats" label="Ghế VIP cụ thể (ví dụ: C3,D4)">
-          <Input placeholder="C3,D4" />
-        </Form.Item>
+            <Form.Item name="vipSeats" label="Ghế VIP cụ thể (ví dụ: C3,D4)">
+              <Input placeholder="C3,D4" />
+            </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isPending}>
-            Tạo ghế
-          </Button>
-        </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={isPending}>
+                Tạo ghế
+              </Button>
+            </Form.Item>
+          </>
+        )}
+
+        {hasSeats && (
+          <div className="mt-2 text-blue-600">
+            Phòng đã có ghế. Không thể thêm ghế VI.
+          </div>
+        )}
       </Form>
-
+      <Divider className="my-6" />
+      {currentRow && (
+        <h3 className="text-lg font-semibold mb-2">
+          Danh sách ghế - Hàng {currentRow}
+        </h3>
+      )}
       {selectedRoom && (
         <div className="mt-8">
           <h3 className="text-lg font-semibold mb-2">Danh sách ghế</h3>
@@ -190,12 +244,20 @@ const SeatList = () => {
             rowKey="_id"
             loading={loadingSeats}
             columns={columns}
-            dataSource={seats}
+            dataSource={currentSeats} // chỉ hiển thị A1 → A10 nếu currentRow là "A"
             bordered
             pagination={false}
           />
         </div>
       )}
+      <Pagination
+        current={currentPage}
+        pageSize={1} // mỗi trang 1 hàng
+        total={rowKeys.length}
+        onChange={(page) => setCurrentPage(page)}
+        showSizeChanger={false}
+        className="mt-4 text-center"
+      />
     </div>
   );
 };

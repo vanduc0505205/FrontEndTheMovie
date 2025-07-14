@@ -8,6 +8,7 @@ import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
+import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Route path='admin' element={<MainLayout/>}>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
+        <Route path='rooms' element={<RoomList/>}/>
       </Route>
 
       {/* 404 */}

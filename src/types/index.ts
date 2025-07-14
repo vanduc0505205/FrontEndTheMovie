@@ -18,7 +18,7 @@ export interface IShowtime {
   createdAt?: string
   updatedAt?: string
 }
-export interface Movie {
+export interface IMovie {
   _id: string;
   title: string;
   description: string;
@@ -36,7 +36,7 @@ export interface Movie {
   updatedAt: string; // hoặc Date
 }
 
-export interface Cinema {
+export interface ICinema {
   _id: string;
   name: string;
   address: string;
@@ -44,7 +44,7 @@ export interface Cinema {
   updatedAt: string;
 }
 
-export interface Room {
+export interface IRoom {
   _id: string;
   name: string;
   rows: number;  
