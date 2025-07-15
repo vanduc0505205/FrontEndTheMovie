@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
+import { Login } from "@/interface/user";
 
 const { Title, Text } = Typography;
 
@@ -9,7 +10,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: Login) => {
     try {
       setLoading(true);
       const res = await fetch("http://localhost:3000/user/login", {

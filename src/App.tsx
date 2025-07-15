@@ -11,6 +11,10 @@ import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
+import ListCinema from './admin/pageAdmin/cinemaAdmin/CinemaList'
+import AddCinema from './admin/pageAdmin/cinemaAdmin/CinemaAdd'
+import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
+import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
 
 function App() {
   return (
@@ -30,6 +34,10 @@ function App() {
       <Route path='admin' element={<MainLayout />}>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
+        <Route path="cinemas" element={<ListCinema />} />
+        <Route path="cinemas/add" element={<AddCinema />} />
+        <Route path="cinemas/edit/:id" element={<EditCinema />} />
+        <Route path="cinemas/:id" element={<CinemaDetail />} />
       </Route>
 
       {/* 404 */}

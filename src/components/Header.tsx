@@ -44,7 +44,6 @@ const Header = () => {
         }`}
     >
       <nav className="container flex items-center justify-between">
-        {/* Logo */}
         <div className="flex items-center space-x-2">
           <Link
             to="/"
@@ -72,22 +71,45 @@ const Header = () => {
                 style={{ paddingTop: "60px" }}
                 onClick={toggleMenu}
               >
-                <button className="absolute top-14 right-4 text-white">
+                <button
+                  className="absolute top-14 right-4 text-white"
+                  onClick={toggleMenu}
+                >
                   ✕
                 </button>
-                <Link to="/" className="block text-base text-primary-green-50 mb-4">
+                <Link
+                  to="/"
+                  className="block text-base text-primary-green-50 mb-4"
+                  onClick={toggleMenu}
+                >
                   Trang chủ
                 </Link>
-                <Link to="/ve-chung-toi" className="block text-base text-primary-green-50 mb-4">
+                <Link
+                  to="/ve-chung-toi"
+                  className="block text-base text-primary-green-50 mb-4"
+                  onClick={toggleMenu}
+                >
                   Về chúng tôi
                 </Link>
-                <Link to="/mo-hinh-van-hanh" className="block text-base text-primary-green-50 mb-4">
+                <Link
+                  to="/mo-hinh-van-hanh"
+                  className="block text-base text-primary-green-50 mb-4"
+                  onClick={toggleMenu}
+                >
                   Mô hình
                 </Link>
-                <Link to="/cong-nghe" className="block text-base text-primary-green-50 mb-4">
+                <Link
+                  to="/cong-nghe"
+                  className="block text-base text-primary-green-50 mb-4"
+                  onClick={toggleMenu}
+                >
                   Công nghệ
                 </Link>
-                <Link to="/lien-he" className="block text-base text-primary-green-50 mb-4">
+                <Link
+                  to="/lien-he"
+                  className="block text-base text-primary-green-50 mb-4"
+                  onClick={toggleMenu}
+                >
                   Liên hệ
                 </Link>
 
@@ -133,24 +155,35 @@ const Header = () => {
               Trang chủ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link to="/ve-chung-toi" className="relative group text-white px-4">
+            <Link
+              to="/ve-chung-toi"
+              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
+            >
               Về chúng tôi
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link to="/mo-hinh-van-hanh" className="relative group text-white px-4">
+            <Link
+              to="/mo-hinh-van-hanh"
+              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
+            >
               Mô hình
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link to="/cong-nghe" className="relative group text-white px-4">
+            <Link
+              to="/cong-nghe"
+              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
+            >
               Công nghệ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link to="/lien-he" className="relative group text-white px-4">
+            <Link
+              to="/lien-he"
+              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
+            >
               Liên hệ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-
-            <div className="flex items-center gap-3 ml-4">
+            <div className="space-x-2 mx-4">
               {user ? (
                 <>
                   <span className="text-white">👋 {user.username}</span>
