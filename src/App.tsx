@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound'
 import CategoryAdmin from './admin/componentAdmin/category.admin'
 import MovieList from './admin/componentAdmin/movieAdmin/movieList'
 import 'antd/dist/reset.css';
+import MovieDetail from './admin/componentAdmin/movieAdmin/movieDetail'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path="movies" element={<MovieList />} />
+        <Route path="movies/:id" element={<MovieDetail />} />
         <Route path="categories" element={<CategoryAdmin />} />
       </Route>
       {/* 404 */}
