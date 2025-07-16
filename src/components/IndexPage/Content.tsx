@@ -7,8 +7,8 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import coffeeImage from "@/assets/images/index/image-home01.png";
 import { slideData } from "@/config";
+import { IMG_MAI } from "@/assets/path";
 
 const Content = () => {
   const autoplay = Autoplay({ delay: 2000, stopOnInteraction: false });
@@ -21,8 +21,8 @@ const Content = () => {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="order-1 lg:order-1">
                 <img
-                  src={coffeeImage}
-                  alt="Coffee farmer harvesting"
+                  src={IMG_MAI}
+                  alt="Phim mai"
                   className="shadow-2xl w-full h-[250px] lg:h-[400px]"
                 />
               </div>
