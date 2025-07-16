@@ -8,6 +8,10 @@ import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
+import CategoryAdmin from './admin/componentAdmin/category.admin'
+import MovieList from './admin/componentAdmin/movieAdmin/movieList'
+import 'antd/dist/reset.css';
+import MovieDetail from './admin/componentAdmin/movieAdmin/movieDetail'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
@@ -34,12 +38,14 @@ function App() {
       <Route path='admin' element={<MainLayout />}>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
+        <Route path="movies" element={<MovieList />} />
+        <Route path="movies/:id" element={<MovieDetail />} />
+        <Route path="categories" element={<CategoryAdmin />} />
         <Route path="cinemas" element={<ListCinema />} />
         <Route path="cinemas/add" element={<AddCinema />} />
         <Route path="cinemas/edit/:id" element={<EditCinema />} />
         <Route path="cinemas/:id" element={<CinemaDetail />} />
       </Route>
-
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>

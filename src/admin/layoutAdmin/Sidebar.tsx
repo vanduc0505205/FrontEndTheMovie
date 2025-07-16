@@ -4,6 +4,16 @@ import clsx from 'clsx'
 
 const navItems = [
   {
+    label: 'Phim',
+    path: 'movies',
+    icon: <VideoCameraOutlined />
+  },
+  {
+    label: 'Danh mục',
+    path: 'categories',
+    icon: <AppstoreOutlined />
+  },
+  {
     label: 'Rạp chiếu',
     path: 'cinemas',
     icon: <HomeOutlined />
