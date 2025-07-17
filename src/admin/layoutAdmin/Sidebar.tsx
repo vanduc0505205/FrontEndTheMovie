@@ -1,8 +1,23 @@
 import { Link, useLocation } from 'react-router-dom'
-import { VideoCameraOutlined, AppstoreOutlined, PictureOutlined } from '@ant-design/icons'
+import { VideoCameraOutlined, AppstoreOutlined, PictureOutlined, HomeOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
 
 const navItems = [
+  {
+    label: 'Phim',
+    path: 'movies',
+    icon: <VideoCameraOutlined />
+  },
+  {
+    label: 'Danh mục',
+    path: 'categories',
+    icon: <AppstoreOutlined />
+  },
+  {
+    label: 'Rạp chiếu',
+    path: 'cinemas',
+    icon: <HomeOutlined />
+  },
   {
     label: 'Suất chiếu',
     path: 'showtimes',

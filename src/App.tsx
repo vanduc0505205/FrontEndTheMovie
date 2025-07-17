@@ -10,6 +10,17 @@ import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
 import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
 import TicketPrice from './pages/TicketPrice'
+import CategoryAdmin from './admin/componentAdmin/category.admin'
+import MovieList from './admin/componentAdmin/movieAdmin/movieList'
+import 'antd/dist/reset.css';
+import MovieDetail from './admin/componentAdmin/movieAdmin/movieDetail'
+import Register from './pages/Register'
+import Login from './pages/Login'
+import Logout from './pages/Logout'
+import ListCinema from './admin/pageAdmin/cinemaAdmin/CinemaList'
+import AddCinema from './admin/pageAdmin/cinemaAdmin/CinemaAdd'
+import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
+import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
 
 function App() {
   return (
@@ -21,15 +32,24 @@ function App() {
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
         <Route path="/ticket-price" element={<TicketPrice/>}/>
+        <Route path="/dang-ky" element={<Register />} />
+        <Route path="/dang-nhap" element={<Login />} />
+        <Route path="/dang-xuat" element={<Logout />} />
       </Route>
 
       {/* Giao diện admin */}
-      <Route path='admin' element={<MainLayout/>}>
+      <Route path='admin' element={<MainLayout />}>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path='rooms' element={<RoomList/>}/>
+        <Route path="movies" element={<MovieList />} />
+        <Route path="movies/:id" element={<MovieDetail />} />
+        <Route path="categories" element={<CategoryAdmin />} />
+        <Route path="cinemas" element={<ListCinema />} />
+        <Route path="cinemas/add" element={<AddCinema />} />
+        <Route path="cinemas/edit/:id" element={<EditCinema />} />
+        <Route path="cinemas/:id" element={<CinemaDetail />} />
       </Route>
-
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>
