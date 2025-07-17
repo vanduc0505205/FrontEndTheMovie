@@ -18,8 +18,8 @@ export interface IShowtime {
   createdAt?: string
   updatedAt?: string
 }
-export interface Movie {
-  _id?: string; // optional nếu dùng cho form create
+export interface IMovie {
+  _id: string;
   title: string;
   description: string;
   duration: number;
@@ -44,7 +44,7 @@ export interface Category {
   capNhatLuc?: string;
 }
 
-export interface Cinema {
+export interface ICinema {
   _id: string;
   name: string;
   address: string;
@@ -52,7 +52,7 @@ export interface Cinema {
   updatedAt: string;
 }
 
-export interface Room {
+export interface IRoom {
   _id: string;
   name: string;
   rows: number;  

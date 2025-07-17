@@ -8,6 +8,8 @@ import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
+import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
+import TicketPrice from './pages/TicketPrice'
 import CategoryAdmin from './admin/componentAdmin/category.admin'
 import MovieList from './admin/componentAdmin/movieAdmin/movieList'
 import 'antd/dist/reset.css';
@@ -29,6 +31,7 @@ function App() {
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
+        <Route path="/ticket-price" element={<TicketPrice/>}/>
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
@@ -38,6 +41,7 @@ function App() {
       <Route path='admin' element={<MainLayout />}>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
+        <Route path='rooms' element={<RoomList/>}/>
         <Route path="movies" element={<MovieList />} />
         <Route path="movies/:id" element={<MovieDetail />} />
         <Route path="categories" element={<CategoryAdmin />} />
