@@ -9,6 +9,7 @@ import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
 import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
+import TicketPrice from './pages/TicketPrice'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
+        <Route path="/ticket-price" element={<TicketPrice/>}/>
       </Route>
 
       {/* Giao diện admin */}
