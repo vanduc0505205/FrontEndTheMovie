@@ -1,9 +1,6 @@
+import Hero from "@/components/IndexPage/Hero";
+import Content from "@/components/IndexPage/Content";
 
-import {
-  Content,
-  ContactForm,
-  Hero,
-} from "@/components/IndexPage";
 
 const Index = () => {
   return (
@@ -15,7 +12,7 @@ const Index = () => {
       <Content />
 
       {/* Contact Form Section */}
-      <ContactForm />
+      {/* <ContactForm /> */}
 
     </div>
   );

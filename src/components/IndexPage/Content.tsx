@@ -69,7 +69,7 @@ const Content = () => {
                     className="md:basis-1/2 lg:basis-1/3"
                   >
                     <div className="relative rounded-xl overflow-hidden shadow-lg h-[500px] w-full">
-                      <div className="absolute inset-0 bg-custom-gradient-4 z-10"></div>
+                      <div className="absolute inset-0 bg-custom-gradient-carousel z-10"></div>
                       <img
                         src={slide.image}
                         alt={slide.title}
