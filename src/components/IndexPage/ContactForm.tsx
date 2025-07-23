@@ -21,7 +21,7 @@ const ContactForm = () => {
         alt="background"
         className="absolute inset-0 w-full h-full object-cover z-0"
       />
-      <div className="absolute inset-0 z-10 bg-custom-gradient-form"></div>
+      {/* <div className="absolute inset-0 z-10 bg-custom-gradient-form"></div> */}
 
       <div className="container py-10 lg:py-20 relative z-20">
         <div className=" bg-white/80 shadow-lg flex flex-col lg:flex-row overflow-hidden">

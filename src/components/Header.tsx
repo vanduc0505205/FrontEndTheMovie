@@ -40,7 +40,7 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${isScrolled
         ? "bg-black/80 backdrop-blur-sm shadow-lg"
-        : "bg-custom-gradient-2"
+        : "bg-custom-gradient-header"
         }`}
     >
       <nav className="container flex items-center justify-between">
