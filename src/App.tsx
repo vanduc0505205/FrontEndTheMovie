@@ -8,8 +8,6 @@ import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
-import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
-import TicketPrice from './pages/TicketPrice'
 import 'antd/dist/reset.css';
 import MovieDetail from './admin/pageAdmin/movieAdmin/movieDetail'
 import Register from './pages/Register'
@@ -24,6 +22,8 @@ import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './admin/pageAdmin/movieAdmin/movieList'
 import CategoryAdmin from './admin/pageAdmin/category.admin'
+import TicketPrice from './pages/TicketPrice'
+import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
 
 function App() {
   return (
