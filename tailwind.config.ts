@@ -24,9 +24,9 @@ export default {
       colors: {
         // --- Bảng màu đã được thay đổi sang tông ĐỎ ĐEN ---
         "primary-background": "#0D0D0D",         // nền chính (gần đen)
-        "primary-green-10": "#1A1A1A",           // hơi sáng hơn nền
-        "primary-green-50": "#262626",           // dùng cho section
-        "primary-green-100": "#330000",          // đỏ rất tối
+        "primary-green-10": "#FFFFFF",           // hơi sáng hơn nền
+        "primary-green-50": "#FFFFFF",           // dùng cho section
+        "primary-green-100": "#FFFFFF",          // đỏ rất tối
         "primary-green-150": "#8B0000",          // đỏ đậm (điểm nhấn)
         "primary-green-200": "#CC0000",          // đỏ tươi (nút CTA)
         "primary-green-300": "#990000",          // đỏ trung bình

@@ -31,7 +31,7 @@ function App() {
       {/* Giao diện landing */}
       <Route element={<DefaultLayout />}>
         <Route index element={<Index />} />
-        <Route path="/ve-chung-toi" element={<AboutUs />} />
+        {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
         <Route path="/ticket-price" element={<TicketPrice/>}/>
