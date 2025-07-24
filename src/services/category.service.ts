@@ -1,10 +1,10 @@
 // services/category.service.ts
 import axios from 'axios';
-import { Category } from '@/types/index';
+import { ICategory } from '@/types/category';
 
 const BASE_URL = 'http://localhost:3000/category';
 
-export const getCategories = async (): Promise<Category[]> => {
+export const getCategories = async (): Promise<ICategory[]> => {
   const res = await axios.get('http://localhost:3000/category');
   console.log("Dữ liệu trả về từ API:", res.data);
   return res.data; // Giả sử BE trả về { list: [...] }

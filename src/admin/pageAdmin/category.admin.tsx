@@ -6,7 +6,7 @@ import {
   updateCategory,
   deleteCategory,
 } from '@/services/category.service';
-import { Category } from '@/types/index';
+import { ICategory } from '@/types/category';
 import {
   Card,
   Input,
@@ -22,7 +22,7 @@ const { TextArea } = Input;
 const { Title } = Typography;
 
 export default function CategoryAdmin() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [form] = Form.useForm();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ export default function CategoryAdmin() {
     }
   };
 
-  const handleEdit = (cat: Category) => {
+  const handleEdit = (cat: ICategory) => {
     form.setFieldsValue({
       categoryName: cat.categoryName,
       description: cat.description,
@@ -120,7 +120,7 @@ export default function CategoryAdmin() {
 
       <Title level={5}>Danh sách danh mục</Title>
       <List
-        dataSource={categories}
+         dataSource={categories || []}
         bordered
         locale={{ emptyText: 'Chưa có danh mục nào' }}
         renderItem={(cat) => (

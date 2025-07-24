@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, Typography, Spin, Tag, Image, message, Button } from "antd";
-import axios from "axios";
-import { Movie } from "@/types";
+import {
+  Card,
+  Typography,
+  Spin,
+  Tag,
+  Image,
+  message,
+  Button,
+  Modal,
+} from "antd"; import axios from "axios";
+import { IMovie } from "@/types/movie";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Title, Paragraph } = Typography;
 
-const statusMap: Record<Movie["status"], { label: string; color: string }> = {
+const statusMap: Record<IMovie["status"], { label: string; color: string }> = {
   sap_chieu: { label: "Sắp chiếu", color: "blue" },
   dang_chieu: { label: "Đang chiếu", color: "green" },
   ngung_chieu: { label: "Ngừng chiếu", color: "red" },
@@ -16,14 +24,14 @@ const statusMap: Record<Movie["status"], { label: string; color: string }> = {
 export default function MovieDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [movie, setMovie] = useState<Movie | null>(null);
+  const [movie, setMovie] = useState<IMovie | null>(null);
   const [loading, setLoading] = useState(true);
   const [trailerVisible, setTrailerVisible] = useState(false);
 
   const fetchDetail = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data; // handle both cases
+      const data = res.data?.newMovie || res.data;
       setMovie(data);
     } catch (err) {
       console.error(err);
@@ -93,23 +101,31 @@ export default function MovieDetail() {
             </Paragraph>
           )}
 
-          {trailerVisible && (
-            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, marginTop: 12 }}>
-              <iframe
-                src={movie.trailer.replace("watch?v=", "embed/")}
-                title="Trailer"
-                allowFullScreen
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  border: 0,
-                }}
-              />
-            </div>
-          )}
+          {/* Modal Trailer */}
+      <Modal
+        open={trailerVisible}
+        onCancel={() => setTrailerVisible(false)}
+        footer={null}
+        width={1000}
+        bodyStyle={{ padding: 20 }}
+        destroyOnClose
+      >
+        <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+          <iframe
+            src={movie.trailer.replace("watch?v=", "embed/")}
+            title="Trailer"
+            allowFullScreen
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              border: 0,
+            }}
+          />
+        </div>
+      </Modal>
 
           {movie.banner?.length > 0 && (
             <>
