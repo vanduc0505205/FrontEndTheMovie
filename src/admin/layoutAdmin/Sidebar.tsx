@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { VideoCameraOutlined, AppstoreOutlined, PictureOutlined, HomeOutlined } from '@ant-design/icons'
+import { VideoCameraOutlined, AppstoreOutlined, PictureOutlined, HomeOutlined, TeamOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
 
 const navItems = [
@@ -32,6 +32,11 @@ const navItems = [
     label: 'Phòng',
     path: 'rooms',
     icon: <PictureOutlined />
+  },
+  {
+    label: 'Nhân viên',
+    path: 'users',
+    icon: <TeamOutlined />
   }
 ]
 

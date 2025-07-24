@@ -17,6 +17,8 @@ import ListCinema from './admin/pageAdmin/cinemaAdmin/CinemaList'
 import AddCinema from './admin/pageAdmin/cinemaAdmin/CinemaAdd'
 import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
 import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
+import UserList from './admin/pageAdmin/userAdmin/UserList'
+import SelectSeat from './pages/SelectSeat'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
@@ -38,6 +40,7 @@ function App() {
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
+        <Route path="/selectSeat" element={<SelectSeat/>} />
         <Route path="/gio-hang" element={<CartPage />} />
         <Route path="/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />
@@ -48,6 +51,7 @@ function App() {
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path='rooms' element={<RoomList/>}/>
+        <Route path='users' element={<UserList/>}/>
         <Route path="movies" element={<MovieList />} />
         <Route path="movies/:id" element={<MovieDetail />} />
         <Route path="categories" element={<CategoryAdmin />} />
