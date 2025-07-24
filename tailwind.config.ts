@@ -22,14 +22,16 @@ export default {
         archivo: ['"Archivo"'],
       },
       colors: {
-        "primary-background": "#F7FCF2",
-        "primary-green-10": "#f1f9e7",
-        "primary-green-50": "#F0F9E5",
-        "primary-green-100": "#B4E27E",
-        "primary-green-150": "#7ED839",
-        "primary-green-200": "#3A8047",
-        "primary-green-300": "#008242",
-        "primary-green-400": "#06280c",
+        // --- Bảng màu đã được thay đổi sang tông ĐỎ ĐEN ---
+        "primary-background": "#0D0D0D",         // nền chính (gần đen)
+        "primary-green-10": "#FFFFFF",           // hơi sáng hơn nền
+        "primary-green-50": "#FFFFFF",           // dùng cho section
+        "primary-green-100": "#FFFFFF",          // đỏ rất tối
+        "primary-green-150": "#8B0000",          // đỏ đậm (điểm nhấn)
+        "primary-green-200": "#CC0000",          // đỏ tươi (nút CTA)
+        "primary-green-300": "#990000",          // đỏ trung bình
+        "primary-green-400": "#4D0000", 
+        // ---------------------------------------------------
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

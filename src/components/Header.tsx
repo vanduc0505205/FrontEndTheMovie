@@ -40,7 +40,7 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${isScrolled
         ? "bg-black/80 backdrop-blur-sm shadow-lg"
-        : "bg-custom-gradient-2"
+        : "bg-custom-gradient-header"
         }`}
     >
       <nav className="container flex items-center justify-between">
@@ -89,21 +89,21 @@ const Header = () => {
                   className="block text-base text-primary-green-50 mb-4"
                   onClick={toggleMenu}
                 >
-                  Về chúng tôi
+                  Lịch Chiếu
                 </Link>
                 <Link
                   to="/mo-hinh-van-hanh"
                   className="block text-base text-primary-green-50 mb-4"
                   onClick={toggleMenu}
                 >
-                  Mô hình
+                  Tin Tức
                 </Link>
                 <Link
                   to="/cong-nghe"
                   className="block text-base text-primary-green-50 mb-4"
                   onClick={toggleMenu}
                 >
-                  Công nghệ
+                  Khuyến Mãi
                 </Link>
                 <Link
                   to="/lien-he"
@@ -159,21 +159,21 @@ const Header = () => {
               to="/ve-chung-toi"
               className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
             >
-              Về chúng tôi
+              Lịch Chiếu
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
             <Link
               to="/mo-hinh-van-hanh"
               className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
             >
-              Mô hình
+              Tin Tức
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
             <Link
               to="/cong-nghe"
               className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
             >
-              Công nghệ
+              Khuyến Mãi
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
             <Link
