@@ -5,7 +5,7 @@ import banner from "@/assets/images/banner.jpg";
 const Hero = () => {
   return (
     <section className="relative h-screen ">
-      <div className="absolute inset-0 bg-custom-gradient-3 z-30"></div>
+      <div className="absolute inset-0 bg-custom-gradient-hero z-30"></div>
       <img
           src={banner}
           className="absolute inset-0 w-full h-full object-cover z-10"

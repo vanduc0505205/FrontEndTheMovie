@@ -8,12 +8,8 @@ import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
-import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
-import TicketPrice from './pages/TicketPrice'
-import CategoryAdmin from './admin/componentAdmin/category.admin'
-import MovieList from './admin/componentAdmin/movieAdmin/movieList'
 import 'antd/dist/reset.css';
-import MovieDetail from './admin/componentAdmin/movieAdmin/movieDetail'
+import MovieDetail from './admin/pageAdmin/movieAdmin/movieDetail'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
@@ -23,6 +19,13 @@ import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
 import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
 import UserList from './admin/pageAdmin/userAdmin/UserList'
 import SelectSeat from './pages/SelectSeat'
+import CartPage from './pages/CartPage'
+import CheckoutPage from './pages/CheckoutPage'
+import CheckPayment from './pages/CheckPayment'
+import MovieList from './admin/pageAdmin/movieAdmin/movieList'
+import CategoryAdmin from './admin/pageAdmin/category.admin'
+import TicketPrice from './pages/TicketPrice'
+import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
 
 function App() {
   return (
@@ -30,7 +33,7 @@ function App() {
       {/* Giao diện landing */}
       <Route element={<DefaultLayout />}>
         <Route index element={<Index />} />
-        <Route path="/ve-chung-toi" element={<AboutUs />} />
+        {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
         <Route path="/ticket-price" element={<TicketPrice/>}/>
@@ -38,6 +41,9 @@ function App() {
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
         <Route path="/selectSeat" element={<SelectSeat/>} />
+        <Route path="/gio-hang" element={<CartPage />} />
+        <Route path="/thanh-toan" element={<CheckoutPage />} />
+        <Route path="/payment-result" element={<CheckPayment />} />
       </Route>
 
       {/* Giao diện admin */}

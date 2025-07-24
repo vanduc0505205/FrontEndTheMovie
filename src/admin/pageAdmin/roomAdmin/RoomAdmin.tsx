@@ -170,12 +170,17 @@ const RoomList = () => {
           >
             <InputNumber min={1} className="w-full" disabled={roomHasSeats} />
           </Form.Item>
+
+          {/* ✅ Cảnh báo nên đặt trong Form */}
           {editingRoom && roomHasSeats && (
-            <div className="text-yellow-600 mb-3">
-              ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
-            </div>
+            <Form.Item>
+              <div className="text-yellow-600">
+                ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
+              </div>
+            </Form.Item>
           )}
         </Form>
+
       </Modal>
     </div>
   );
