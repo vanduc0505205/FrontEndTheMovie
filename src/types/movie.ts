@@ -1,3 +1,5 @@
+import { ICategory } from "./category";
+
 export interface IMovie {
   _id: string;
   title: string;
@@ -14,4 +16,5 @@ export interface IMovie {
   status: 'sap_chieu' | 'dang_chieu' | 'ngung_chieu';
   taoLuc?: string;
   capNhatLuc?: string;
+  categories: ICategory[];
 }
