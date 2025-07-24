@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, Typography, Spin, Tag, Image, message, Button } from "antd";
+import {
+  Card,
+  Typography,
+  Spin,
+  Tag,
+  Image,
+  message,
+  Button,
+  Modal,
+} from "antd";
 import axios from "axios";
 import { Movie } from "@/types";
 import { ArrowLeftOutlined } from "@ant-design/icons";
@@ -23,7 +32,7 @@ export default function MovieDetail() {
   const fetchDetail = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data; // handle both cases
+      const data = res.data?.newMovie || res.data;
       setMovie(data);
     } catch (err) {
       console.error(err);
@@ -54,7 +63,7 @@ export default function MovieDetail() {
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-        onClick={() => navigate(-1)} // hoặc navigate("/admin/movies") nếu bạn muốn chỉ định rõ
+        onClick={() => navigate(-1)}
         style={{ marginBottom: 16 }}
       >
         Quay lại danh sách phim
@@ -78,9 +87,14 @@ export default function MovieDetail() {
           <Paragraph strong>Mô tả:</Paragraph>
           <Paragraph>{movie.description}</Paragraph>
           <Paragraph>⏱ Thời lượng: {movie.duration} phút</Paragraph>
-          <Paragraph>🎬 Ngày phát hành: {new Date(movie.releaseDate).toLocaleDateString()}</Paragraph>
+          <Paragraph>
+            🎬 Ngày phát hành:{" "}
+            {new Date(movie.releaseDate).toLocaleDateString()}
+          </Paragraph>
           <Paragraph>👨‍💼 Đạo diễn: {movie.director}</Paragraph>
-          <Paragraph>👥 Diễn viên: {movie.actors?.join(", ") || "Không có thông tin"}</Paragraph>
+          <Paragraph>
+            👥 Diễn viên: {movie.actors?.join(", ") || "Không có thông tin"}
+          </Paragraph>
           <Paragraph>🗣 Ngôn ngữ: {movie.language}</Paragraph>
           <Paragraph>🔞 Giới hạn tuổi: {movie.ageRating}</Paragraph>
 
@@ -91,24 +105,6 @@ export default function MovieDetail() {
                 Xem trailer
               </Button>
             </Paragraph>
-          )}
-
-          {trailerVisible && (
-            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, marginTop: 12 }}>
-              <iframe
-                src={movie.trailer.replace("watch?v=", "embed/")}
-                title="Trailer"
-                allowFullScreen
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  border: 0,
-                }}
-              />
-            </div>
           )}
 
           {movie.banner?.length > 0 && (
@@ -129,6 +125,32 @@ export default function MovieDetail() {
           )}
         </div>
       </div>
+
+      {/* Modal Trailer */}
+      <Modal
+        open={trailerVisible}
+        onCancel={() => setTrailerVisible(false)}
+        footer={null}
+        width={1000}
+        bodyStyle={{ padding: 20 }}
+        destroyOnClose
+      >
+        <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+          <iframe
+            src={movie.trailer.replace("watch?v=", "embed/")}
+            title="Trailer"
+            allowFullScreen
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              border: 0,
+            }}
+          />
+        </div>
+      </Modal>
     </Card>
   );
 }

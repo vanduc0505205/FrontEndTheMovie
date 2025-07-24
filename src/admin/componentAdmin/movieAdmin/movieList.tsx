@@ -10,9 +10,11 @@ import {
   Popconfirm,
   Tag,
   Form,
+  Input,
+  Select,
 } from "antd";
 import MovieModal from "./movieFormModal";
-import { Movie } from "@/types";
+import { Movie, Category } from "@/types";
 import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
@@ -25,6 +27,7 @@ const statusMap: Record<Movie["status"], { label: string; color: string }> = {
 
 export default function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -36,22 +39,42 @@ export default function MovieList() {
   const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
 
-  const fetchMovies = async (page = currentPage, limit = pageSize) => {
+  const [searchTitle, setSearchTitle] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
+
+  const fetchMovies = async (
+    page = currentPage,
+    limit = pageSize,
+    title = searchTitle,
+    category = selectedCategory,
+    status = selectedStatus
+  ) => {
+    const params: any = { page, limit };
+    if (title) params.title = title;
+    if (category) params.category = category;
+    if (status) params.status = status;
+
     try {
-      const res = await axios.get("http://localhost:3000/movie", {
-        params: { page, limit },
-      });
+      const res = await axios.get("http://localhost:3000/movie", { params });
       setMovies(res.data.list);
       setTotal(res.data.total);
     } catch (err) {
-      console.error(err);
       message.error("Không thể tải danh sách phim");
     }
   };
 
   useEffect(() => {
-    fetchMovies(currentPage, pageSize);
+    fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
   }, [currentPage, pageSize]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get("http://localhost:3000/category");
+      setCategories(res.data.list);
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (!modalOpen) setSelectedMovie(null);
@@ -73,9 +96,8 @@ export default function MovieList() {
     try {
       await axios.delete(`http://localhost:3000/movie/${id}`);
       message.success("Xoá thành công");
-      fetchMovies();
+      fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
     } catch (error) {
-      console.error("Lỗi xoá:", error);
       message.error("Xoá thất bại");
     }
   };
@@ -91,9 +113,8 @@ export default function MovieList() {
         message.success("Thêm phim thành công");
       }
       setModalOpen(false);
-      fetchMovies();
+      fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
     } catch (error) {
-      console.error("Lỗi:", error);
       message.error("Có lỗi xảy ra");
     } finally {
       setLoading(false);
@@ -101,105 +122,157 @@ export default function MovieList() {
   };
 
   return (
-    <>
-      <Card
-        title={
-          <div className="flex justify-between items-center">
-            <Title level={4} className="!mb-0">
-              Danh sách phim
-            </Title>
+    <Card
+      title={
+        <div className="flex justify-between items-center gap-4 flex-wrap">
+          <Title level={4} className="!mb-0">Danh sách phim</Title>
+          <Space wrap>
+            <Input.Search
+              placeholder="Tìm theo tên phim"
+              allowClear
+              onSearch={(value) => {
+                setSearchTitle(value);
+                setCurrentPage(1);
+                fetchMovies(1, pageSize, value, selectedCategory, selectedStatus);
+              }}
+              style={{ width: 200 }}
+            />
+            <Select
+              placeholder="Lọc theo danh mục"
+              allowClear
+              options={categories.map((cat) => ({
+                label: cat.categoryName,
+                value: cat._id,
+              }))}
+              value={selectedCategory}
+              onChange={(value) => {
+                setSelectedCategory(value);
+                setCurrentPage(1);
+                fetchMovies(1, pageSize, searchTitle, value, selectedStatus);
+              }}
+              onClear={() => {
+                setSelectedCategory(undefined);
+                setCurrentPage(1);
+                fetchMovies(1, pageSize, searchTitle, undefined, selectedStatus);
+              }}
+              style={{ width: 160 }}
+            />
+            <Select
+              placeholder="Lọc theo trạng thái"
+              allowClear
+              options={Object.entries(statusMap).map(([key, val]) => ({
+                label: val.label,
+                value: key,
+              }))}
+              value={selectedStatus}
+              onChange={(value) => {
+                setSelectedStatus(value);
+                setCurrentPage(1);
+                fetchMovies(1, pageSize, searchTitle, selectedCategory, value);
+              }}
+              onClear={() => {
+                setSelectedStatus(undefined);
+                setCurrentPage(1);
+                fetchMovies(1, pageSize, searchTitle, selectedCategory, undefined);
+              }}
+              style={{ width: 160 }}
+            />
             <Button type="primary" onClick={handleCreate}>
               + Thêm phim
             </Button>
-          </div>
-        }
-        style={{ maxWidth: 1000, margin: "24px auto" }}
-      >
-        <List
-          grid={{ gutter: 16, column: 1 }}
-          dataSource={movies}
-          pagination={{
-            current: currentPage,
-            pageSize,
-            total,
-            onChange: (page, size) => {
-              setCurrentPage(page);
-              setPageSize(size);
-            },
-          }}
-          locale={{ emptyText: "Không có phim" }}
-          renderItem={(movie) => (
-            <List.Item>
-              <Card
-                bordered
-                style={{ display: "flex", alignItems: "center", gap: 16 }}
-                bodyStyle={{ display: "flex", padding: 12, width: "100%" }}
-              >
-                <img
-                  src={movie.poster || "https://via.placeholder.com/100x140?text=No+Image"}
-                  alt={movie.title}
-                  style={{
-                    width: 100,
-                    height: 140,
-                    objectFit: "cover",
-                    borderRadius: 8,
-                  }}
-                />
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <Button
-                      type="link"
-                      style={{ padding: 0, fontSize: 16, fontWeight: 600 }}
-                      onClick={() => navigate(`/admin/movies/${movie._id}`)}
-                    >
-                      {movie.title}
-                    </Button>
-                    <Tag color={statusMap[movie.status].color}>
-                      {statusMap[movie.status].label}
-                    </Tag>
-                  </div>
-                  <div>⏱ Thời lượng: {movie.duration} phút</div>
-                  <div>🗣 Ngôn ngữ: {movie.language}</div>
-                  <div>🎥 Đạo diễn: {movie.director}</div>
-                  <div>👥 Diễn viên: {movie.actors?.join(", ")}</div>
-                  <div>🔞 Độ tuổi: {movie.ageRating}</div>
+          </Space>
+        </div>
+      }
+      style={{ maxWidth: 1200, margin: "24px auto" }}
+    >
+      <List
+        grid={{ gutter: 16, xs: 1, sm: 1, md: 2 }}
+        dataSource={movies}
+        pagination={{
+          current: currentPage,
+          pageSize,
+          total,
+          onChange: (page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          },
+        }}
+        locale={{ emptyText: "Không có phim" }}
+        renderItem={(movie) => (
+          <List.Item>
+            <Card
+              bordered
+              style={{ display: "flex", alignItems: "center", gap: 16 }}
+              bodyStyle={{ display: "flex", padding: 12, width: 1150 }}
+            >
+              <img
+                src={movie.poster || "https://via.placeholder.com/100x140?text=No+Image"}
+                alt={movie.title}
+                style={{ width: 120, height: 140, objectFit: "cover", borderRadius: 8 }}
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Button
+                    type="link"
+                    style={{ padding: 0, fontSize: 16, fontWeight: 600 }}
+                    onClick={() => navigate(`/admin/movies/${movie._id}`)}
+                  >
+                    {movie.title}
+                  </Button>
+                  <Tag color={statusMap[movie.status].color}>{statusMap[movie.status].label}</Tag>
+                </div>
+                <div>⏱ Thời lượng: {movie.duration} phút</div>
+                <div>🗣 Ngôn ngữ: {movie.language}</div>
+                <div>🎥 Đạo diễn: {movie.director}</div>
+                <div>
+                  👥 Diễn viên:{" "}
+                  {movie.actors.length > 3
+                    ? movie.actors.slice(0, 3).join(", ") + "..."
+                    : movie.actors.join(", ")}
                 </div>
                 <div>
-                  <Space direction="vertical">
-                    <Button size="small" onClick={() => handleEdit(movie)}>
-                      Sửa
+                    📂 Danh mục: {movie.categories?.map((cat) => (
+                      <Tag key={cat._id}>{cat.categoryName}</Tag>
+                    ))}
+                  </div>
+                <div>🔞 Độ tuổi: {movie.ageRating}</div>
+              </div>
+              <div>
+                <Space direction="vertical">
+                  <Button size="small" onClick={() => handleEdit(movie)}>
+                    Sửa
+                  </Button>
+                  <Popconfirm
+                    title="Bạn có chắc chắn muốn xoá phim này không?"
+                    onConfirm={() => handleDelete(movie._id)}
+                    okText="Xoá"
+                    cancelText="Huỷ"
+                  >
+                    <Button size="small" danger>
+                      Xoá
                     </Button>
-                    <Popconfirm
-                      title="Bạn có chắc chắn muốn xoá phim này không?"
-                      onConfirm={() => handleDelete(movie._id)}
-                      okText="Xoá"
-                      cancelText="Huỷ"
-                    >
-                      <Button size="small" danger>
-                        Xoá
-                      </Button>
-                    </Popconfirm>
-                  </Space>
-                </div>
-              </Card>
-            </List.Item>
-          )}
-        />
+                  </Popconfirm>
+                </Space>
+              </div>
+            </Card>
+          </List.Item>
+        )}
+      />
 
-        <MovieModal
-          open={modalOpen}
-          onClose={() => {
-            setModalOpen(false);
-            fetchMovies();
-          }}
-          onSubmit={handleSubmit}
-          onSuccess={fetchMovies}
-          initialValues={selectedMovie || undefined}
-          isEditing={isEditing}
-          loading={loading}
-          form={form}
-        />
-      </Card>
-    </>
+      <MovieModal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        onSubmit={handleSubmit}
+        onSuccess={() => {
+          fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
+        }}
+        initialValues={selectedMovie || undefined}
+        isEditing={isEditing}
+        loading={loading}
+        form={form}
+      />
+    </Card>
   );
 }

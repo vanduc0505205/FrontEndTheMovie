@@ -6,8 +6,8 @@ const BASE_URL = 'http://localhost:3000/category';
 
 export const getCategories = async (): Promise<Category[]> => {
   const res = await axios.get('http://localhost:3000/category');
-  console.log("Dữ liệu trả về từ API:", res.data);
-  return res.data; // Giả sử BE trả về { list: [...] }
+  // console.log("Dữ liệu trả về từ API:", res.data);
+  return res.data.list; // Giả sử BE trả về { list: [...] }
 };
 
 export const createCategory = async (payload: {

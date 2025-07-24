@@ -34,6 +34,7 @@ export default function CategoryAdmin() {
   const fetchCategories = async () => {
     try {
       const list = await getCategories();
+      console.log('Fetched categories:', list);
       setCategories(list);
     } catch (err) {
       console.error('Lỗi lấy danh sách danh mục:', err);
@@ -120,7 +121,7 @@ export default function CategoryAdmin() {
 
       <Title level={5}>Danh sách danh mục</Title>
       <List
-        dataSource={categories}
+        dataSource={categories || []}
         bordered
         locale={{ emptyText: 'Chưa có danh mục nào' }}
         renderItem={(cat) => (

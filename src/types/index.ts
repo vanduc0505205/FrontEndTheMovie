@@ -34,6 +34,7 @@ export interface Movie {
   status: 'sap_chieu' | 'dang_chieu' | 'ngung_chieu';
   taoLuc?: string;     // createdAt (nếu dùng timestamps)
   capNhatLuc?: string; // updatedAt (nếu dùng timestamps)
+  categories: Category[]; // Mảng chứa các category ID
 }
 // types/category.ts
 export interface Category {
@@ -72,5 +73,3 @@ export interface ISeat {
   createdAt?: string;
   updatedAt?: string;
 }
-
-

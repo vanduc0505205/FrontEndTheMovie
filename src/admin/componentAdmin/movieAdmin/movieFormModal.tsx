@@ -1,9 +1,20 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, Select, DatePicker, Row, Col, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Row,
+  Col,
+  Typography,
+  message,
+} from "antd";
 import dayjs from "dayjs";
 import { movieSchema } from "@/validations/movie.schema";
 import { Movie } from "@/types";
-
+import { getCategories } from "@/services/category.service";
+import { getAllMovies } from "@/services/movie.service";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -30,6 +41,21 @@ export default function MovieModal({
   loading,
   form,
 }: MovieModalProps) {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getCategories();
+        // console.log(res);
+        setCategories(res);
+      } catch (err) {
+        message.error("Không thể tải danh mục.");
+      }
+    };
+    fetchCategories();
+  }, []);
+
   useEffect(() => {
     if (initialValues) {
       form.setFieldsValue({
@@ -45,7 +71,7 @@ export default function MovieModal({
     }
   }, [initialValues, form]);
 
-  const handleFinish = (values: any) => {
+  const handleFinish = async (values: any) => {
     try {
       const formatted = {
         ...values,
@@ -59,19 +85,35 @@ export default function MovieModal({
           ?.split(",")
           .map((b: string) => b.trim())
           .filter(Boolean),
+        categories: values.categories?.map((c: string) => c.trim()).filter(Boolean) || [],
       };
+
+      const now = dayjs().startOf("day");
+      if (dayjs(formatted.releaseDate).isBefore(now)) {
+        return Modal.error({
+          title: "Ngày phát hành không hợp lệ",
+          content: "Ngày phát hành không được trước ngày hôm nay.",
+        });
+      }
+
+      if (!isEditing) {
+        const exists = await getAllMovies();
+        if (exists.some((movie) => movie.title === formatted.title)) {
+          return Modal.error({
+            title: "Tên phim bị trùng",
+            content: "Phim này đã tồn tại.",
+          });
+        }
+      }
 
       const result = movieSchema.safeParse(formatted);
       if (!result.success) {
         const errors = result.error.errors.map((e) => e.message).join("\n");
-        Modal.error({
-          title: "Lỗi xác thực",
-          content: errors,
-        });
-        return;
+        return Modal.error({ title: "Lỗi xác thực", content: errors });
       }
 
-      onSubmit(result.data as Movie);
+      onSubmit(result.data as unknown as Movie);
+      console.log("Submit data:", formatted);
       if (onSuccess) onSuccess();
       form.resetFields();
       onClose();
@@ -106,7 +148,7 @@ export default function MovieModal({
       confirmLoading={loading}
       okText={isEditing ? "Lưu" : "Thêm"}
       width={1000}
-      style={{ top: 20 }}
+      style={{ top: 10 }}
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={16}>
@@ -151,22 +193,44 @@ export default function MovieModal({
               <Input placeholder="Chris Evans, Robert Downey Jr." />
             </Form.Item>
 
+            <Form.Item name="description" label="Mô tả">
+              <TextArea rows={2} placeholder="Tóm tắt nội dung phim..." />
+            </Form.Item>
+
             <Form.Item
-              name="description"
-              label="Mô tả"
-              rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+              name="categories"
+              label="Danh mục"
+              rules={[{ required: true, message: "Vui lòng chọn ít nhất 1 danh mục" }]}
             >
-              <TextArea rows={4} placeholder="Tóm tắt nội dung phim..." />
+              <Select mode="multiple" placeholder="Chọn danh mục">
+                {(Array.isArray(categories) ? categories : []).map((cat) => (
+                  <Option key={cat._id} value={cat._id}>
+                    {cat.categoryName}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
 
           <Col span={12}>
             <Form.Item
               name="language"
-              label="Ngôn ngữ"
-              rules={[{ required: true, message: "Vui lòng nhập ngôn ngữ" }]}
+              label="Quốc gia"
+              rules={[{ required: true, message: "Vui lòng chọn quốc gia" }]}
             >
-              <Input />
+              <Select placeholder="Chọn quốc gia">
+                <Option value="Việt Nam">Việt Nam</Option>
+                <Option value="Mỹ">Mỹ</Option>
+                <Option value="Anh">Anh</Option>
+                <Option value="Hàn Quốc">Hàn Quốc</Option>
+                <Option value="Nhật Bản">Nhật Bản</Option>
+                <Option value="Trung Quốc">Trung Quốc</Option>
+                <Option value="Pháp">Pháp</Option>
+                <Option value="Đức">Đức</Option>
+                <Option value="Tây Ban Nha">Tây Ban Nha</Option>
+                <Option value="Ý">Ý</Option>
+                <Option value="Khác">Khác</Option>
+              </Select>
             </Form.Item>
 
             <Form.Item
@@ -216,7 +280,7 @@ export default function MovieModal({
                   height="250"
                   src={getYouTubeEmbedUrl(trailerUrl) as string}
                   title="Trailer"
-                  frameBorder="0" 
+                  frameBorder="0"
                   allowFullScreen
                 ></iframe>
               </div>

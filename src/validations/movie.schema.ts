@@ -14,13 +14,26 @@ export const movieSchema = z.object({
     .array(z.string().min(1, 'Tên diễn viên không được trống'))
     .min(1, 'Phải có ít nhất 1 diễn viên'),
   language: z.string().min(1, 'Ngôn ngữ không được để trống'),
-  trailer: z.string().url('Trailer phải là URL hợp lệ').optional().or(z.literal('')),
-  poster: z.string().url('Poster phải là URL hợp lệ').optional().or(z.literal('')),
-  banner: z.array(z.string().url('Ảnh banner phải là URL hợp lệ')).optional(),
+  trailer: z
+    .string()
+    .url('Trailer phải là URL hợp lệ')
+    .optional()
+    .or(z.literal('')),
+  poster: z
+    .string()
+    .url('Poster phải là URL hợp lệ')
+    .optional()
+    .or(z.literal('')),
+  banner: z
+    .array(z.string().url('Ảnh banner phải là URL hợp lệ'))
+    .optional(),
   ageRating: z.enum(['C13', 'C16', 'C18'], {
     required_error: 'Chọn độ tuổi phù hợp',
   }),
   status: z.enum(['sap_chieu', 'dang_chieu', 'ngung_chieu'], {
     required_error: 'Chọn trạng thái phim',
   }),
+  categories: z
+    .array(z.string().min(1, 'Danh mục không hợp lệ'))
+    .min(1, 'Chọn ít nhất 1 danh mục'),
 });
