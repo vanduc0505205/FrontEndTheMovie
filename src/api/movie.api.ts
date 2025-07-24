@@ -1,4 +1,4 @@
-import { IMovie } from '@/types';
+import { IMovie } from '@/types/movie';
 import axios from 'axios'
 
 export const getMovies = async (): Promise<IMovie[]> => {

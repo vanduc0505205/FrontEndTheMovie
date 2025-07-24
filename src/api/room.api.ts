@@ -1,4 +1,4 @@
-import { IRoom } from '@/types';
+import { IRoom } from '@/types/room';
 import axios from 'axios'
 
 export const getRooms = async (): Promise<IRoom[]> => {
@@ -12,6 +12,10 @@ export const createRoom = async (payload: Partial<IRoom>) => {
   return data;
 };
 
+export const getRoomById = async (id: string): Promise<IRoom> => {
+  const { data } = await axios.get(`http://localhost:3000/room/${id}`);
+  return data;
+};
 
 // Cập nhật phòng
 export const updateRoom = async (id: string, payload: Partial<IRoom>) => {

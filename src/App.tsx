@@ -21,6 +21,8 @@ import ListCinema from './admin/pageAdmin/cinemaAdmin/CinemaList'
 import AddCinema from './admin/pageAdmin/cinemaAdmin/CinemaAdd'
 import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
 import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
+import UserList from './admin/pageAdmin/userAdmin/UserList'
+import SelectSeat from './pages/SelectSeat'
 
 function App() {
   return (
@@ -35,6 +37,7 @@ function App() {
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
+        <Route path="/selectSeat" element={<SelectSeat/>} />
       </Route>
 
       {/* Giao diện admin */}
@@ -42,6 +45,7 @@ function App() {
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path='rooms' element={<RoomList/>}/>
+        <Route path='users' element={<UserList/>}/>
         <Route path="movies" element={<MovieList />} />
         <Route path="movies/:id" element={<MovieDetail />} />
         <Route path="categories" element={<CategoryAdmin />} />

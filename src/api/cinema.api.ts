@@ -1,5 +1,5 @@
 import { Cinema } from '@/interface/cinema';
-import { ICinema } from '@/types';
+import { ICinema } from '@/types/cinema';
 import axios from 'axios'
 
 // Sau khi đầy đủ api của cinema thì chuyển về folder types

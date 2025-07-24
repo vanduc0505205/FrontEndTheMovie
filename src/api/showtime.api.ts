@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { IShowtime } from '@/types'
+import { IShowtime } from '@/types/showtime'
 
 // Lấy tất cả suất chiếu
 export const getShowtimes = async (): Promise<IShowtime[]> => {

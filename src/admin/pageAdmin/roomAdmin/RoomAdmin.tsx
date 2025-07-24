@@ -17,7 +17,7 @@ import {
   deleteRoom,
 } from "@/api/room.api";
 import { getSeatsByRoom } from "@/api/seat.api";
-import { IRoom } from "@/types";
+import { IRoom } from "@/types/room";
 
 const RoomList = () => {
   const [form] = Form.useForm();
