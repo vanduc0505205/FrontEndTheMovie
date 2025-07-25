@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, Select } from 'antd';
 import { IUser } from '@/types/user';
+
+const { Option } = Select;
 
 interface UserFormModalProps {
   visible: boolean;
@@ -24,6 +26,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       form.setFieldsValue({
         username: currentStaff?.username || '',
         email: currentStaff?.email || '',
+        status: currentStaff?.status || 'active',
         password: '',
       });
     }
@@ -76,6 +79,17 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             <Input.Password />
           </Form.Item>
         )}
+
+        <Form.Item
+          label="Trạng thái tài khoản"
+          name="status"
+          rules={[{ required: true, message: 'Vui lòng chọn trạng thái' }]}
+        >
+          <Select>
+            <Option value="active">Hoạt động</Option>
+            <Option value="blocked">Bị khóa</Option>
+          </Select>
+        </Form.Item>
       </Form>
     </Modal>
   );
