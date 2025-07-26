@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
   Card,
@@ -18,6 +18,7 @@ import { IMovie  } from "@/types/movie";
 import { ICategory } from "@/types/category";
 import { useNavigate } from "react-router-dom";
 import { Import } from "lucide-react";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -45,7 +46,7 @@ export default function MovieList() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
 
-  const fetchMovies = async (
+  const fetchMovies = useCallback(async (
     page = currentPage,
     limit = pageSize,
     title = searchTitle,
@@ -58,18 +59,18 @@ export default function MovieList() {
     if (status) params.status = status;
     try {
       const res = await axios.get("http://localhost:3000/movie", {
-        params: { params },
+        params,
       });
       setMovies(res.data.list);
       setTotal(res.data.total);
     } catch (err) {
       message.error("Không thể tải danh sách phim");
     }
-  };
+  }, [currentPage, pageSize, searchTitle, selectedCategory, selectedStatus]);
 
   useEffect(() => {
     fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, searchTitle, selectedCategory, selectedStatus]);
 
  useEffect(() => {
     const fetchCategories = async () => {
@@ -203,7 +204,7 @@ export default function MovieList() {
         renderItem={(movie) => (
           <List.Item>
             <Card
-              bordered
+              // bordered
               style={{ display: "flex", alignItems: "center", gap: 16 }}
               bodyStyle={{ display: "flex", padding: 12, width: 1150 }}
             >
@@ -224,6 +225,7 @@ export default function MovieList() {
                   <Tag color={statusMap[movie.status].color}>{statusMap[movie.status].label}</Tag>
                 </div>
                 <div>⏱ Thời lượng: {movie.duration} phút</div>
+                <div>📅 Ngày phát hành: {dayjs(movie.releaseDate).format("DD/MM/YYYY")}</div>
                 <div>🗣 Ngôn ngữ: {movie.language}</div>
                 <div>🎥 Đạo diễn: {movie.director}</div>
                 <div>
