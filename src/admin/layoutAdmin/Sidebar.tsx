@@ -34,7 +34,7 @@ const navItems = [
     icon: <PictureOutlined />
   },
   {
-    label: 'Nhân viên',
+    label: 'Tài khoản',
     path: 'users',
     icon: <TeamOutlined />
   }

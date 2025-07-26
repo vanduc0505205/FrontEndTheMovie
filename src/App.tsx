@@ -17,7 +17,7 @@ import ListCinema from './admin/pageAdmin/cinemaAdmin/CinemaList'
 import AddCinema from './admin/pageAdmin/cinemaAdmin/CinemaAdd'
 import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
 import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
-import UserList from './admin/pageAdmin/userAdmin/UserList'
+import UserList from './admin/pageAdmin/userAdmin/AccountList'
 import SelectSeat from './pages/SelectSeat'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
@@ -35,7 +35,7 @@ function App() {
         <Route index element={<Index />} />
         {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
-        <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
+        {/* <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} /> */}
         <Route path="/ticket-price" element={<TicketPrice/>}/>
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
