@@ -2,13 +2,6 @@ import imagehome05 from "@/assets/images/index/image-home05.png";
 import imagehome04 from "@/assets/images/index/image-home04.png";
 import imagehome06 from "@/assets/images/index/image-home06.png";
 import imagehome11 from "@/assets/images/index/image-home11.png";
-import imageBlogAboutUs1 from "@/assets/images/about-us/about-blog-us-image1.png";
-import imageBlogAboutUs2 from "@/assets/images/about-us/about-blog-us-image2.png";
-import imageBlogAboutUs3 from "@/assets/images/about-us/about-blog-us-image3.png";
-import iconAboutUs1 from "@/assets/images/about-us/icons-about-us02.png";
-import iconAboutUs2 from "@/assets/images/about-us/icons-about-us03.png";
-import iconAboutUs3 from "@/assets/images/about-us/icons-about-us04.png";
-
 export const slideData = [
   {
     image: imagehome11,
@@ -98,62 +91,3 @@ export const accordionData = [
         hiện đại, đảm bảo mỗi cảnh quay đều đạt chất lượng hình ảnh và âm thanh tốt nhất.`,
     },
   ];
-
-
-
-  export const blogItems = [
-  {
-    image: imageBlogAboutUs1,
-    title: "Hậu trường thú vị của bộ phim đình đám mùa hè",
-    link: "#",
-  },
-  {
-    image: imageBlogAboutUs2,
-    title: "Phỏng vấn đạo diễn: Hành trình thực hiện bộ phim triệu đô",
-    link: "#",
-  },
-  {
-    image: imageBlogAboutUs3,
-    title: "Khám phá bối cảnh quay phim tại Đà Lạt mộng mơ",
-    link: "#",
-  },
-  {
-    image: imageBlogAboutUs1,
-    title: "Dàn diễn viên trẻ đầy triển vọng trong phim mới",
-    link: "#",
-  },
-  {
-    image: imageBlogAboutUs2,
-    title: "Công nghệ CGI đỉnh cao trong điện ảnh Việt",
-    link: "#",
-  },
-  {
-    image: imageBlogAboutUs3,
-    title: "Những bộ phim đáng chờ đợi nhất năm 2025",
-    link: "#",
-  },
-];
-
-export const milestones = [
-  {
-    title: "Mốc 1: 2010",
-    subtitle: "Khởi đầu khiêm tốn",
-    description:
-      "Ra mắt bộ phim đầu tay với kinh phí khiêm tốn nhưng nhận được sự đón nhận nồng nhiệt từ khán giả trẻ.",
-    image: iconAboutUs1,
-  },
-  {
-    title: "Mốc 2: 2018",
-    subtitle: "Bước đột phá",
-    description:
-      "Đạt giải thưởng Điện ảnh Quốc tế với bộ phim nghệ thuật, đưa tên tuổi đạo diễn lên tầm cao mới.",
-    image: iconAboutUs2,
-  },
-  {
-    title: "Tương lai",
-    subtitle: "Vươn tầm quốc tế",
-    description:
-      "Hợp tác sản xuất với các hãng phim lớn trên thế giới, mang điện ảnh Việt Nam đến gần hơn với khán giả quốc tế.",
-    image: iconAboutUs3,
-  },
-];
