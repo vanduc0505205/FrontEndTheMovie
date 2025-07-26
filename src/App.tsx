@@ -24,6 +24,10 @@ import MovieList from './admin/pageAdmin/movieAdmin/movieList'
 import CategoryAdmin from './admin/pageAdmin/category.admin'
 import TicketPrice from './pages/TicketPrice'
 import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
+import RequireRole from './lib/RequireRole'
+import StaffMainLayout from './staff/layoutStaff/mainLayout'
+import ForbiddenPage from './pages/403'
+
 
 function App() {
   return (
@@ -34,7 +38,7 @@ function App() {
         {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
-        <Route path="/ticket-price" element={<TicketPrice/>}/>
+        <Route path="/ticket-price" element={<TicketPrice />} />
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
@@ -44,10 +48,14 @@ function App() {
       </Route>
 
       {/* Giao diện admin */}
-      <Route path='admin' element={<MainLayout />}>
+      <Route path='admin' element={
+        <RequireRole allowedRoles={['admin']}>
+          <MainLayout />
+        </RequireRole>
+      }>
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
-        <Route path='rooms' element={<RoomList/>}/>
+        <Route path='rooms' element={<RoomList />} />
         <Route path="movies" element={<MovieList />} />
         <Route path="movies/:id" element={<MovieDetail />} />
         <Route path="categories" element={<CategoryAdmin />} />
@@ -56,8 +64,27 @@ function App() {
         <Route path="cinemas/edit/:id" element={<EditCinema />} />
         <Route path="cinemas/:id" element={<CinemaDetail />} />
       </Route>
+      {/* Giao diện staff */}
+      <Route path='staff' element={
+        <RequireRole allowedRoles={['staff']}>
+          <StaffMainLayout />
+        </RequireRole>
+      }
+      >
+        <Route path="showtimes" element={<ShowtimeList />} />
+        <Route path="seats" element={<SeatList />} />
+        <Route path="movies" element={<MovieList />} />
+        <Route path="movies/:id" element={<MovieDetail />} />
+        <Route path="categories" element={<CategoryAdmin />} />
+        <Route path="cinemas" element={<ListCinema />} />
+        <Route path="cinemas/add" element={<AddCinema />} />
+        <Route path="cinemas/edit/:id" element={<EditCinema />} />
+        <Route path="cinemas/:id" element={<CinemaDetail />} />
+
+      </Route>
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
+      <Route path="/403" element={<ForbiddenPage />} />
     </Routes>
   )
 }
