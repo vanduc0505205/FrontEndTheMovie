@@ -4,6 +4,7 @@ export interface IUser {
   email: string;
   password?: string;
   role?: 'staff' | 'customer' | 'admin';
+  status?: 'active' | 'blocked'; 
   resetToken?: string | null;
   resetTokenExpires?: string | null;
   createdAt?: string;

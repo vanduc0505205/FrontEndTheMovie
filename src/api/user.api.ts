@@ -17,3 +17,7 @@ export const updateUser = async (id: string, user: Partial<IUser>) => {
 export const deleteUser = async (id: string) => {
   return axios.delete(`http://localhost:3000/user/${id}`);
 };
+
+export const toggleUserStatus = async (id: string, status: 'active' | 'blocked') => {
+  return axios.patch(`http://localhost:3000/user/${id}/status`, { status });
+};

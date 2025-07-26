@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Input, Button, Space, Popconfirm, message, Card, Tag, Segmented } from 'antd';
 import dayjs from 'dayjs';
-import UserFormModal from './UserFormModal';
-import { getAllUsers, deleteUser, createUser, updateUser } from '@/api/user.api';
+import UserFormModal from './AccountFormModal';
+import { getAllUsers, deleteUser, createUser, updateUser, toggleUserStatus } from '@/api/user.api';
 import { IUser } from '@/types/user';
 
 const UserAdmin: React.FC = () => {
@@ -29,6 +29,7 @@ const UserAdmin: React.FC = () => {
         try {
             const res = await getAllUsers();
             setUsers(res.users);
+            console.log(res)
         } catch (err) {
             message.error('Lỗi khi tải danh sách tài khoản');
         }
@@ -94,6 +95,19 @@ const UserAdmin: React.FC = () => {
         }
     };
 
+    const handleStatusToggle = async (id: string, newStatus: 'active' | 'blocked') => {
+        try {
+            await toggleUserStatus(id, newStatus);
+            message.success(`Đã ${newStatus === 'active' ? 'mở khóa' : 'khóa'} tài khoản`);
+            fetchUsers();
+        } catch (error) {
+            console.error('Toggle user status failed:', error);
+            message.error('Thao tác thất bại');
+        }
+    };
+
+
+
     const columns = [
         { title: 'Tên đăng nhập', dataIndex: 'username', width: 300 },
         { title: 'Email', dataIndex: 'email', width: 400 },
@@ -117,19 +131,45 @@ const UserAdmin: React.FC = () => {
         },
         {
             title: 'Hành động',
-            width: 150,
-            render: (_: any, record: IUser) => (
-                roleFilter === 'staff' && (
-                    <Space>
-                        <Button type="link" onClick={() => openEditModal(record)}>Sửa</Button>
-                        <Popconfirm title="Xác nhận xóa?" onConfirm={() => handleDelete(record._id!)}>
-                            <Button type="link" danger>Xóa</Button>
-                        </Popconfirm>
-                    </Space>
-                )
-            )
-        }
+            width: 220,
+            render: (_: any, record: IUser) => {
+                const isStaffTab = roleFilter === 'staff';
+                const isCustomerTab = roleFilter === 'customer';
 
+                return (
+                    <Space>
+                        {isStaffTab && (
+                            <>
+                                <Button type="link" onClick={() => openEditModal(record)}>Sửa</Button>
+                                <Popconfirm title="Xác nhận xóa?" onConfirm={() => handleDelete(record._id!)}>
+                                    <Button type="link" danger>Xóa</Button>
+                                </Popconfirm>
+                            </>
+                        )}
+                        {isCustomerTab && (
+                            <Popconfirm
+                                title={
+                                    record.status === 'active'
+                                        ? 'Bạn có chắc muốn khóa tài khoản này?'
+                                        : 'Bạn có chắc muốn mở khóa tài khoản này?'
+                                }
+                                onConfirm={() =>
+                                    handleStatusToggle(record._id!, record.status === 'active' ? 'blocked' : 'active')
+                                }
+                            >
+                                <Tag
+                                    color={record.status === 'active' ? 'green' : 'volcano'}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {record.status === 'active' ? 'Hoạt động' : 'Đã khóa'}
+                                </Tag>
+                            </Popconfirm>
+                        )}
+
+                    </Space>
+                );
+            }
+        }
     ];
 
     return (
