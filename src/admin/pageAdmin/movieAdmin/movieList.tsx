@@ -14,7 +14,7 @@ import {
   Select,
 } from "antd";
 import MovieModal from "./movieFormModal";
-import { IMovie  } from "@/types/movie";
+import { IMovie } from "@/types/movie";
 import { ICategory } from "@/types/category";
 import { useNavigate } from "react-router-dom";
 import { Import } from "lucide-react";
@@ -43,36 +43,47 @@ export default function MovieList() {
   const [total, setTotal] = useState(0);
 
   const [searchTitle, setSearchTitle] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
+  >();
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
 
-  const fetchMovies = useCallback(async (
-    page = currentPage,
-    limit = pageSize,
-    title = searchTitle,
-    category = selectedCategory,
-    status = selectedStatus
-  ) => {
-    const params: any = { page, limit };
-    if (title) params.title = title;
-    if (category) params.category = category;
-    if (status) params.status = status;
-    try {
-      const res = await axios.get("http://localhost:3000/movie", {
-        params,
-      });
-      setMovies(res.data.list);
-      setTotal(res.data.total);
-    } catch (err) {
-      message.error("Không thể tải danh sách phim");
-    }
+  const fetchMovies = useCallback(
+    async (
+      page = currentPage,
+      limit = pageSize,
+      title = searchTitle,
+      category = selectedCategory,
+      status = selectedStatus
+    ) => {
+      const params: any = { page, limit };
+      if (title) params.title = title;
+      if (category) params.category = category;
+      if (status) params.status = status;
+      try {
+        const res = await axios.get("http://localhost:3000/movie", {
+          params,
+        });
+        setMovies(res.data.list);
+        setTotal(res.data.total);
+      } catch (err) {
+        message.error("Không thể tải danh sách phim");
+      }
+    },
+    [currentPage, pageSize, searchTitle, selectedCategory, selectedStatus]
+  );
+
+  useEffect(() => {
+    fetchMovies(
+      currentPage,
+      pageSize,
+      searchTitle,
+      selectedCategory,
+      selectedStatus
+    );
   }, [currentPage, pageSize, searchTitle, selectedCategory, selectedStatus]);
 
   useEffect(() => {
-    fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
-  }, [currentPage, pageSize, searchTitle, selectedCategory, selectedStatus]);
-
- useEffect(() => {
     const fetchCategories = async () => {
       const res = await axios.get("http://localhost:3000/category");
       console.log("Categories fetched:", res.data.list);
@@ -97,7 +108,13 @@ export default function MovieList() {
     try {
       await axios.delete(`http://localhost:3000/movie/${id}`);
       message.success("Xoá thành công");
-      fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
+      fetchMovies(
+        currentPage,
+        pageSize,
+        searchTitle,
+        selectedCategory,
+        selectedStatus
+      );
     } catch (error) {
       console.error("Lỗi xoá:", error);
       message.error("Xoá thất bại");
@@ -108,7 +125,10 @@ export default function MovieList() {
     setLoading(true);
     try {
       if (isEditing && selectedMovie) {
-        await axios.put(`http://localhost:3000/movie/${selectedMovie._id}`, data);
+        await axios.put(
+          `http://localhost:3000/movie/${selectedMovie._id}`,
+          data
+        );
         message.success("Cập nhật thành công");
       } else {
         await axios.post("http://localhost:3000/movie", data);
@@ -125,10 +145,12 @@ export default function MovieList() {
   };
 
   return (
-      <Card
+    <Card
       title={
         <div className="flex justify-between items-center gap-4 flex-wrap">
-          <Title level={4} className="!mb-0">Danh sách phim</Title>
+          <Title level={4} className="!mb-0">
+            Danh sách phim
+          </Title>
           <Space wrap>
             <Input.Search
               placeholder="Tìm theo tên phim"
@@ -136,7 +158,13 @@ export default function MovieList() {
               onSearch={(value) => {
                 setSearchTitle(value);
                 setCurrentPage(1);
-                fetchMovies(1, pageSize, value, selectedCategory, selectedStatus);
+                fetchMovies(
+                  1,
+                  pageSize,
+                  value,
+                  selectedCategory,
+                  selectedStatus
+                );
               }}
               style={{ width: 200 }}
             />
@@ -156,7 +184,13 @@ export default function MovieList() {
               onClear={() => {
                 setSelectedCategory(undefined);
                 setCurrentPage(1);
-                fetchMovies(1, pageSize, searchTitle, undefined, selectedStatus);
+                fetchMovies(
+                  1,
+                  pageSize,
+                  searchTitle,
+                  undefined,
+                  selectedStatus
+                );
               }}
               style={{ width: 160 }}
             />
@@ -176,7 +210,13 @@ export default function MovieList() {
               onClear={() => {
                 setSelectedStatus(undefined);
                 setCurrentPage(1);
-                fetchMovies(1, pageSize, searchTitle, selectedCategory, undefined);
+                fetchMovies(
+                  1,
+                  pageSize,
+                  searchTitle,
+                  selectedCategory,
+                  undefined
+                );
               }}
               style={{ width: 160 }}
             />
@@ -209,9 +249,17 @@ export default function MovieList() {
               bodyStyle={{ display: "flex", padding: 12, width: 1150 }}
             >
               <img
-                src={movie.poster || "https://via.placeholder.com/100x140?text=No+Image"}
+                src={
+                  movie.poster ||
+                  "https://via.placeholder.com/100x140?text=No+Image"
+                }
                 alt={movie.title}
-                style={{ width: 120, height: 140, objectFit: "cover", borderRadius: 8 }}
+                style={{
+                  width: 120,
+                  height: 140,
+                  objectFit: "cover",
+                  borderRadius: 8,
+                }}
               />
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -222,10 +270,19 @@ export default function MovieList() {
                   >
                     {movie.title}
                   </Button>
-                  <Tag color={statusMap[movie.status].color}>{statusMap[movie.status].label}</Tag>
+                  {statusMap[movie.status] ? (
+                    <Tag color={statusMap[movie.status].color}>
+                      {statusMap[movie.status].label}
+                    </Tag>
+                  ) : (
+                    <Tag color="default">Không xác định</Tag>
+                  )}
                 </div>
                 <div>⏱ Thời lượng: {movie.duration} phút</div>
-                <div>📅 Ngày phát hành: {dayjs(movie.releaseDate).format("DD/MM/YYYY")}</div>
+                <div>
+                  📅 Ngày phát hành:{" "}
+                  {dayjs(movie.releaseDate).format("DD/MM/YYYY")}
+                </div>
                 <div>🗣 Ngôn ngữ: {movie.language}</div>
                 <div>🎥 Đạo diễn: {movie.director}</div>
                 <div>
@@ -234,11 +291,12 @@ export default function MovieList() {
                     ? movie.actors.slice(0, 3).join(", ") + "..."
                     : movie.actors.join(", ")}
                 </div>
-              <div>
-                    📂 Danh mục: {movie.categories?.map((cat) => (
-                      <Tag key={cat._id}>{cat.categoryName}</Tag>
-                    ))}
-                  </div>
+                <div>
+                  📂 Danh mục:{" "}
+                  {movie.categories?.map((cat) => (
+                    <Tag key={cat._id}>{cat.categoryName}</Tag>
+                  ))}
+                </div>
                 <div>🔞 Độ tuổi: {movie.ageRating}</div>
               </div>
               <div>
@@ -270,7 +328,13 @@ export default function MovieList() {
         }}
         onSubmit={handleSubmit}
         onSuccess={() => {
-          fetchMovies(currentPage, pageSize, searchTitle, selectedCategory, selectedStatus);
+          fetchMovies(
+            currentPage,
+            pageSize,
+            searchTitle,
+            selectedCategory,
+            selectedStatus
+          );
         }}
         initialValues={selectedMovie || undefined}
         isEditing={isEditing}
