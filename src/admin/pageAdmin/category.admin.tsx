@@ -75,9 +75,11 @@ export default function CategoryAdmin() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteCategory(id);
-      message.success('Xóa danh mục thành công');
-      fetchCategories();
+      if(confirm("Bạn có chắc chắn muốn xóa danh mục này?")) {
+        await deleteCategory(id);
+        message.success('Xóa danh mục thành công');
+        fetchCategories();
+      }
     } catch (err) {
       console.error('Lỗi khi xóa:', err);
       message.error('Không thể xóa danh mục');

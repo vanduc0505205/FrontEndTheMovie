@@ -36,7 +36,7 @@ const AddCinema = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isPending}>
+          <Button type="primary" color="green" htmlType="submit" loading={isPending}>
             Thêm rạp
           </Button>
         </Form.Item>
