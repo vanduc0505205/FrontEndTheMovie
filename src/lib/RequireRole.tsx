@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import { message } from "antd";
 
 interface RequireRoleProps {
@@ -7,39 +8,27 @@ interface RequireRoleProps {
 }
 
 const RequireRole: React.FC<RequireRoleProps> = ({ allowedRoles, children }) => {
-  const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const location = useLocation();
+  const userString = localStorage.getItem("user");
 
-  useEffect(() => {
-    const userString = localStorage.getItem("user");
+  if (!userString) {
+    message.error("Vui lòng đăng nhập để tiếp tục");
+    return <Navigate to="/403" state={{ from: location }} replace />;
+  }
 
-    if (!userString) {
-      message.error("Vui lòng đăng nhập để tiếp tục");
-      setAuthorized(false);
-      return;
+  try {
+    const user = JSON.parse(userString);
+    console.log("User role:", user);
+    console.log("Allowed roles:", allowedRoles);
+    if (!user?.role || !allowedRoles.includes(user.role.toLowerCase())) {
+      message.error("Bạn không có quyền truy cập vào tác vụ này");
+      return <Navigate to="/403" state={{ from: location }} replace />;
     }
+  } catch (error) {
+    message.error("Dữ liệu người dùng không hợp lệ");
+    return <Navigate to="/403" state={{ from: location }} replace />;
+  }
 
-    try {
-      const user = JSON.parse(userString);
-      if (!user?.role || !allowedRoles.includes(user.role)) {
-        message.error("Bạn không có quyền truy cập vào tác vụ này");
-        setAuthorized(false);
-        return;
-      }
-
-      setAuthorized(true); // Đủ quyền
-    } catch (error) {
-      message.error("Dữ liệu người dùng không hợp lệ");
-      setAuthorized(false);
-    }
-  }, [allowedRoles]);
-
-  // Chưa xác định quyền: render rỗng (tránh flicker)
-  if (authorized === null) return null;
-
-  // Không có quyền: không render gì cả
-  if (!authorized) return null;
-
-  // Có quyền
   return <>{children}</>;
 };
 

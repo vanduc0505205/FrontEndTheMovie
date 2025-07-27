@@ -45,7 +45,7 @@ const CinemaList = () => {
       width: "34%",
       render: (_: any, record: Cinema) => (
         <div className="flex gap-2">
-          <Button type="primary" onClick={() => navigate(`/admin/cinemas/edit/${record._id}`)}>Sửa</Button>
+          <Button type="primary" onClick={() => navigate(`/staff/cinemas/edit/${record._id}`)}>Sửa</Button>
           <Popconfirm
             title="Bạn có chắc chắn muốn xoá?"
             onConfirm={() => mutate(record._id)}
@@ -54,7 +54,7 @@ const CinemaList = () => {
           >
             <Button danger>Xoá</Button>
           </Popconfirm>
-          <Button onClick={() => navigate(`/admin/cinemas/${record._id}`)}>Xem</Button>
+          <Button onClick={() => navigate(`/staff/cinemas/${record._id}`)}>Xem</Button>
         </div>
       ),
     },
@@ -63,7 +63,7 @@ const CinemaList = () => {
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">Danh sách rạp chiếu</h1>
-      <Button type="primary" className="mb-4" onClick={() => navigate("/admin/cinemas/add")}>Thêm rạp</Button>
+      <Button type="primary" className="mb-4" onClick={() => navigate("/staff/cinemas/add")}>Thêm rạp</Button>
       <Table
         rowKey="_id"
         loading={isLoading}

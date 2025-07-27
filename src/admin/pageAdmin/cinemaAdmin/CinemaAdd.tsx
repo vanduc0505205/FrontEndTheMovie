@@ -17,8 +17,8 @@ const AddCinema = () => {
     onError: (error: any) => {
       if (error.response?.status === 403) {
         notification.error({
-          message: "Không có quyền",
-          description: "Bạn không có quyền thêm rạp!",
+          message: "Thêm thát bại",
+          description: "Bạn không có quyền cho hành động này !",
         });
       } else {
         message.error("Thêm rạp thất bại!");

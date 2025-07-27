@@ -21,12 +21,13 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './admin/pageAdmin/movieAdmin/movieList'
-import CategoryAdmin from './admin/pageAdmin/category.admin'
+
 import TicketPrice from './pages/TicketPrice'
 import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
 import RequireRole from './lib/RequireRole'
 import StaffMainLayout from './staff/layoutStaff/mainLayout'
 import ForbiddenPage from './pages/403'
+import CategoryAdmin from './admin/pageAdmin/category.admin'
 
 
 function App() {
@@ -66,13 +67,14 @@ function App() {
       </Route>
       {/* Giao diện staff */}
       <Route path='staff' element={
-        <RequireRole allowedRoles={['staff']}>
+        <RequireRole allowedRoles={['staff', 'admin']}>
           <StaffMainLayout />
         </RequireRole>
       }
       >
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
+        <Route path='rooms' element={<RoomList />} />
         <Route path="movies" element={<MovieList />} />
         <Route path="movies/:id" element={<MovieDetail />} />
         <Route path="categories" element={<CategoryAdmin />} />

@@ -22,7 +22,7 @@ export default function MovieDetail() {
 
   const fetchDetail = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/movie/${id}`);
+      const res = await axios.get(`http://localhost:3000/staff/movie/${id}`);
       const data = res.data?.newMovie || res.data; // handle both cases
       setMovie(data);
     } catch (err) {
