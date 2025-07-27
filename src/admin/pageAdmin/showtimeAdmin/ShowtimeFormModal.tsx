@@ -7,6 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getMovies } from '@/api/movie.api';
 import { getCinemas } from '@/api/cinema.api';
 import { getRooms } from '@/api/room.api';
+import axios from "axios";
+import { ICinema } from "@/types/cinema";
 
 const { RangePicker } = DatePicker;
 
@@ -93,9 +95,15 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
         queryFn: getMovies,
     });
 
-    const { data: cinemas = [], isLoading: loadingCinemas } = useQuery<any>({
-        queryKey: ['cinema'],
-        queryFn: getCinemas,
+    // hàm api lấy dữ liệu cinema không truyền limit&page
+    const getAllCinemas = async (): Promise<ICinema[]> => {
+        const { data } = await axios.get("http://localhost:3000/cinema");
+        return data.data;
+    };
+
+    const { data: allCinemas, isLoading: LoadingCinemas } = useQuery({
+        queryKey: ["cinemas-all"],
+        queryFn: getAllCinemas,
     });
 
     const { data: rooms = [], isLoading: loadingRooms } = useQuery<any>({
@@ -113,7 +121,12 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
             okText={isEdit ? "Cập nhật" : "Thêm mới"}
         >
             <Form layout="vertical" form={form} onFinish={handleFinish}>
-                <Form.Item name="movieId" label="Phim" rules={[{ required: true }]}>
+                {/* Phim */}
+                <Form.Item
+                    name="movieId"
+                    label="Phim"
+                    rules={[{ required: true, message: "Vui lòng chọn phim" }]}
+                >
                     <Select placeholder="Chọn phim" loading={loadingMovies}>
                         {movies?.list?.map((movie: any) => (
                             <Select.Option key={movie._id} value={movie._id}>
@@ -123,9 +136,14 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     </Select>
                 </Form.Item>
 
-                <Form.Item name="cinemaId" label="Rạp" rules={[{ required: true }]}>
-                    <Select placeholder="Chọn rạp" loading={loadingCinemas}>
-                        {cinemas?.data?.map((cinema) => (
+                {/* Rạp */}
+                <Form.Item
+                    name="cinemaId"
+                    label="Rạp"
+                    rules={[{ required: true, message: "Vui lòng chọn rạp" }]}
+                >
+                    <Select placeholder="Chọn rạp" loading={LoadingCinemas}>
+                        {allCinemas?.map((cinema: ICinema) => (
                             <Select.Option key={cinema._id} value={cinema._id}>
                                 {cinema.name}
                             </Select.Option>
@@ -133,7 +151,12 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     </Select>
                 </Form.Item>
 
-                <Form.Item name="roomId" label="Phòng" rules={[{ required: true }]}>
+                {/* Phòng */}
+                <Form.Item
+                    name="roomId"
+                    label="Phòng"
+                    rules={[{ required: true, message: "Vui lòng chọn phòng chiếu" }]}
+                >
                     <Select placeholder="Chọn phòng" loading={loadingRooms}>
                         {rooms?.map((room) => (
                             <Select.Option key={room._id} value={room._id}>
@@ -143,10 +166,23 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     </Select>
                 </Form.Item>
 
+                {/* Thời gian bắt đầu */}
                 <Form.Item
                     name="startTime"
                     label="Thời gian bắt đầu"
-                    rules={[{ required: true }]}
+                    rules={[
+                        { required: true, message: "Vui lòng chọn thời gian bắt đầu" },
+                        {
+                            validator(_, value) {
+                                if (!value) return Promise.resolve();
+                                const now = new Date();
+                                if (value.toDate() < now) {
+                                    return Promise.reject(new Error("Không được chọn thời gian trong quá khứ"));
+                                }
+                                return Promise.resolve();
+                            },
+                        },
+                    ]}
                 >
                     <DatePicker
                         showTime
@@ -156,18 +192,17 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     />
                 </Form.Item>
 
-
+                {/* Giá vé */}
                 <Form.Item
                     name="defaultPrice"
                     label="Giá vé mặc định"
-                    rules={[{ required: true }]}
+                    rules={[{ required: true, message: "Vui lòng chọn giá vé" }]}
                 >
                     <Select placeholder="Chọn giá vé">
                         <Select.Option value={100000}>100.000 VND</Select.Option>
                         <Select.Option value={150000}>150.000 VND</Select.Option>
                     </Select>
                 </Form.Item>
-
             </Form>
         </Modal>
     );

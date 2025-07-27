@@ -3,7 +3,7 @@ import { Form, Input, Button, message, notification } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getCinemaById, updateCinema } from "@/api/cinema.api";
-import { Cinema } from "@/types";
+import { Cinema } from "@/interface/cinema";
 
 const EditCinema = () => {
   const [form] = Form.useForm();

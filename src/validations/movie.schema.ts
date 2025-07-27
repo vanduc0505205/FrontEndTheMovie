@@ -23,4 +23,7 @@ export const movieSchema = z.object({
   status: z.enum(['sap_chieu', 'dang_chieu', 'ngung_chieu'], {
     required_error: 'Chọn trạng thái phim',
   }),
+   categories: z
+    .array(z.string().min(1, 'Danh mục không hợp lệ'))
+    .min(1, 'Chọn ít nhất 1 danh mục'),
 });

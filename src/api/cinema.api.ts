@@ -1,6 +1,6 @@
-
 import { Cinema } from '@/interface/cinema';
-import axios from 'axios';
+import { ICinema } from '@/types/cinema';
+import axios from 'axios'
 
 const API_BASE_URL = 'http://localhost:3000';
 

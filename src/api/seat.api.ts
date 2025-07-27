@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ISeat } from "@/types";
+import { ISeat } from "@/types/seat";
 
 // 🔁 Lấy danh sách ghế theo roomId
 export const getSeatsByRoom = async (roomId: string): Promise<ISeat[]> => {

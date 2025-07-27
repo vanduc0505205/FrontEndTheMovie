@@ -18,7 +18,7 @@ import {
   deleteRoom,
 } from "@/api/room.api";
 import { getSeatsByRoom } from "@/api/seat.api";
-import { IRoom } from "@/types";
+import { IRoom } from "@/types/room";
 
 const RoomList = () => {
   const [form] = Form.useForm();
@@ -163,32 +163,93 @@ const RoomList = () => {
           <Form.Item
             name="name"
             label="Tên phòng"
-            rules={[{ required: true, message: "Không được để trống" }]}
+            rules={[
+              { required: true, whitespace: true, message: "Không được để trống" },
+              {
+                validator: (_, value) => {
+                  if (!value || !value.trim()) return Promise.resolve(); // đã check required
+                  const inputName = value.trim().toLowerCase();
+
+                  const isDuplicate = rooms.some(
+                    (room) =>
+                      room.name.trim().toLowerCase() === inputName &&
+                      room._id !== editingRoom?._id // bỏ qua phòng đang sửa
+                  );
+
+                  return isDuplicate
+                    ? Promise.reject("Tên phòng đã tồn tại")
+                    : Promise.resolve();
+                },
+              },
+            ]}
           >
             <Input />
           </Form.Item>
 
+
           <Form.Item
             name="rows"
             label="Số hàng"
-            rules={[{ required: true, type: "number", min: 1 }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập số hàng" },
+              {
+                validator(_, value) {
+                  if (typeof value !== "number" || !Number.isInteger(value)) {
+                    return Promise.reject("Số hàng phải là số nguyên");
+                  }
+                  if (value < 1 || value > 10) {
+                    return Promise.reject("Số hàng phải từ 1 đến 20");
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
-            <InputNumber min={1} className="w-full" disabled={roomHasSeats} />
+            <InputNumber
+              min={1}
+              max={10}
+              className="w-full"
+              disabled={roomHasSeats}
+              step={1}
+            />
           </Form.Item>
 
           <Form.Item
             name="columns"
             label="Số cột"
-            rules={[{ required: true, type: "number", min: 1 }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập số cột" },
+              {
+                validator(_, value) {
+                  if (typeof value !== "number" || !Number.isInteger(value)) {
+                    return Promise.reject("Số cột phải là số nguyên");
+                  }
+                  if (value < 1 || value > 15) {
+                    return Promise.reject("Số cột phải từ 1 đến 26");
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
-            <InputNumber min={1} className="w-full" disabled={roomHasSeats} />
+            <InputNumber
+              min={1}
+              max={15}
+              className="w-full"
+              disabled={roomHasSeats}
+              step={1}
+            />
           </Form.Item>
+
           {editingRoom && roomHasSeats && (
-            <div className="text-yellow-600 mb-3">
-              ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
-            </div>
+            <Form.Item>
+              <div className="text-yellow-600">
+                ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
+              </div>
+            </Form.Item>
           )}
         </Form>
+
       </Modal>
     </div>
   );

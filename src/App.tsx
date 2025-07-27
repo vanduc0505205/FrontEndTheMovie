@@ -4,7 +4,6 @@ import ShowtimeList from './admin/pageAdmin/showtimeAdmin/ShowtimeList'
 import SeatList from './admin/pageAdmin/seatAdmin/SeatList'
 import DefaultLayout from './layouts/DefaultLayout'
 import Index from './pages/Index'
-import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
@@ -17,6 +16,8 @@ import ListCinema from './admin/pageAdmin/cinemaAdmin/CinemaList'
 import AddCinema from './admin/pageAdmin/cinemaAdmin/CinemaAdd'
 import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
 import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
+import UserList from './admin/pageAdmin/userAdmin/AccountList'
+import SelectSeat from './pages/SelectSeat'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
@@ -38,11 +39,12 @@ function App() {
         <Route index element={<Index />} />
         {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
-        <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} />
+        {/* <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} /> */}
         <Route path="/ticket-price" element={<TicketPrice />} />
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
+        <Route path="/selectSeat" element={<SelectSeat />} />
         <Route path="/gio-hang" element={<CartPage />} />
         <Route path="/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />
@@ -57,6 +59,7 @@ function App() {
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path='rooms' element={<RoomList />} />
+        <Route path='users' element={<UserList />} />
         <Route path="movies" element={<MovieList />} />
         <Route path="movies/:id" element={<MovieDetail />} />
         <Route path="categories" element={<CategoryAdmin />} />

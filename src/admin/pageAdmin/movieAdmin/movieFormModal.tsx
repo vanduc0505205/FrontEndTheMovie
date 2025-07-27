@@ -1,9 +1,23 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, Select, DatePicker, Row, Col, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Row,
+  Col,
+  Typography,
+  message,
+  Upload,
+} from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { movieSchema } from "@/validations/movie.schema";
-import { Movie } from "@/types";
-
+import { IMovie } from "@/types/movie";
+import { getCategories } from "@/services/category.service";
+import { getAllMovies } from "@/services/movie.service";
+import { RcFile } from "antd/es/upload";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -12,9 +26,9 @@ const { Title } = Typography;
 interface MovieModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (values: Movie) => void;
+  onSubmit: (values: IMovie) => void;
   onSuccess?: () => void;
-  initialValues?: Partial<Movie>;
+  initialValues?: Partial<IMovie>;
   isEditing: boolean;
   loading?: boolean;
   form: any;
@@ -30,22 +44,46 @@ export default function MovieModal({
   loading,
   form,
 }: MovieModalProps) {
+  const [categories, setCategories] = useState<any[]>([]);
+  const [posterUrl, setPosterUrl] = useState<string>("");
+  const [bannerUrl, setBannerUrl] = useState<string>("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getCategories();
+        setCategories(res);
+      } catch (err) {
+        message.error("Không thể tải danh mục.");
+      }
+    };
+    fetchCategories();
+  }, []);
+
   useEffect(() => {
     if (initialValues) {
       form.setFieldsValue({
         ...initialValues,
-        releaseDate: initialValues.releaseDate
-          ? dayjs(initialValues.releaseDate)
-          : undefined,
+        releaseDate: dayjs(initialValues.releaseDate),
+        categories: initialValues.categories?.map((cat: any) =>
+          typeof cat === "string" ? cat : cat._id
+        ),
         actors: initialValues.actors?.join(", ") || "",
-        banner: initialValues.banner?.join(", ") || "",
       });
+      setPosterUrl(initialValues.poster || "");
+      setBannerUrl(
+        Array.isArray(initialValues.banner)
+          ? initialValues.banner[0]
+          : initialValues.banner || ""
+      );
     } else {
       form.resetFields();
+      setPosterUrl("");
+      setBannerUrl("");
     }
   }, [initialValues, form]);
 
-  const handleFinish = (values: any) => {
+  const handleFinish = async (values: any) => {
     try {
       const formatted = {
         ...values,
@@ -55,23 +93,39 @@ export default function MovieModal({
           .split(",")
           .map((a: string) => a.trim())
           .filter(Boolean),
-        banner: values.banner
-          ?.split(",")
-          .map((b: string) => b.trim())
-          .filter(Boolean),
+        poster: posterUrl,
+        banner: [bannerUrl],
+        categories:
+          values.categories?.map((c: string) => c.trim()).filter(Boolean) || [],
       };
+
+      if (!isEditing) {
+        const now = dayjs().startOf("day");
+        if (dayjs(formatted.releaseDate).isBefore(now)) {
+          return Modal.error({
+            title: "Ngày phát hành không hợp lệ",
+            content: "Ngày phát hành không được trước ngày hôm nay.",
+          });
+        }
+      }
+
+      if (!isEditing) {
+        const exists = await getAllMovies();
+        if (exists.some((movie) => movie.title === formatted.title)) {
+          return Modal.error({
+            title: "Tên phim bị trùng",
+            content: "Phim này đã tồn tại.",
+          });
+        }
+      }
 
       const result = movieSchema.safeParse(formatted);
       if (!result.success) {
         const errors = result.error.errors.map((e) => e.message).join("\n");
-        Modal.error({
-          title: "Lỗi xác thực",
-          content: errors,
-        });
-        return;
+        return Modal.error({ title: "Lỗi xác thực", content: errors });
       }
 
-      onSubmit(result.data as Movie);
+      onSubmit(result.data as unknown as IMovie);
       if (onSuccess) onSuccess();
       form.resetFields();
       onClose();
@@ -83,14 +137,30 @@ export default function MovieModal({
     }
   };
 
-  const handleCancel = () => {
-    form.resetFields();
-    onClose();
-  };
+  const handleUpload = async (file: RcFile, type: "poster" | "banner") => {
+    const formData = new FormData();
+    formData.append("image", file);
 
-  const trailerUrl = form.getFieldValue("trailer");
-  const posterUrl = form.getFieldValue("poster");
-  const bannerUrls = form.getFieldValue("banner");
+    try {
+      const res = await fetch("http://localhost:3000/upload/image", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (type === "poster") {
+          setPosterUrl(data.url);
+        } else {
+          setBannerUrl(data.url);
+        }
+        message.success("Tải ảnh lên thành công!");
+      } else {
+        throw new Error(data.error || "Upload failed");
+      }
+    } catch (err) {
+      message.error("Lỗi khi tải ảnh lên.");
+    }
+  };
 
   const getYouTubeEmbedUrl = (url: string) => {
     const match = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
@@ -101,12 +171,18 @@ export default function MovieModal({
     <Modal
       open={open}
       title={isEditing ? "Chỉnh sửa phim" : "Thêm phim"}
-      onCancel={handleCancel}
+      onCancel={() => {
+        form.resetFields();
+        onClose();
+        setPosterUrl("");
+        setBannerUrl("");
+      }}
       onOk={() => form.submit()}
       confirmLoading={loading}
       okText={isEditing ? "Lưu" : "Thêm"}
       width={1000}
-      style={{ top: 20 }}
+      height={750}
+      centered
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={16}>
@@ -116,21 +192,21 @@ export default function MovieModal({
               label="Tên phim"
               rules={[{ required: true, message: "Vui lòng nhập tên phim" }]}
             >
-              <Input placeholder="Ví dụ: Avengers: Endgame" />
+              <Input />
             </Form.Item>
 
             <Form.Item
               name="duration"
               label="Thời lượng (phút)"
-              rules={[{ required: true, message: "Vui lòng nhập thời lượng" }]}
+              rules={[{ required: true, message: "Nhập thời lượng" }]}
             >
-              <Input type="number" placeholder="120" />
+              <Input type="number" />
             </Form.Item>
 
             <Form.Item
               name="releaseDate"
               label="Ngày khởi chiếu"
-              rules={[{ required: true, message: "Vui lòng chọn ngày phát hành" }]}
+              rules={[{ required: true, message: "Chọn ngày phát hành" }]}
             >
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
@@ -138,7 +214,7 @@ export default function MovieModal({
             <Form.Item
               name="director"
               label="Đạo diễn"
-              rules={[{ required: true, message: "Vui lòng nhập tên đạo diễn" }]}
+              rules={[{ required: true, message: "Nhập tên đạo diễn" }]}
             >
               <Input />
             </Form.Item>
@@ -146,35 +222,49 @@ export default function MovieModal({
             <Form.Item
               name="actors"
               label="Diễn viên (phân cách bằng dấu phẩy)"
-              rules={[{ required: true, message: "Vui lòng nhập ít nhất 1 diễn viên" }]}
+              rules={[{ required: true, message: "Nhập diễn viên" }]}
             >
-              <Input placeholder="Chris Evans, Robert Downey Jr." />
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="description" label="Mô tả">
+              <TextArea rows={2} />
             </Form.Item>
 
             <Form.Item
-              name="description"
-              label="Mô tả"
-              rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+              name="categories"
+              label="Danh mục"
+              rules={[{ required: true, message: "Chọn danh mục" }]}
             >
-              <TextArea rows={4} placeholder="Tóm tắt nội dung phim..." />
+              <Select mode="multiple">
+                {categories.map((cat) => (
+                  <Option key={cat._id} value={cat._id}>
+                    {cat.categoryName}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
 
           <Col span={12}>
             <Form.Item
               name="language"
-              label="Ngôn ngữ"
-              rules={[{ required: true, message: "Vui lòng nhập ngôn ngữ" }]}
+              label="Quốc gia"
+              rules={[{ required: true, message: "Chọn quốc gia" }]}
             >
-              <Input />
+              <Select>
+                <Option value="Việt Nam">Việt Nam</Option>
+                <Option value="Mỹ">Mỹ</Option>
+                <Option value="Hàn Quốc">Hàn Quốc</Option>
+              </Select>
             </Form.Item>
 
             <Form.Item
               name="ageRating"
               label="Độ tuổi"
-              rules={[{ required: true, message: "Vui lòng chọn độ tuổi" }]}
+              rules={[{ required: true, message: "Chọn độ tuổi" }]}
             >
-              <Select placeholder="Chọn độ tuổi">
+              <Select>
                 <Option value="C13">C13</Option>
                 <Option value="C16">C16</Option>
                 <Option value="C18">C18</Option>
@@ -184,88 +274,73 @@ export default function MovieModal({
             <Form.Item
               name="status"
               label="Trạng thái"
-              rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+              rules={[{ required: true, message: "Chọn trạng thái" }]}
             >
-              <Select placeholder="Chọn trạng thái">
+              <Select>
                 <Option value="sap_chieu">Sắp chiếu</Option>
                 <Option value="dang_chieu">Đang chiếu</Option>
                 <Option value="ngung_chieu">Ngừng chiếu</Option>
               </Select>
             </Form.Item>
 
-            {isEditing && (
-              <>
-                <Form.Item name="taoLuc" label="Ngày tạo">
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item name="capNhatLuc" label="Ngày cập nhật">
-                  <Input disabled />
-                </Form.Item>
-              </>
-            )}
-
-            <Form.Item name="trailer" label="Link trailer">
+            <Form.Item name="trailer" label="Trailer (YouTube)">
               <Input placeholder="https://youtube.com/..." />
             </Form.Item>
 
-            {trailerUrl && getYouTubeEmbedUrl(trailerUrl) && (
-              <div style={{ marginBottom: 16 }}>
-                <Title level={5}>Xem trước Trailer</Title>
-                <iframe
-                  width="100%"
-                  height="250"
-                  src={getYouTubeEmbedUrl(trailerUrl) as string}
-                  title="Trailer"
-                  frameBorder="0" 
-                  allowFullScreen
-                ></iframe>
-              </div>
-            )}
+            {form.getFieldValue("trailer") &&
+              getYouTubeEmbedUrl(form.getFieldValue("trailer")) && (
+                <div style={{ marginBottom: 16 }}>
+                  <Title level={5}>Xem trước Trailer</Title>
+                  <iframe
+                    width="100%"
+                    height="250"
+                    src={getYouTubeEmbedUrl(form.getFieldValue("trailer"))!}
+                    title="Trailer"
+                    frameBorder="0"
+                    allowFullScreen
+                  />
+                </div>
+              )}
 
-            <Form.Item name="poster" label="Link poster">
-              <Input placeholder="https://example.com/poster.jpg" />
-            </Form.Item>
-
-            {posterUrl && (
-              <div style={{ marginBottom: 16 }}>
-                <Title level={5}>Xem trước Poster</Title>
+            {/* Upload Poster */}
+            <Form.Item label="Poster">
+              <Upload
+                beforeUpload={(file) => {
+                  handleUpload(file, "poster");
+                  return false;
+                }}
+                showUploadList={false}
+              >
+                <UploadOutlined /> Tải ảnh poster
+              </Upload>
+              {posterUrl && (
                 <img
                   src={posterUrl}
                   alt="Poster"
-                  style={{ width: "100%", borderRadius: 8 }}
+                  style={{ width: "100%", marginTop: 8, borderRadius: 8 }}
                 />
-              </div>
-            )}
-
-            <Form.Item
-              name="banner"
-              label="Link banner (phân cách bằng dấu phẩy)"
-            >
-              <Input placeholder="https://img1.jpg, https://img2.jpg" />
+              )}
             </Form.Item>
 
-            {bannerUrls && (
-              <div style={{ marginBottom: 16 }}>
-                <Title level={5}>Xem trước Banner</Title>
-                <Row gutter={[8, 8]}>
-                  {bannerUrls
-                    .split(",")
-                    .map((url: string, index: number) => {
-                      const trimmed = url.trim();
-                      if (!trimmed) return null;
-                      return (
-                        <Col span={12} key={index}>
-                          <img
-                            src={trimmed}
-                            alt={`Banner ${index + 1}`}
-                            style={{ width: "100%", borderRadius: 8 }}
-                          />
-                        </Col>
-                      );
-                    })}
-                </Row>
-              </div>
-            )}
+            {/* Upload Banner */}
+            <Form.Item label="Banner">
+              <Upload
+                beforeUpload={(file) => {
+                  handleUpload(file, "banner");
+                  return false;
+                }}
+                showUploadList={false}
+              >
+                <UploadOutlined /> Tải ảnh banner
+              </Upload>
+              {bannerUrl && (
+                <img
+                  src={bannerUrl}
+                  alt="Banner"
+                  style={{ width: "100%", marginTop: 8, borderRadius: 8 }}
+                />
+              )}
+            </Form.Item>
           </Col>
         </Row>
       </Form>
