@@ -26,7 +26,7 @@ const Login: React.FC = () => {
         message.success("Đăng nhập thành công!");
 
         //Lưu thông tin user & token
-        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("access_token", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));
 
         localStorage.setItem("user", JSON.stringify(data.user));

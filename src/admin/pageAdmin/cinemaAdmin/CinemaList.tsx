@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Popconfirm, message } from "antd";
+import { Table, Button, Popconfirm, notification } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { deleteCinema, getCinemas } from "@/api/cinema.api";
@@ -20,10 +20,21 @@ const CinemaList = () => {
   const { mutate } = useMutation({
     mutationFn: deleteCinema,
     onSuccess: () => {
-      message.success("Xoá thành công");
+      notification.success({
+        message: "Xoá thành công",
+        description: "Rạp chiếu đã được xoá khỏi hệ thống.",
+        placement: "topRight",
+        duration: 3,
+      });
       queryClient.invalidateQueries({ queryKey: ["cinemas", page] });
     },
-    onError: () => message.error("Xoá thất bại"),
+    onError: () => {
+      notification.error({
+        message: "Xoá thất bại",
+        description: "Bạn không có quyền cho hành động này!",
+        placement: "topRight",
+      });
+    },
   });
 
   const columns = [
@@ -34,7 +45,7 @@ const CinemaList = () => {
       width: "34%",
       render: (_: any, record: Cinema) => (
         <div className="flex gap-2">
-          <Button type="primary" onClick={() => navigate(`/admin/cinemas/edit/${record._id}`)}>Sửa</Button>
+          <Button type="primary" onClick={() => navigate(`/staff/cinemas/edit/${record._id}`)}>Sửa</Button>
           <Popconfirm
             title="Bạn có chắc chắn muốn xoá?"
             onConfirm={() => mutate(record._id)}
@@ -43,15 +54,16 @@ const CinemaList = () => {
           >
             <Button danger>Xoá</Button>
           </Popconfirm>
-          <Button onClick={() => navigate(`/admin/cinemas/${record._id}`)}>Xem</Button>
+          <Button onClick={() => navigate(`/staff/cinemas/${record._id}`)}>Xem</Button>
         </div>
       ),
     },
   ];
+
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">Danh sách rạp chiếu</h1>
-      <Button type="primary" className="mb-4" onClick={() => navigate("/admin/cinemas/add")}>Thêm rạp</Button>
+      <Button type="primary" className="mb-4" onClick={() => navigate("/staff/cinemas/add")}>Thêm rạp</Button>
       <Table
         rowKey="_id"
         loading={isLoading}

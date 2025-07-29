@@ -8,6 +8,7 @@ import {
   InputNumber,
   message,
   Popconfirm,
+  notification,
 } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -46,7 +47,13 @@ const RoomList = () => {
       setIsModalOpen(false);
       setEditingRoom(null);
     },
-    onError: () => message.error("Lỗi khi lưu phòng"),
+    onError: () => {
+      notification.error({
+        message: "Bạn không có quyền!",
+        description: "Bạn không có quyền cho hành động này !",
+        placement: "topRight",
+      });
+    },
   });
 
   const { mutate: handleDelete } = useMutation({
@@ -55,7 +62,13 @@ const RoomList = () => {
       message.success("Đã xoá phòng");
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },
-    onError: () => message.error("Xoá phòng thất bại"),
+    onError: () => {
+      notification.error({
+        message: "Bạn không thể xóa!",
+        description: "Bạn không có quyền cho hành động này !",
+        placement: "topRight",
+      });
+    },
   });
 
   const openModalToEdit = async (room: IRoom) => {

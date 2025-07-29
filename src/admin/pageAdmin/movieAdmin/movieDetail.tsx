@@ -45,9 +45,8 @@ export default function MovieDetail() {
 
   const fetchDetail = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data;
-      console.log("Movie data:", data);
+      const res = await axios.get(`http://localhost:3000/staff/movie/${id}`);
+      const data = res.data?.newMovie || res.data; // handle both cases
       setMovie(data);
     } catch (err) {
       console.error(err);
@@ -130,8 +129,8 @@ export default function MovieDetail() {
             onCancel={() => setTrailerVisible(false)}
             footer={null}
             width={1000}
-            // bodyStyle={{ padding: 20 }}
-            // destroyOnClose
+          // bodyStyle={{ padding: 20 }}
+          // destroyOnClose
           >
             <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
               <iframe
