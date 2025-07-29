@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import { Login } from "@/interface/user";
+import  type { Login } from "@/interface/user";
 
 const { Title, Text } = Typography;
 

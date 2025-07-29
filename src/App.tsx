@@ -33,6 +33,8 @@ function App() {
       {/* Giao diện landing */}
       <Route element={<DefaultLayout />}>
         <Route index element={<Index />} />
+        {/* chi tiết */}
+          <Route path="/phim/:id" element={<MovieDetail />} />   
         {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
         {/* <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} /> */}
