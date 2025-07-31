@@ -19,6 +19,7 @@ import { ICategory } from "@/types/category";
 import { useNavigate } from "react-router-dom";
 import { Import } from "lucide-react";
 import dayjs from "dayjs";
+import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -86,7 +87,6 @@ export default function MovieList() {
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await axios.get("http://localhost:3000/category");
-      console.log("Categories fetched:", res.data.list);
       setCategories(res.data.list);
     };
     fetchCategories();
@@ -116,7 +116,6 @@ export default function MovieList() {
         selectedStatus
       );
     } catch (error) {
-      console.error("Lỗi xoá:", error);
       message.error("Xoá thất bại");
     }
   };
@@ -137,7 +136,6 @@ export default function MovieList() {
       setModalOpen(false);
       fetchMovies();
     } catch (error) {
-      console.error("Lỗi:", error);
       message.error("Có lỗi xảy ra");
     } finally {
       setLoading(false);
@@ -229,7 +227,7 @@ export default function MovieList() {
       style={{ maxWidth: 1200, margin: "24px auto" }}
     >
       <List
-        grid={{ gutter: 16, xs: 1, sm: 1, md: 2 }}
+        grid={{ gutter: 20, xs: 1, sm: 1, md: 2 }}
         dataSource={movies}
         pagination={{
           current: currentPage,
@@ -244,77 +242,164 @@ export default function MovieList() {
         renderItem={(movie) => (
           <List.Item>
             <Card
-              // bordered
-              style={{ display: "flex", alignItems: "center", gap: 16 }}
-              bodyStyle={{ display: "flex", padding: 12, width: 1150 }}
+              hoverable
+              styles={{
+                body: {
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 24,
+                borderRadius: 16,
+                boxShadow: "0 2px 12px #f0f1f2",
+                transition: "box-shadow 0.2s",
+                minHeight: 200,
+                width: "1150px",
+                maxWidth: "100%",
+                },
+              }}
+              bodyStyle={{
+                display: "flex",
+                padding: 24,
+                width: "100%",
+                background: "#f9fafb",
+              }}
             >
               <img
                 src={
                   movie.poster ||
-                  "https://via.placeholder.com/100x140?text=No+Image"
+                  "https://via.placeholder.com/100x160?text=No+Image"
                 }
                 alt={movie.title}
                 style={{
                   width: 120,
-                  height: 140,
+                  height: 160,
                   objectFit: "cover",
-                  borderRadius: 8,
+                  borderRadius: 10,
+                  border: "1px solid #eee",
+                  boxShadow: "0 1px 4px #ddd",
+                  marginRight: 24,
+                  background: "#fff",
                 }}
               />
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Button
-                    type="link"
-                    style={{ padding: 0, fontSize: 16, fontWeight: 600 }}
-                    onClick={() => navigate(`/admin/movies/${movie._id}`)}
+              <div style={{ flex: 1, paddingLeft: 8 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    marginBottom: 8,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 700,
+                      color: "#1677ff",
+                      lineHeight: 1.2,
+                      marginRight: 8,
+                    }}
                   >
                     {movie.title}
-                  </Button>
+                  </span>
                   {statusMap[movie.status] ? (
-                    <Tag color={statusMap[movie.status].color}>
+                    <Tag
+                      color={statusMap[movie.status].color}
+                      style={{ fontWeight: 500 }}
+                    >
                       {statusMap[movie.status].label}
                     </Tag>
                   ) : (
                     <Tag color="default">Không xác định</Tag>
                   )}
                 </div>
-                <div>⏱ Thời lượng: {movie.duration} phút</div>
-                <div>
-                  📅 Ngày phát hành:{" "}
+                <div style={{ color: "#444", marginBottom: 4 }}>
+                  <span role="img" aria-label="duration">
+                    ⏱
+                  </span>{" "}
+                  <b>Thời lượng:</b> {movie.duration} phút
+                </div>
+                <div style={{ color: "#444", marginBottom: 4 }}>
+                  <span role="img" aria-label="date">
+                    📅
+                  </span>{" "}
+                  <b>Ngày phát hành:</b>{" "}
                   {dayjs(movie.releaseDate).format("DD/MM/YYYY")}
                 </div>
-                <div>🗣 Ngôn ngữ: {movie.language}</div>
-                <div>🎥 Đạo diễn: {movie.director}</div>
-                <div>
-                  👥 Diễn viên:{" "}
+                <div style={{ color: "#444", marginBottom: 4 }}>
+                  <span role="img" aria-label="language">
+                    🗣
+                  </span>{" "}
+                  <b>Ngôn ngữ:</b> {movie.language}
+                </div>
+                <div style={{ color: "#444", marginBottom: 4 }}>
+                  <span role="img" aria-label="director">
+                    🎥
+                  </span>{" "}
+                  <b>Đạo diễn:</b> {movie.director}
+                </div>
+                <div style={{ color: "#444", marginBottom: 4 }}>
+                  <span role="img" aria-label="actors">
+                    👥
+                  </span>{" "}
+                  <b>Diễn viên:</b>{" "}
                   {movie.actors.length > 3
                     ? movie.actors.slice(0, 3).join(", ") + "..."
                     : movie.actors.join(", ")}
                 </div>
-                <div>
-                  📂 Danh mục:{" "}
+                <div style={{ color: "#444", marginBottom: 4 }}>
+                  <span role="img" aria-label="category">
+                    📂
+                  </span>{" "}
+                  <b>Danh mục:</b>{" "}
                   {movie.categories?.map((cat) => (
-                    <Tag key={cat._id}>{cat.categoryName}</Tag>
+                    <Tag key={cat._id} style={{ marginBottom: 2 }}>
+                      {cat.categoryName}
+                    </Tag>
                   ))}
                 </div>
-                <div>🔞 Độ tuổi: {movie.ageRating}</div>
+                <div style={{ color: "#444" }}>
+                  <span role="img" aria-label="age">
+                    🔞
+                  </span>{" "}
+                  <b>Độ tuổi:</b> {movie.ageRating}
+                </div>
               </div>
-              <div>
-                <Space direction="vertical">
-                  <Button size="small" onClick={() => handleEdit(movie)}>
-                    Sửa
-                  </Button>
-                  <Popconfirm
-                    title="Bạn có chắc chắn muốn xoá phim này không?"
-                    onConfirm={() => handleDelete(movie._id)}
-                    okText="Xoá"
-                    cancelText="Huỷ"
+              <div
+                style={{
+                  minWidth: 110,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 8,
+                }}
+              >
+                <Button
+                  icon={<EyeOutlined />}
+                  onClick={() => navigate(`/admin/movies/${movie._id}`)}
+                  style={{ width: 90 }}
+                >
+                  Chi tiết
+                </Button>
+                <Button
+                  icon={<EditOutlined />}
+                  onClick={() => handleEdit(movie)}
+                  style={{ width: 90 }}
+                >
+                  Sửa
+                </Button>
+                <Popconfirm
+                  title="Bạn có chắc chắn muốn xoá phim này không?"
+                  onConfirm={() => handleDelete(movie._id)}
+                  okText="Xoá"
+                  cancelText="Huỷ"
+                >
+                  <Button
+                    icon={<DeleteOutlined />}
+                    danger
+                    style={{ width: 90 }}
                   >
-                    <Button size="small" danger>
-                      Xoá
-                    </Button>
-                  </Popconfirm>
-                </Space>
+                    Xoá
+                  </Button>
+                </Popconfirm>
               </div>
             </Card>
           </List.Item>
@@ -325,6 +410,8 @@ export default function MovieList() {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
+          setSelectedMovie(null); 
+          setIsEditing(false);    
         }}
         onSubmit={handleSubmit}
         onSuccess={() => {

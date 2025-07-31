@@ -22,9 +22,10 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './admin/pageAdmin/movieAdmin/movieList'
-import CategoryAdmin from './admin/pageAdmin/category.admin'
+import CategoryAdmin from './admin/pageAdmin/categoryAdmin/category.admin'
 import TicketPrice from './pages/TicketPrice'
 import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
+import Dashboard from './admin/pageAdmin/dashboardAdmin/dashboard.admin'
 
 function App() {
   return (
@@ -47,6 +48,8 @@ function App() {
 
       {/* Giao diện admin */}
       <Route path='admin' element={<MainLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path='rooms' element={<RoomList/>}/>

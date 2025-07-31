@@ -16,6 +16,7 @@ import {
   Typography,
   Space,
   message,
+  Popconfirm,
 } from 'antd';
 
 const { TextArea } = Input;
@@ -36,34 +37,52 @@ export default function CategoryAdmin() {
       const list = await getCategories();
       setCategories(list);
     } catch (err) {
-      console.error('Lỗi lấy danh sách danh mục:', err);
       message.error('Không thể lấy danh sách danh mục');
     }
   };
 
-  const handleSubmit = async (values: { categoryName: string; description?: string }) => {
-    if (!values.categoryName.trim()) {
-      return message.warning('Tên danh mục không được để trống');
-    }
+const handleSubmit = async (values: { categoryName: string; description?: string }) => {
+  if (!values.categoryName.trim()) {
+    return message.warning('Tên danh mục không được để trống');
+  }
 
-    setLoading(true);
-    try {
-      if (editingId) {
-        await updateCategory(editingId, values);
-        message.success('Cập nhật danh mục thành công');
-      } else {
-        await createCategory(values);
-        message.success('Tạo danh mục mới thành công');
-      }
-      resetForm();
-      fetchCategories();
-    } catch (err) {
-      console.error('Lỗi khi submit:', err);
-      message.error('Đã xảy ra lỗi khi lưu danh mục');
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    if (editingId) {
+      await updateCategory(editingId, values);
+      message.success('Cập nhật danh mục thành công');
+    } else {
+      await createCategory(values);
+      message.success('Tạo danh mục mới thành công');
     }
-  };
+    resetForm();
+    fetchCategories();
+  } catch (err: any) {
+    const messages = err?.response?.data?.message;
+
+    if (Array.isArray(messages)) {
+      // messages.forEach((msg) => {
+      //   message.error(msg);
+      // });
+
+      const nameError = messages.find((msg: string) =>
+        msg.toLowerCase().includes('tên thể loại')
+      );
+      if (nameError) {
+        form.setFields([
+          {
+            name: 'categoryName',
+            errors: [nameError],
+          },
+        ]);
+      }
+    } else {
+      message.error('Đã xảy ra lỗi khi lưu danh mục');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleEdit = (cat: ICategory) => {
     form.setFieldsValue({
@@ -81,7 +100,6 @@ export default function CategoryAdmin() {
         fetchCategories();
       }
     } catch (err) {
-      console.error('Lỗi khi xóa:', err);
       message.error('Không thể xóa danh mục');
     }
   };
@@ -122,14 +140,21 @@ export default function CategoryAdmin() {
 
       <Title level={5}>Danh sách danh mục</Title>
       <List
-         dataSource={categories || []}
+        dataSource={categories || []}
         bordered
         locale={{ emptyText: 'Chưa có danh mục nào' }}
         renderItem={(cat) => (
           <List.Item
             actions={[
               <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>,
-              <Button size="small" danger onClick={() => handleDelete(cat._id)}>Xoá</Button>,
+              <Popconfirm
+                title="Bạn có chắc chắn muốn xóa danh mục này?"
+                okText="Xóa"
+                cancelText="Hủy"
+                onConfirm={() => handleDelete(cat._id)}
+              >
+                <Button size="small" danger>Xoá</Button>
+              </Popconfirm>,
             ]}
           >
             <List.Item.Meta

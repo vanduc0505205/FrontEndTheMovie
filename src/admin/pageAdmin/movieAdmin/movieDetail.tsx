@@ -12,7 +12,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { IMovie } from "@/types/movie";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CloseCircleTwoTone } from "@ant-design/icons";
 
 const { Title, Paragraph } = Typography;
 
@@ -22,7 +22,6 @@ const statusMap: Record<IMovie["status"], { label: string; color: string }> = {
   ngung_chieu: { label: "Ngừng chiếu", color: "red" },
 };
 
-// Hàm chuẩn hóa link YouTube
 function getYoutubeEmbedUrl(url: string): string {
   if (!url) return "";
   try {
@@ -47,10 +46,8 @@ export default function MovieDetail() {
     try {
       const res = await axios.get(`http://localhost:3000/movie/${id}`);
       const data = res.data?.newMovie || res.data;
-      console.log("Movie data:", data);
       setMovie(data);
     } catch (err) {
-      console.error(err);
       message.error("Không thể tải thông tin phim");
     } finally {
       setLoading(false);
@@ -76,7 +73,16 @@ export default function MovieDetail() {
   const embedUrl = getYoutubeEmbedUrl(movie.trailer || "");
 
   return (
-    <Card style={{ maxWidth: 900, margin: "24px auto" }}>
+    <Card
+      style={{
+        maxWidth: 900,
+        margin: "32px auto",
+        padding: 24,
+        borderRadius: 16,
+        boxShadow: "0 4px 24px #e0e0e0",
+        background: "#fff",
+      }}
+    >
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
@@ -86,88 +92,135 @@ export default function MovieDetail() {
         Quay lại danh sách phim
       </Button>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 32,
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+        }}
+      >
         <Image
           src={movie.poster || "https://via.placeholder.com/200x300?text=No+Poster"}
           alt={movie.title}
-          width={200}
-          height={300}
-          style={{ objectFit: "cover", borderRadius: 8 }}
+          width={220}
+          height={320}
+          style={{
+            objectFit: "cover",
+            borderRadius: 12,
+            boxShadow: "0 2px 8px #e0e0e0",
+            background: "#fafafa",
+          }}
+          preview={false}
         />
-        <div className="flex-1">
-          <Title level={3}>
+        <div
+          style={{
+            flex: 1,
+            minWidth: 260,
+            background: "#f7f9fa",
+            borderRadius: 12,
+            padding: 24,
+            boxShadow: "0 1px 4px #f0f1f2",
+          }}
+        >
+          <Title level={3} style={{ marginBottom: 8 }}>
             {movie.title}{" "}
             <Tag color={statusMap[movie.status]?.color}>
               {statusMap[movie.status]?.label}
             </Tag>
           </Title>
-          <Paragraph strong>Mô tả:</Paragraph>
-          <Paragraph>{movie.description}</Paragraph>
-          <Paragraph>⏱ Thời lượng: {movie.duration} phút</Paragraph>
-          <Paragraph>
-            🎬 Ngày phát hành:{" "}
+          <Paragraph strong style={{ marginBottom: 4 }}>Mô tả:</Paragraph>
+          <Paragraph style={{ marginBottom: 12 }}>{movie.description}</Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>
+            ⏱ <b>Thời lượng:</b> {movie.duration} phút
+          </Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>
+            🎬 <b>Ngày phát hành:</b>{" "}
             {new Date(movie.releaseDate).toLocaleDateString()}
           </Paragraph>
-          <Paragraph>👨‍💼 Đạo diễn: {movie.director}</Paragraph>
-          <Paragraph>
-            👥 Diễn viên: {movie.actors?.join(", ") || "Không có thông tin"}
+          <Paragraph style={{ marginBottom: 4 }}>
+            👨‍💼 <b>Đạo diễn:</b> {movie.director}
           </Paragraph>
-          <Paragraph>🗣 Ngôn ngữ: {movie.language}</Paragraph>
-          <Paragraph>🔞 Giới hạn tuổi: {movie.ageRating}</Paragraph>
-
+          <Paragraph style={{ marginBottom: 4 }}>
+            👥 <b>Diễn viên:</b> {movie.actors?.join(", ") || "Không có thông tin"}
+          </Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>
+            🗣 <b>Ngôn ngữ:</b> {movie.language}
+          </Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>
+            🔞 <b>Giới hạn tuổi:</b> {movie.ageRating}
+          </Paragraph>
+          <Paragraph style={{ marginBottom: 0 }}>
+            📂 <b>Danh mục:</b>{" "}
+            {movie.categories?.map((cat) => (
+              <Tag key={cat._id} >{cat.categoryName}</Tag>
+            )) || "Không có danh mục"}
+          </Paragraph>
           {embedUrl && (
-            <Paragraph>
-              📽 Trailer:{" "}
+            <Paragraph style={{ marginBottom: 4 }}>
+              📽 <b>Trailer:</b>{" "}
               <Button type="link" onClick={() => setTrailerVisible(true)}>
                 Xem trailer
               </Button>
             </Paragraph>
           )}
-
-          {/* Modal Trailer */}
-          <Modal
-            open={trailerVisible}
-            onCancel={() => setTrailerVisible(false)}
-            footer={null}
-            width={1000}
-            // bodyStyle={{ padding: 20 }}
-            // destroyOnClose
-          >
-            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
-              <iframe
-                src={embedUrl}
-                title="Trailer"
-                allowFullScreen
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  border: 0,
-                }}
-              />
-            </div>
-          </Modal>
-
-          {movie.banner?.length > 0 && (
-            <>
-              <Paragraph strong style={{ marginTop: 24 }}>Banner:</Paragraph>
-              <div className="flex flex-wrap gap-2">
-                {movie.banner.map((url, index) => (
-                  <Image
-                    key={index}
-                    src={url}
-                    width={300}
-                    height={160}
-                    style={{ objectFit: "cover", borderRadius: 4 }}
-                  />
-                ))}
-              </div>
-            </>
-          )}
         </div>
       </div>
+
+      {/* Modal Trailer */}
+      <Modal
+        open={trailerVisible}
+        onCancel={() => setTrailerVisible(false)}
+        footer={null}
+        width={1000}
+        closeIcon={
+          <CloseCircleTwoTone twoToneColor="#ff4d4f" style={{ fontSize: 32 }} />
+        }
+      >
+        <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+          <iframe
+            src={embedUrl}
+            title="Trailer"
+            allowFullScreen
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              border: 0,
+            }}
+          />
+        </div>
+      </Modal>
+
+      {movie.banner?.length > 0 && (
+        <>
+          <Paragraph strong style={{ marginTop: 32, marginBottom: 12, fontSize: 16, textAlign: "center" }}>
+            Banner:
+          </Paragraph>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 16,
+              justifyContent: "center",
+            }}
+          >
+            {movie.banner.map((url, index) => (
+              <Image
+                key={index}
+                src={url}
+                width={320}
+                height={160}
+                style={{ objectFit: "cover", borderRadius: 8, background: "#fafafa" }}
+                preview={false}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </Card>
   );
 }
