@@ -45,7 +45,7 @@ export default function MovieDetail() {
   const fetchDetail = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data;
+      const data = res.data?.newMovie || res.data; // handle both cases
       setMovie(data);
     } catch (err) {
       message.error("Không thể tải thông tin phim");
@@ -164,6 +164,49 @@ export default function MovieDetail() {
                 Xem trailer
               </Button>
             </Paragraph>
+          )}
+
+          {/* Modal Trailer */}
+          <Modal
+            open={trailerVisible}
+            onCancel={() => setTrailerVisible(false)}
+            footer={null}
+            width={1000}
+          // bodyStyle={{ padding: 20 }}
+          // destroyOnClose
+          >
+            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+              <iframe
+                src={embedUrl}
+                title="Trailer"
+                allowFullScreen
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  border: 0,
+                }}
+              />
+            </div>
+          </Modal>
+
+          {movie.banner?.length > 0 && (
+            <>
+              <Paragraph strong style={{ marginTop: 24 }}>Banner:</Paragraph>
+              <div className="flex flex-wrap gap-2">
+                {movie.banner.map((url, index) => (
+                  <Image
+                    key={index}
+                    src={url}
+                    width={300}
+                    height={160}
+                    style={{ objectFit: "cover", borderRadius: 4 }}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>

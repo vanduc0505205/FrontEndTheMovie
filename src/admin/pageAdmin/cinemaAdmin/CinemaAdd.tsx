@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, notification } from "antd";
 import { createCinema } from "@/api/cinema.api";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -14,8 +14,15 @@ const AddCinema = () => {
       message.success("Thêm rạp thành công!");
       navigate("/admin/cinemas");
     },
-    onError: () => {
-      message.error("Thêm rạp thất bại!");
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        notification.error({
+          message: "Thêm thát bại",
+          description: "Bạn không có quyền cho hành động này !",
+        });
+      } else {
+        message.error("Thêm rạp thất bại!");
+      }
     },
   });
 
@@ -27,11 +34,19 @@ const AddCinema = () => {
     <div className="max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Thêm Rạp Chiếu</h1>
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item name="name" label="Tên rạp" rules={[{ required: true, message: "Vui lòng nhập tên rạp" }]}>
+        <Form.Item
+          name="name"
+          label="Tên rạp"
+          rules={[{ required: true, message: "Vui lòng nhập tên rạp" }]}
+        >
           <Input placeholder="Nhập tên rạp" />
         </Form.Item>
 
-        <Form.Item name="address" label="Địa chỉ" rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}>
+        <Form.Item
+          name="address"
+          label="Địa chỉ"
+          rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+        >
           <Input placeholder="Nhập địa chỉ" />
         </Form.Item>
 
