@@ -19,6 +19,8 @@ import {
 } from "@/api/room.api";
 import { getSeatsByRoom } from "@/api/seat.api";
 import { IRoom } from "@/types/room";
+import { getUserFromLocalStorage } from "@/lib/auth";
+
 
 const RoomList = () => {
   const [form] = Form.useForm();
@@ -26,6 +28,7 @@ const RoomList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<IRoom | null>(null);
   const [roomHasSeats, setRoomHasSeats] = useState(false);
+  const user = getUserFromLocalStorage(); // Lấy user từ localStorage
 
   const { data: rooms = [], isLoading } = useQuery({
     queryKey: ["rooms"],
@@ -50,7 +53,7 @@ const RoomList = () => {
     onError: () => {
       notification.error({
         message: "Bạn không có quyền!",
-        description: "Bạn không có quyền cho hành động này !",
+        description: "Bạn không có quyền cho hành động này!",
         placement: "topRight",
       });
     },
@@ -65,7 +68,7 @@ const RoomList = () => {
     onError: () => {
       notification.error({
         message: "Bạn không thể xóa!",
-        description: "Bạn không có quyền cho hành động này !",
+        description: "Bạn không có quyền cho hành động này!",
         placement: "topRight",
       });
     },
@@ -103,21 +106,25 @@ const RoomList = () => {
     {
       title: "Hành động",
       key: "action",
-      render: (_, room: IRoom) => (
-        <div className="space-x-2">
-          <Button size="small" onClick={() => openModalToEdit(room)}>
-            Sửa
-          </Button>
-          <Popconfirm
-            title="Xác nhận xoá phòng này?"
-            onConfirm={() => handleDelete(room._id)}
-          >
-            <Button size="small" danger>
-              Xoá
+      render: (_, room: IRoom) => {
+        if (user?.role !== "admin") return null; // 👈 Ẩn với staff
+
+        return (
+          <div className="space-x-2">
+            <Button size="small" onClick={() => openModalToEdit(room)}>
+              Sửa
             </Button>
-          </Popconfirm>
-        </div>
-      ),
+            <Popconfirm
+              title="Xác nhận xoá phòng này?"
+              onConfirm={() => handleDelete(room._id)}
+            >
+              <Button size="small" danger>
+                Xoá
+              </Button>
+            </Popconfirm>
+          </div>
+        );
+      },
     },
   ];
 
@@ -129,18 +136,20 @@ const RoomList = () => {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Quản lý phòng chiếu</h2>
-        <Button
-          type="primary"
-          onClick={() => {
-            form.resetFields();
-            setEditingRoom(null);
-            setRoomHasSeats(false); // Reset lại
-            setIsModalOpen(true);
-          }}
 
-        >
-          Thêm phòng
-        </Button>
+        {user?.role === "admin" && ( // 👈 Ẩn nút "Thêm phòng" nếu không phải admin
+          <Button
+            type="primary"
+            onClick={() => {
+              form.resetFields();
+              setEditingRoom(null);
+              setRoomHasSeats(false);
+              setIsModalOpen(true);
+            }}
+          >
+            Thêm phòng
+          </Button>
+        )}
       </div>
 
       <Table
@@ -167,13 +176,13 @@ const RoomList = () => {
               { required: true, whitespace: true, message: "Không được để trống" },
               {
                 validator: (_, value) => {
-                  if (!value || !value.trim()) return Promise.resolve(); // đã check required
+                  if (!value || !value.trim()) return Promise.resolve();
                   const inputName = value.trim().toLowerCase();
 
                   const isDuplicate = rooms.some(
                     (room) =>
                       room.name.trim().toLowerCase() === inputName &&
-                      room._id !== editingRoom?._id // bỏ qua phòng đang sửa
+                      room._id !== editingRoom?._id
                   );
 
                   return isDuplicate
@@ -185,7 +194,6 @@ const RoomList = () => {
           >
             <Input />
           </Form.Item>
-
 
           <Form.Item
             name="rows"
@@ -249,7 +257,6 @@ const RoomList = () => {
             </Form.Item>
           )}
         </Form>
-
       </Modal>
     </div>
   );
