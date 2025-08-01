@@ -39,7 +39,12 @@ export default function Checkout() {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-4 text-center">Xác nhận thanh toán</h2>
-
+      <button
+        onClick={() => navigate(-1)} 
+        className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
+      >
+        Quay lại 
+      </button>
       {movie && (
         <div className="flex items-start gap-4 mb-4">
           <img

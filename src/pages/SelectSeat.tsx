@@ -66,10 +66,17 @@ export default function SeatSelection() {
   if (!seats.length) return <div className="text-center mt-10">Không có ghế</div>;
 
   return (
+    
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-md shadow-lg">
       <div className="mb-6 text-center font-semibold text-gray-700 tracking-widest">
         MÀN HÌNH
       </div>
+       <button
+        onClick={() => navigate(-1)} 
+        className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
+      >
+        Quay lại 
+      </button>
       <div className="mx-auto mb-8 h-6 w-4/5 rounded bg-gray-300 shadow-inner"></div>
 
       <div
