@@ -1,15 +1,40 @@
-export default function Header() {
+// HeaderStaff.tsx
+import React from "react";
+import { Layout, Avatar, Dropdown, Menu, Typography } from "antd";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+
+const { Header } = Layout;
+const { Text } = Typography;
+
+const HeaderStaff = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
+    navigate("/dang-nhap");
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
-    <header className="bg-white shadow-sm px-6 py-3 flex justify-between items-center border-b">
-      <h1 className="text-lg font-semibold">Trang quản trị</h1>
-      <div className="flex items-center gap-2">
-        <img
-          src="https://ui-avatars.com/api/?name=Admin"
-          alt="Avatar"
-          className="w-8 h-8 rounded-full"
-        />
-        <span className="text-sm text-gray-600">Admin</span>
-      </div>
-    </header>
-  )
-}
+    <Header className="bg-white shadow-md px-6 flex justify-between items-center">
+      <Text className="text-xl font-semibold">Trang Quản Trị </Text>
+      <Dropdown overlay={menu} placement="bottomRight">
+        <div className="flex items-center gap-2 cursor-pointer">
+          <Avatar icon={<UserOutlined />} />
+          <Text className="hidden md:block">admin</Text>
+        </div>
+      </Dropdown>
+    </Header>
+  );
+};
+
+export default HeaderStaff;

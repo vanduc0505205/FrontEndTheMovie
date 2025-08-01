@@ -27,6 +27,9 @@ export default function CategoryAdmin() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user?.role;
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -75,7 +78,7 @@ export default function CategoryAdmin() {
 
   const handleDelete = async (id: string) => {
     try {
-      if(confirm("Bạn có chắc chắn muốn xóa danh mục này?")) {
+      if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
         await deleteCategory(id);
         message.success('Xóa danh mục thành công');
         fetchCategories();
@@ -92,45 +95,62 @@ export default function CategoryAdmin() {
   };
 
   return (
-    <Card title={<Title level={4}>Quản lý danh mục</Title>} style={{ maxWidth: 800, margin: '24px auto' }}>
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Tên danh mục"
-          name="categoryName"
-          rules={[{ required: true, message: 'Vui lòng nhập tên danh mục' }]}
-        >
-          <Input placeholder="Tên danh mục" />
-        </Form.Item>
+    <Card
+      title={<Title level={4}>Quản lý danh mục</Title>}
+      style={{ maxWidth: 800, margin: '24px auto' }}
+    >
+      {userRole === 'admin' && (
+        <>
+          <Form form={form} layout="vertical" onFinish={handleSubmit}>
+            <Form.Item
+              label="Tên danh mục"
+              name="categoryName"
+              rules={[{ required: true, message: 'Vui lòng nhập tên danh mục' }]}
+            >
+              <Input placeholder="Tên danh mục" />
+            </Form.Item>
 
-        <Form.Item label="Mô tả" name="description">
-          <TextArea placeholder="Mô tả danh mục (tuỳ chọn)" autoSize={{ minRows: 2, maxRows: 4 }} />
-        </Form.Item>
+            <Form.Item label="Mô tả" name="description">
+              <TextArea
+                placeholder="Mô tả danh mục (tuỳ chọn)"
+                autoSize={{ minRows: 2, maxRows: 4 }}
+              />
+            </Form.Item>
 
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              {editingId ? 'Cập nhật' : 'Thêm'}
-            </Button>
-            {editingId && (
-              <Button onClick={resetForm} disabled={loading}>
-                Hủy
-              </Button>
-            )}
-          </Space>
-        </Form.Item>
-      </Form>
+            <Form.Item>
+              <Space>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  {editingId ? 'Cập nhật' : 'Thêm'}
+                </Button>
+                {editingId && (
+                  <Button onClick={resetForm} disabled={loading}>
+                    Hủy
+                  </Button>
+                )}
+              </Space>
+            </Form.Item>
+          </Form>
 
-      <Title level={5}>Danh sách danh mục</Title>
+          <Title level={5}>Danh sách danh mục</Title>
+        </>
+      )}
+
+      {userRole !== 'admin' && <Title level={5}>Danh sách danh mục</Title>}
+
       <List
-         dataSource={categories || []}
+        dataSource={categories || []}
         bordered
         locale={{ emptyText: 'Chưa có danh mục nào' }}
         renderItem={(cat) => (
           <List.Item
-            actions={[
-              <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>,
-              <Button size="small" danger onClick={() => handleDelete(cat._id)}>Xoá</Button>,
-            ]}
+            actions={
+              userRole === 'admin'
+                ? [
+                  <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>,
+                  <Button size="small" danger onClick={() => handleDelete(cat._id)}>Xoá</Button>,
+                ]
+                : undefined
+            }
           >
             <List.Item.Meta
               title={cat.categoryName}

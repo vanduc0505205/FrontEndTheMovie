@@ -20,6 +20,19 @@ import { useNavigate } from "react-router-dom";
 import { Import } from "lucide-react";
 import dayjs from "dayjs";
 
+const getUserRole = () => {
+  try {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return null;
+    const user = JSON.parse(userStr);
+    return user?.role || null;
+  } catch (err) {
+    return null;
+  }
+};
+
+const userRole = getUserRole();
+
 const { Title } = Typography;
 
 const statusMap: Record<IMovie["status"], { label: string; color: string }> = {
@@ -299,23 +312,26 @@ export default function MovieList() {
                 </div>
                 <div>🔞 Độ tuổi: {movie.ageRating}</div>
               </div>
-              <div>
-                <Space direction="vertical">
-                  <Button size="small" onClick={() => handleEdit(movie)}>
-                    Sửa
-                  </Button>
-                  <Popconfirm
-                    title="Bạn có chắc chắn muốn xoá phim này không?"
-                    onConfirm={() => handleDelete(movie._id)}
-                    okText="Xoá"
-                    cancelText="Huỷ"
-                  >
-                    <Button size="small" danger>
-                      Xoá
+              {userRole === "admin" && (
+                <div>
+                  <Space direction="vertical">
+                    <Button size="small" onClick={() => handleEdit(movie)}>
+                      Sửa
                     </Button>
-                  </Popconfirm>
-                </Space>
-              </div>
+                    <Popconfirm
+                      title="Bạn có chắc chắn muốn xoá phim này không?"
+                      onConfirm={() => handleDelete(movie._id)}
+                      okText="Xoá"
+                      cancelText="Huỷ"
+                    >
+                      <Button size="small" danger>
+                        Xoá
+                      </Button>
+                    </Popconfirm>
+                  </Space>
+                </div>
+              )}
+
             </Card>
           </List.Item>
         )}

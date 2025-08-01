@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Popconfirm, message } from "antd";
+import { Table, Button, Popconfirm, notification } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { deleteCinema, getCinemas } from "@/api/cinema.api";
@@ -20,10 +20,21 @@ const CinemaList = () => {
   const { mutate } = useMutation({
     mutationFn: deleteCinema,
     onSuccess: () => {
-      message.success("Xoá thành công");
+      notification.success({
+        message: "Xoá thành công",
+        description: "Rạp chiếu đã được xoá khỏi hệ thống.",
+        placement: "topRight",
+        duration: 3,
+      });
       queryClient.invalidateQueries({ queryKey: ["cinemas", page] });
     },
-    onError: () => message.error("Xoá thất bại"),
+    onError: () => {
+      notification.error({
+        message: "Xoá thất bại",
+        description: "Bạn không có quyền cho hành động này!",
+        placement: "topRight",
+      });
+    },
   });
 
   const columns = [
@@ -48,6 +59,7 @@ const CinemaList = () => {
       ),
     },
   ];
+
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">Danh sách rạp chiếu</h1>

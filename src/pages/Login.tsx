@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import { Login } from "@/interface/user";
+import  type { Login } from "@/interface/user";
 
 const { Title, Text } = Typography;
 
@@ -26,7 +26,7 @@ const Login: React.FC = () => {
         message.success("Đăng nhập thành công!");
 
         //Lưu thông tin user & token
-        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("access_token", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));
 
         localStorage.setItem("user", JSON.stringify(data.user));

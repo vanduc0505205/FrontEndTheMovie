@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, notification } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getCinemaById, updateCinema } from "@/api/cinema.api";
@@ -22,7 +22,17 @@ const EditCinema = () => {
       message.success("Cập nhật thành công!");
       navigate("/admin/cinemas");
     },
-    onError: () => message.error("Cập nhật thất bại!"),
+    onError: (error: any) => {
+      if (error.response?.status === 403) {
+        notification.error({
+          message: "Sửa thất bại",
+          description: "Bạn không có quyền cho hành động này !",
+        });
+      } else {
+        const errorMsg = error.response?.data?.message || "Cập nhật thất bại!";
+        message.error(errorMsg);
+      }
+    },
   });
 
   useEffect(() => {
