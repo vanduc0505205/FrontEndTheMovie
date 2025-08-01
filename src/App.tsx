@@ -29,6 +29,7 @@ import RequireRole from './lib/RequireRole'
 import StaffMainLayout from './staff/layoutStaff/mainLayout'
 import ForbiddenPage from './pages/403'
 import CategoryAdmin from './admin/pageAdmin/category.admin'
+import Checkout from "./pages/Checkout";
 
 
 function App() {
@@ -50,6 +51,8 @@ function App() {
         <Route path="/gio-hang" element={<CartPage />} />
         <Route path="/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />
+        <Route path="/checkout" element={<Checkout />} />
+
       </Route>
 
       {/* Giao diện admin */}
