@@ -238,32 +238,7 @@ export default function MovieDetail() {
         </div>
       </Modal>
 
-      {movie.banner?.length > 0 && (
-        <>
-          <Paragraph strong style={{ marginTop: 32, marginBottom: 12, fontSize: 16, textAlign: "center" }}>
-            Banner:
-          </Paragraph>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 16,
-              justifyContent: "center",
-            }}
-          >
-            {movie.banner.map((url, index) => (
-              <Image
-                key={index}
-                src={url}
-                width={320}
-                height={160}
-                style={{ objectFit: "cover", borderRadius: 8, background: "#fafafa" }}
-                preview={false}
-              />
-            ))}
-          </div>
-        </>
-      )}
+      
     </Card>
   );
 }

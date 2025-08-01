@@ -29,6 +29,8 @@ import RequireRole from './lib/RequireRole'
 import StaffMainLayout from './staff/layoutStaff/mainLayout'
 import ForbiddenPage from './pages/403'
 import CategoryAdmin from './admin/pageAdmin/categoryAdmin/category.admin'
+import NewsList from './pages/NewsPage'
+import PolicyPage from './pages/Policy'
 
 
 function App() {
@@ -50,6 +52,8 @@ function App() {
         <Route path="/gio-hang" element={<CartPage />} />
         <Route path="/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />
+        <Route path="/tin-tuc" element={<NewsList />} />
+        <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
       </Route>
 
       {/* Giao diện admin */}
