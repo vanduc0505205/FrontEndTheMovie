@@ -9,6 +9,7 @@ import {
 import clsx from 'clsx';
 
 const navItems = [
+  { label: 'Dashboard', path: 'dashboard', icon: <VideoCameraOutlined /> },
   { label: 'Phim', path: 'movies', icon: <VideoCameraOutlined /> },
   { label: 'Danh mục', path: 'categories', icon: <AppstoreOutlined /> },
   { label: 'Rạp chiếu', path: 'cinemas', icon: <HomeOutlined /> },
