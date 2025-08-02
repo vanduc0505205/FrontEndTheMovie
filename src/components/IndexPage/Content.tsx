@@ -6,6 +6,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import Autoplay from "embla-carousel-autoplay";
 import { slideData } from "@/config";
 import { phimMai } from "@/assets/path";
+import { Link } from "react-router-dom";
 
 export default function HomePageContent() {
   const autoplay = Autoplay({ delay: 2000, stopOnInteraction: false });
@@ -77,76 +78,78 @@ export default function HomePageContent() {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 {nowShowing.map((movie) => (
-                  <div
-                    key={movie._id}
-                    className="bg-primary-green-10 rounded-xl shadow-md overflow-hidden flex flex-col"
-                  >
-                    <img
-                      src={movie.poster}
-                      alt={movie.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-3 flex-1 flex flex-col">
-                      <h3 className="font-bold text-base text-primary-green-200 mb-1 line-clamp-2">
-                        {movie.title}
-                      </h3>
-                      <div className="flex flex-col text-xs text-primary-green-400 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-wrap gap-1">
-                            {movie.categories.map((cat) => (
-                              <span key={cat._id}>{cat.categoryName}</span>
-                            ))}
-                          </div>
-                          <span>{movie.duration} phút</span>
-                        </div>
-                        <span>{new Date(movie.releaseDate).toLocaleDateString("vi-VN")}</span>
-                      </div>
-                    </div>
-                  </div>))}
+        <Link
+          to={`/phim/${movie._id}`}
+          key={movie._id}
+          className="bg-primary-green-10 rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition"
+        >
+          <img
+            src={movie.poster}
+            alt={movie.title}
+            className="w-full h-48 object-cover"
+          />
+          <div className="p-3 flex-1 flex flex-col">
+            <h3 className="font-bold text-base text-primary-green-200 mb-1 line-clamp-2">
+              {movie.title}
+            </h3>
+            <div className="flex flex-col text-xs text-primary-green-400 space-y-1">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-wrap gap-1">
+                  {movie.categories.map((cat) => (
+                    <span key={cat._id}>{cat.categoryName}</span>
+                  ))}
+          </div>
+          <span>{movie.duration} phút</span>
+        </div>
+        <span>{new Date(movie.releaseDate).toLocaleDateString("vi-VN")}</span>
+      </div>
+    </div>
+  </Link>
+))}
+
               </div>
             </div>
           </section>
 
           {/* Phim sắp chiếu */}
           <section className="py-16 bg-primary-green-50">
-            <div className="container mx-auto px-4">
-              <div className="text-left mb-8">
-                <h2 className="text-2xl lg:text-3xl font-bold text-primary-green-300 mb-4">
-                  Phim sắp chiếu
-                </h2>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {comingSoon.map((movie) => (
-                  <div
-                    key={movie._id}
-                    className="bg-primary-green-10 rounded-xl shadow-md overflow-hidden flex flex-col"
-                  >
-                    <img
-                      src={movie.poster}
-                      alt={movie.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-3 flex-1 flex flex-col">
-                      <h3 className="font-bold text-base text-primary-green-200 mb-1 line-clamp-2">
-                        {movie.title}
-                      </h3>
-                      <div className="flex flex-col text-xs text-primary-green-400 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-wrap gap-1">
-                            {movie.categories.map((cat) => (
-                              <span key={cat._id}>{cat.categoryName}</span>
-                            ))}
-                          </div>
-                          <span>{movie.duration} phút</span>
-                        </div>
-                        <span>{new Date(movie.releaseDate).toLocaleDateString("vi-VN")}</span>
-                      </div>
-                    </div>
-                  </div>))}
+  <div className="container mx-auto px-4">
+    <div className="text-left mb-8">
+      <h2 className="text-2xl lg:text-3xl font-bold text-primary-green-300 mb-4">
+        Phim sắp chiếu
+      </h2>
+    </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      {comingSoon.map((movie) => (
+        <Link to={`/phim/${movie._id}`} key={movie._id} className="block">
+          <div className="bg-primary-green-10 rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition">
+            <img
+              src={movie.poster}
+              alt={movie.title}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-3 flex-1 flex flex-col">
+              <h3 className="font-bold text-base text-primary-green-200 mb-1 line-clamp-2">
+                {movie.title}
+              </h3>
+              <div className="flex flex-col text-xs text-primary-green-400 space-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap gap-1">
+                    {movie.categories.map((cat) => (
+                      <span key={cat._id}>{cat.categoryName}</span>
+                    ))}
+                  </div>
+                  <span>{movie.duration} phút</span>
+                </div>
+                <span>{new Date(movie.releaseDate).toLocaleDateString("vi-VN")}</span>
               </div>
             </div>
-          </section>
-
+          </div>
+        </Link>
+      ))}
+    </div>
+  </div>
+           </section>
 
           {/* Carousel Section */}
           <section className="py-10 lg:py-20 bg-primary-green-50">

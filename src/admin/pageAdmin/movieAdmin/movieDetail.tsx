@@ -87,7 +87,13 @@ export default function MovieDetail() {
         type="link"
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate(-1)}
-        style={{ marginBottom: 16 }}
+         style={{
+          marginBottom: 16,
+          padding: '8px 16px',      
+          fontSize: '16px',         
+          height: 'auto',           
+  }}
+        
       >
         Quay lại danh sách phim
       </Button>
@@ -191,6 +197,15 @@ export default function MovieDetail() {
               />
             </div>
           </Modal>
+                <Button
+        type="primary"
+        size="large"
+        style={{ marginTop: 20 }}
+        onClick={() => navigate("/selectSeat", { state: { movieId: movie._id ,movie} })}
+      >
+        🎟️ Đặt vé ngay
+      </Button>
+
 
           {movie.banner?.length > 0 && (
             <>
