@@ -28,10 +28,10 @@ import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
 import RequireRole from './lib/RequireRole'
 import StaffMainLayout from './staff/layoutStaff/mainLayout'
 import ForbiddenPage from './pages/403'
-import Checkout from "./pages/Checkout";
 import CategoryAdmin from './admin/pageAdmin/categoryAdmin/category.admin'
 import NewsList from './pages/NewsPage'
 import PolicyPage from './pages/Policy'
+import DashboardAdmin from './admin/pageAdmin/dashboardAdmin/dashboard.admin'
 
 
 function App() {
@@ -53,8 +53,6 @@ function App() {
         <Route path="/gio-hang" element={<CartPage />} />
         <Route path="/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />
-        <Route path="/checkout" element={<Checkout />} />
-
         <Route path="/tin-tuc" element={<NewsList />} />
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
       </Route>
@@ -76,6 +74,7 @@ function App() {
         <Route path="cinemas/add" element={<AddCinema />} />
         <Route path="cinemas/edit/:id" element={<EditCinema />} />
         <Route path="cinemas/:id" element={<CinemaDetail />} />
+        <Route path="dashboard" element={<DashboardAdmin />} />
       </Route>
       {/* Giao diện staff */}
       <Route path='staff' element={
