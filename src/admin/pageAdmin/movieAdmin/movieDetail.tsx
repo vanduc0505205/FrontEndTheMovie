@@ -45,7 +45,7 @@ export default function MovieDetail() {
   const fetchDetail = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data; // handle both cases
+      const data = res.data?.newMovie || res.data; 
       setMovie(data);
     } catch (err) {
       message.error("Không thể tải thông tin phim");

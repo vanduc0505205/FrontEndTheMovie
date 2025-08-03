@@ -128,9 +128,10 @@ export default function MovieModal({
           .map((a: string) => a.trim())
           .filter(Boolean),
         categories:
-        values.categories?.map((c: string) => c.trim()).filter(Boolean) || [],
-        banner: values.banner ? [values.banner] : [],
-        poster: posterUrl || values.poster,
+          values.categories?.map((c: string) => c.trim()).filter(Boolean) || [],
+        poster: posterUrl || values.poster || "",
+        banner: bannerUrl || values.banner || "",
+
       };
       if (!isEditing) {
         const now = dayjs().startOf("day");
@@ -223,7 +224,7 @@ export default function MovieModal({
               <Input />
             </Form.Item>
 
-            <Form.Item name="description" label="Mô tả">
+            <Form.Item name="description" label="Mô tả" rules={[{ required: true }]}>
               <TextArea rows={2} />
             </Form.Item>
 
@@ -282,8 +283,7 @@ export default function MovieModal({
                 </div>
               )}
 
-            <Form.Item name="poster" hidden><Input /></Form.Item>
-            <Form.Item label="Poster">
+            <Form.Item name="poster" label="Poster" rules={[{ required: true }]}>
               <Upload
                 beforeUpload={(file) => handleUpload(file, "poster")}
                 showUploadList={false}
@@ -295,8 +295,7 @@ export default function MovieModal({
               )}
             </Form.Item>
 
-            <Form.Item name="banner" hidden><Input /></Form.Item>
-            <Form.Item label="Banner">
+            <Form.Item name="banner" label="Banner" rules={[{ required: true }]}>
               <Upload
                 beforeUpload={(file) => handleUpload(file, "banner")}
                 showUploadList={false}

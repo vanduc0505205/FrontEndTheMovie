@@ -258,15 +258,15 @@ export default function MovieList() {
               hoverable
               styles={{
                 body: {
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 24,
-                borderRadius: 16,
-                boxShadow: "0 2px 12px #f0f1f2",
-                transition: "box-shadow 0.2s",
-                minHeight: 200,
-                width: "1150px",
-                maxWidth: "100%",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 24,
+                  borderRadius: 16,
+                  boxShadow: "0 2px 12px #f0f1f2",
+                  transition: "box-shadow 0.2s",
+                  minHeight: 200,
+                  width: "1150px",
+                  maxWidth: "100%",
                 },
               }}
               bodyStyle={{
@@ -379,23 +379,29 @@ export default function MovieList() {
               {userRole === "admin" && (
                 <div>
                   <Space direction="vertical">
-                    <Button size="small" onClick={() => handleEdit(movie)}>
-                      Sửa
+                    <Button size="small" onClick={() => navigate(`/movie/${movie._id}`)}>
+                      Chi tiết
                     </Button>
-                    <Popconfirm
-                      title="Bạn có chắc chắn muốn xoá phim này không?"
-                      onConfirm={() => handleDelete(movie._id)}
-                      okText="Xoá"
-                      cancelText="Huỷ"
-                    >
-                      <Button size="small" danger>
-                        Xoá
-                      </Button>
-                    </Popconfirm>
+                    {userRole === "admin" && (
+                      <>
+                        <Button size="small" onClick={() => handleEdit(movie)}>
+                          Sửa
+                        </Button>
+                        <Popconfirm
+                          title="Bạn có chắc chắn muốn xoá phim này không?"
+                          onConfirm={() => handleDelete(movie._id)}
+                          okText="Xoá"
+                          cancelText="Huỷ"
+                        >
+                          <Button size="small" danger>
+                            Xoá
+                          </Button>
+                        </Popconfirm>
+                      </>
+                    )}
                   </Space>
                 </div>
               )}
-
             </Card>
           </List.Item>
         )}
@@ -405,8 +411,8 @@ export default function MovieList() {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setSelectedMovie(null); 
-          setIsEditing(false);    
+          setSelectedMovie(null);
+          setIsEditing(false);
         }}
         onSubmit={handleSubmit}
         onSuccess={() => {
