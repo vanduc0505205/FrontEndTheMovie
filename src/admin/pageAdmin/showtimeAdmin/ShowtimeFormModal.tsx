@@ -4,13 +4,11 @@ import { createShowtime, updateShowtime } from "@/api/showtime.api";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
-import { getMovies } from '@/api/movie.api';
-import { getCinemas } from '@/api/cinema.api';
+import { getAllMovies } from '@/api/movie.api';
 import { getRooms } from '@/api/room.api';
 import axios from "axios";
 import { ICinema } from "@/types/cinema";
-
-const { RangePicker } = DatePicker;
+import { IMovie } from "@/types/movie";
 
 interface Props {
     open: boolean;
@@ -43,6 +41,24 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
     const mutationCreate = useMutation({
         mutationFn: createShowtime,
+        onError: (error: any) => {
+            const { response } = error;
+            if (Array.isArray(response?.data?.errors)) {
+                response.data.errors.forEach((err: string) => {
+                    notification.error({
+                        message: "Lỗi dữ liệu",
+                        description: err,
+                        placement: "topRight",
+                    });
+                });
+            } else {
+                notification.error({
+                    message: "Thất bại",
+                    description: response?.data?.message || "Có lỗi xảy ra",
+                    placement: "topRight",
+                });
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["showtimes"] });
             form.resetFields();
@@ -58,6 +74,24 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
     const mutationUpdate = useMutation({
         mutationFn: ({ id, data }: any) => updateShowtime(id, data),
+        onError: (error: any) => {
+            const { response } = error;
+            if (Array.isArray(response?.data?.errors)) {
+                response.data.errors.forEach((err: string) => {
+                    notification.error({
+                        message: "Lỗi dữ liệu",
+                        description: err,
+                        placement: "topRight",
+                    });
+                });
+            } else {
+                notification.error({
+                    message: "Thất bại",
+                    description: response?.data?.message || "Có lỗi xảy ra",
+                    placement: "topRight",
+                });
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["showtimes"] });
             form.resetFields();
@@ -73,16 +107,17 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
 
     const handleFinish = (values: any) => {
-        const start = values.startTime;
-
+        const start = dayjs(values.startTime);
+        const movie = movies.find((m: IMovie) => m._id === values.movieId);
+        const duration = movie?.duration || 0;
+        const end = start.add(duration, 'minute');
         const payload = {
             movieId: values.movieId,
             cinemaId: values.cinemaId,
             roomId: values.roomId,
             defaultPrice: values.defaultPrice,
-            startTime: start.toISOString()
+            startTime: start.toISOString(),
         };
-
         if (isEdit) {
             mutationUpdate.mutate({ id: initialData._id, data: payload });
         } else {
@@ -92,7 +127,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
     const { data: movies = [], isLoading: loadingMovies } = useQuery<any>({
         queryKey: ['movie'],
-        queryFn: getMovies,
+        queryFn: getAllMovies,
     });
 
     // hàm api lấy dữ liệu cinema không truyền limit&page
@@ -128,7 +163,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     rules={[{ required: true, message: "Vui lòng chọn phim" }]}
                 >
                     <Select placeholder="Chọn phim" loading={loadingMovies}>
-                        {movies?.list?.map((movie: any) => (
+                        {movies?.map((movie: IMovie) => (
                             <Select.Option key={movie._id} value={movie._id}>
                                 {movie.title}
                             </Select.Option>
@@ -189,6 +224,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                         format="YYYY-MM-DD HH:mm"
                         className="w-full"
                         placeholder="Chọn thời gian chiếu"
+                        disabledDate={(current) => current && current < dayjs().startOf('day')}
                     />
                 </Form.Item>
 
@@ -213,9 +249,6 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                         min={0}
                         step={1000}
                         style={{ width: "100%" }}
-                        formatter={(value) =>
-                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND"
-                        }
                     />
                 </Form.Item>
 

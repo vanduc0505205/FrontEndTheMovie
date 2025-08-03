@@ -1,13 +1,11 @@
 import axios from 'axios';
 import { ISeat } from "@/types/seat";
 
-// 🔁 Lấy danh sách ghế theo roomId
 export const getSeatsByRoom = async (roomId: string): Promise<ISeat[]> => {
   const { data } = await axios.get(`http://localhost:3000/seat/room/${roomId}`);
   return data as ISeat[];
 };
 
-// ➕ Tạo nhiều ghế
 export const bulkCreateSeats = async (payload: {
   roomId: string;
   rows: number;
@@ -19,7 +17,6 @@ export const bulkCreateSeats = async (payload: {
   return data;
 };
 
-// ✏️ Cập nhật ghế
 export const updateSeat = async (
   id: string,
   updates: Partial<ISeat>
@@ -28,13 +25,11 @@ export const updateSeat = async (
   return data;
 };
 
-// ❌ Xoá 1 ghế
 export const deleteSeat = async (id: string): Promise<{ message: string }> => {
   const { data } = await axios.delete(`http://localhost:3000/seat/${id}`);
   return data;
 };
 
-// 🧹 Xoá toàn bộ ghế trong 1 phòng
 export const resetSeatsByRoom = async (
   roomId: string
 ): Promise<{ message: string }> => {

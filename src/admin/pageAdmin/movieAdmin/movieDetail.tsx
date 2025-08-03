@@ -205,8 +205,6 @@ export default function MovieDetail() {
       >
         🎟️ Đặt vé ngay
       </Button>
-
-
           {movie.banner?.length > 0 && (
             <>
               <Paragraph strong style={{ marginTop: 24 }}>Banner:</Paragraph>

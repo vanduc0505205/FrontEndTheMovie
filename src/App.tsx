@@ -22,6 +22,7 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './admin/pageAdmin/movieAdmin/movieList'
+import MovieDetailPage from '@/pages/MovieDetail'
 
 import TicketPrice from './pages/TicketPrice'
 import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
@@ -33,7 +34,6 @@ import NewsList from './pages/NewsPage'
 import PolicyPage from './pages/Policy'
 import DashboardAdmin from './admin/pageAdmin/dashboardAdmin/dashboard.admin'
 
-
 function App() {
   return (
     <Routes>
@@ -41,7 +41,7 @@ function App() {
       <Route element={<DefaultLayout />}>
         <Route index element={<Index />} />
         {/* chi tiết */}
-          <Route path="/phim/:id" element={<MovieDetail />} />   
+        <Route path="/phim/:id" element={<MovieDetailPage />} />
         {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
         {/* <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} /> */}

@@ -3,6 +3,7 @@ import logo from "@/assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
+import { ShoppingCart } from "lucide-react";
 
 const Header = () => {
   const isMobile = useIsMobile();
@@ -186,16 +187,28 @@ const Header = () => {
             <div className="space-x-2 mx-4">
               {user ? (
                 <>
-                  <span className="text-white">👋 {user.username}</span>
-                  <Link to="/dang-xuat">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border border-red-500 text-red-500 hover:bg-red-500/10 h-9"
-                    >
-                      Đăng xuất
-                    </Button>
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white leading-[36px]">👋 {user.username}</span>
+                    <Link to="/dang-xuat">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border border-red-500 text-red-500 hover:bg-red-500/10 h-9"
+                      >
+                        Đăng xuất
+                      </Button>
+                    </Link>
+                    <Link to="/gio-hang">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border border-primary-green-100 text-primary-green-100 hover:bg-primary-green-100/10 h-9"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-1" /> Giỏ hàng
+                      </Button>
+                    </Link>
+                  </div>
+
                 </>
               ) : (
                 <>
