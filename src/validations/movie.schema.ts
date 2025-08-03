@@ -26,7 +26,8 @@ export const movieSchema = z
       .or(z.literal("")),
 
     banner: z
-      .array(z.string().url("Ảnh banner phải là URL hợp lệ"))
+      .string()
+      .url("Ảnh banner phải là URL hợp lệ")
       .optional(),
 
     ageRating: z.enum(["C13", "C16", "C18"], {
