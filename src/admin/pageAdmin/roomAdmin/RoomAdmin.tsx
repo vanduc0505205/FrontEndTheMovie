@@ -20,6 +20,18 @@ import {
 import { getSeatsByRoom } from "@/api/seat.api";
 import { IRoom } from "@/types/room";
 import { getUserFromLocalStorage } from "@/lib/auth";
+const getUserRole = () => {
+  try {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return null;
+    const user = JSON.parse(userStr);
+    return user?.role || null;
+  } catch (err) {
+    return null;
+  }
+};
+
+const userRole = getUserRole();
 
 
 const RoomList = () => {
@@ -107,7 +119,6 @@ const RoomList = () => {
       title: "Hành động",
       key: "action",
       render: (_, room: IRoom) => {
-        if (user?.role !== "admin") return null; // 👈 Ẩn với staff
 
         return (
           <div className="space-x-2">
@@ -118,9 +129,11 @@ const RoomList = () => {
               title="Xác nhận xoá phòng này?"
               onConfirm={() => handleDelete(room._id)}
             >
-              <Button size="small" danger>
-                Xoá
-              </Button>
+              {userRole === "admin" && (
+                <Button size="small" danger>
+                  Xoá
+                </Button>
+              )}
             </Popconfirm>
           </div>
         );

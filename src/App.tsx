@@ -29,6 +29,14 @@ import RequireRole from './lib/RequireRole'
 import StaffMainLayout from './staff/layoutStaff/mainLayout'
 import ForbiddenPage from './pages/403'
 import CategoryAdmin from './admin/pageAdmin/category.admin'
+import CinemaDetailStaff from './staff/pageStaff/cinemaStaff/CinemaDetailStaff'
+import CinemaListStaff from './staff/pageStaff/cinemaStaff/cinemaListStaff'
+import MovieDetailStaff from './staff/pageStaff/movieStaff/movieDetailStaff'
+import MovieListStaff from './staff/pageStaff/movieStaff/movieListStaff'
+import EditCinemaStaff from './staff/pageStaff/cinemaStaff/cinemaEditStaff'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+
 
 
 function App() {
@@ -38,7 +46,7 @@ function App() {
       <Route element={<DefaultLayout />}>
         <Route index element={<Index />} />
         {/* chi tiết */}
-          <Route path="/phim/:id" element={<MovieDetail />} />   
+        <Route path="/phim/:id" element={<MovieDetail />} />
         {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
         {/* <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} /> */}
@@ -50,6 +58,8 @@ function App() {
         <Route path="/gio-hang" element={<CartPage />} />
         <Route path="/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
 
       {/* Giao diện admin */}
@@ -80,13 +90,13 @@ function App() {
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path='rooms' element={<RoomList />} />
-        <Route path="movies" element={<MovieList />} />
-        <Route path="movies/:id" element={<MovieDetail />} />
+        <Route path="movies" element={<MovieListStaff />} />
+        <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="categories" element={<CategoryAdmin />} />
-        <Route path="cinemas" element={<ListCinema />} />
+        <Route path="cinemas" element={<CinemaListStaff />} />
         <Route path="cinemas/add" element={<AddCinema />} />
-        <Route path="cinemas/edit/:id" element={<EditCinema />} />
-        <Route path="cinemas/:id" element={<CinemaDetail />} />
+        <Route path="cinemas/edit/:id" element={<EditCinemaStaff />} />
+        <Route path="cinemas/:id" element={< CinemaDetailStaff />} />
 
       </Route>
       {/* 404 */}

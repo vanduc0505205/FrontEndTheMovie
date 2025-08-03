@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import  type { Register } from "@/interface/user";
+import type { Register } from "@/interface/user";
 
 const { Title, Text } = Typography;
 
@@ -41,9 +41,8 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-64px)] p-6">
-
-      <div className="flex w-full max-w-6xl bg-white rounded-xl overflow-hidden shadow-lg">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-6">
+      <div className="flex w-full max-w-5xl bg-white rounded-xl overflow-hidden shadow-lg">
         <div
           className="w-1/2 hidden md:block bg-cover bg-center"
           style={{
@@ -112,8 +111,14 @@ const Register: React.FC = () => {
               </Button>
             </Form.Item>
 
-            <div className="text-center">
-              <Text>Đã có tài khoản? <Link to="/dang-nhap">Đăng nhập</Link></Text>
+            <div className="text-center space-y-2">
+              <Text>
+                Đã có tài khoản? <Link to="/dang-nhap">Đăng nhập</Link>
+              </Text>
+              <br />
+              <Link to="/forgot-password" className="text-blue-500 hover:underline">
+                Quên mật khẩu?
+              </Link>
             </div>
           </Form>
         </div>

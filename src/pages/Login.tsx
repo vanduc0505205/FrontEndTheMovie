@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import  type { Login } from "@/interface/user";
+import type { Login } from "@/interface/user";
 
 const { Title, Text } = Typography;
 
@@ -24,16 +24,10 @@ const Login: React.FC = () => {
 
       if (res.ok && data.accessToken) {
         message.success("Đăng nhập thành công!");
-
-        //Lưu thông tin user & token
         localStorage.setItem("access_token", data.accessToken);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
         localStorage.setItem("user", JSON.stringify(data.user));
         window.dispatchEvent(new Event("login-success"));
 
-
-        // Điều hướng theo quyền
         const role = data.user?.role;
         if (role === "admin") {
           navigate("/admin");
@@ -54,15 +48,16 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-64px)] p-6">
-      <div className="flex w-full max-w-6xl bg-white rounded-xl overflow-hidden shadow-lg">
-        <div
-          className="w-1/2 hidden md:block bg-cover bg-center"
-          style={{
-            backgroundImage: "url('src/assets/images/dangky.jpg')",
-          }}
-        />
-        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-5xl bg-white rounded-xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        <div className="hidden md:block">
+          <img
+            src="src/assets/images/dangky.jpg"
+            alt="Login"
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="p-8">
           <div className="text-center mb-6">
             <Title level={3}>🎥 Alpha Cinema</Title>
             <Text type="secondary">Đăng nhập để tiếp tục</Text>
@@ -100,9 +95,18 @@ const Login: React.FC = () => {
               </Button>
             </Form.Item>
 
+            <div className="text-center mb-2">
+              <Link to="/forgot-password" className="text-blue-500 hover:underline">
+                Quên mật khẩu?
+              </Link>
+            </div>
+
             <div className="text-center">
               <Text>
-                Chưa có tài khoản? <Link to="/dang-ky">Đăng ký</Link>
+                Chưa có tài khoản?{" "}
+                <Link to="/dang-ky" className="text-blue-500 hover:underline">
+                  Đăng ký
+                </Link>
               </Text>
             </div>
           </Form>

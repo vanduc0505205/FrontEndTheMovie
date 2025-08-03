@@ -13,7 +13,7 @@ import {
   Input,
   Select,
 } from "antd";
-import MovieModal from "./movieFormModal";
+import MovieModal from "./MovieFormModalStaff";
 import { IMovie } from "@/types/movie";
 import { ICategory } from "@/types/category";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ const statusMap: Record<IMovie["status"], { label: string; color: string }> = {
   ngung_chieu: { label: "Ngừng chiếu", color: "red" },
 };
 
-export default function MovieList() {
+export default function MovieListStaff() {
   const [movies, setMovies] = useState<IMovie[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -279,7 +279,7 @@ export default function MovieList() {
                   <Button
                     type="link"
                     style={{ padding: 0, fontSize: 16, fontWeight: 600 }}
-                    onClick={() => navigate(`/admin/movies/${movie._id}`)}
+                    onClick={() => navigate(`/staff/movies/${movie._id}`)}
                   >
                     {movie.title}
                   </Button>
