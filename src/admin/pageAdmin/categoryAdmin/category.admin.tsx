@@ -5,7 +5,7 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-} from '@/services/category.service';
+} from '@/api/category.api';
 import { ICategory } from '@/types/category';
 import {
   Card,

@@ -15,8 +15,8 @@ import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { movieSchema } from "@/validations/movie.schema";
 import { IMovie } from "@/types/movie";
-import { getCategories } from "@/services/category.service";
-import { getAllMovies } from "@/services/movie.service";
+import { getCategories } from "@/api/category.api";
+import { getAllMovies } from "@/api/movie.api";
 import { RcFile } from "antd/es/upload";
 
 const { TextArea } = Input;
