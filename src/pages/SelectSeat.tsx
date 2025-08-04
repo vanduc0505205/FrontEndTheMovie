@@ -23,10 +23,6 @@ export default function SeatSelection() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log(location);
-
-  console.log(location.state);
-
   const searchParams = new URLSearchParams(location.search);
   const roomId = searchParams.get("roomId");
   const showtimeId = searchParams.get("showtimeId");
@@ -34,12 +30,6 @@ export default function SeatSelection() {
 
   const { movie, showtime } = location.state || {};
   const actualRoomId = roomId || "688b9c84554800b4468c61ef";
-
-  console.log(roomId);
-  console.log(userId);
-  console.log(showtimeId);
-  console.log(movie);
-
 
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
