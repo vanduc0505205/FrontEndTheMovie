@@ -49,7 +49,7 @@ function App() {
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
-        <Route path="/selectSeat" element={<SelectSeat />} />
+        <Route path="/phim/:id/selectSeat" element={<SelectSeat />} />
         <Route path="/gio-hang" element={<CartPage />} />
         <Route path="/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />

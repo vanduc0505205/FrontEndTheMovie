@@ -25,7 +25,6 @@ export default function SelectShowtime() {
     enabled: !!movieId, // chỉ gọi khi có movieId
   });
 
-
   // Lấy danh sách lịch chiếu
   const { data: showtimes = [], isLoading } = useQuery({
     queryKey: ["showtimes"],
@@ -52,12 +51,23 @@ export default function SelectShowtime() {
     return map;
   }, [filteredShowtimes]);
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   const sortedDates = useMemo(() => Object.keys(groupedByDate).sort(), [groupedByDate]);
   const [selectedDate, setSelectedDate] = useState(sortedDates[0] || "");
 
   const handleSelectShowtime = (s: IShowtime) => {
     console.log("Chọn suất chiếu:", s);
-    navigate("/selectSeat", { state: { showtime: s } });
+
+    navigate(
+      `/phim/${s.movieId._id}/selectSeat?roomId=${s.roomId._id}&showtimeId=${s._id}&userId=${user.id}`,
+      {
+        state: {
+          movie: s.movieId,
+          showtime: s,
+        },
+      }
+    );
   };
 
   if (isLoading || isMovieLoading) return <Spin className="mt-10" />;

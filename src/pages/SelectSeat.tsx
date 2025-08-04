@@ -23,10 +23,23 @@ export default function SeatSelection() {
   const navigate = useNavigate();
   const location = useLocation();
 
- 
-  const { roomId, userId, showtimeId, movie } = location.state || {};
+  console.log(location);
 
-  const actualRoomId = roomId || "688b9c84554800b4468c61ef"; 
+  console.log(location.state);
+
+  const searchParams = new URLSearchParams(location.search);
+  const roomId = searchParams.get("roomId");
+  const showtimeId = searchParams.get("showtimeId");
+  const userId = searchParams.get("userId");
+
+  const { movie, showtime } = location.state || {};
+  const actualRoomId = roomId || "688b9c84554800b4468c61ef";
+
+  console.log(roomId);
+  console.log(userId);
+  console.log(showtimeId);
+  console.log(movie);
+
 
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -62,20 +75,23 @@ export default function SeatSelection() {
     return acc + priceMap[seat.type];
   }, 0);
 
-  if (loading) return <div className="text-center mt-10">Đang tải ghế...</div>;
-  if (!seats.length) return <div className="text-center mt-10">Không có ghế</div>;
-
+  if (loading) return <div className="text-center mt-10 ">Đang tải ghế...</div>;
+  if (!seats.length) return (
+    <div>
+      <div className="w-max h-10"></div>
+      <div className="text-center mt-10">Không có ghế</div>
+    </div>
+  )
   return (
-    
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-md shadow-lg">
       <div className="mb-6 text-center font-semibold text-gray-700 tracking-widest">
         MÀN HÌNH
       </div>
-       <button
-        onClick={() => navigate(-1)} 
+      <button
+        onClick={() => navigate(-1)}
         className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
       >
-        Quay lại 
+        Quay lại
       </button>
       <div className="mx-auto mb-8 h-6 w-4/5 rounded bg-gray-300 shadow-inner"></div>
 
@@ -94,20 +110,18 @@ export default function SeatSelection() {
           return (
             <button
               key={_id}
-              className={`${bgColor} rounded-md w-10 h-10 flex items-center justify-center font-semibold text-xs select-none ${
-                status !== "available"
-                  ? "opacity-70"
-                  : "hover:outline hover:outline-2 hover:outline-green-600"
-              }`}
+              className={`${bgColor} rounded-md w-10 h-10 flex items-center justify-center font-semibold text-xs select-none ${status !== "available"
+                ? "opacity-70"
+                : "hover:outline hover:outline-2 hover:outline-green-600"
+                }`}
               disabled={status !== "available"}
               onClick={() => toggleSeat(seatCode, status)}
-              title={`${seatCode} - ${type} - ${
-                status === "available"
-                  ? "Có thể đặt"
-                  : status === "booked"
+              title={`${seatCode} - ${type} - ${status === "available"
+                ? "Có thể đặt"
+                : status === "booked"
                   ? "Đã đặt"
                   : "Bảo trì"
-              }`}
+                }`}
             >
               {seatCode}
             </button>
@@ -136,11 +150,11 @@ export default function SeatSelection() {
               userId,
               showtimeId,
               roomId: actualRoomId,
-             seatList: selectedSeats.map((code) => {
+              seatList: selectedSeats.map((code) => {
                 const seat = seats.find((s) => s.seatCode === code);
                 return {
                   seatId: seat?._id || "",
-                  seatCode: seat?.seatCode || "", 
+                  seatCode: seat?.seatCode || "",
                   seatType: seat?.type || "NORMAL",
                 };
               }),
