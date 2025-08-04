@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 type SeatStatus = "available" | "booked" | "maintenance";
@@ -22,7 +22,8 @@ const priceMap = {
 export default function SeatSelection() {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { id: movieId } = useParams();
+  
   const searchParams = new URLSearchParams(location.search);
   const roomId = searchParams.get("roomId");
   const showtimeId = searchParams.get("showtimeId");
@@ -153,7 +154,7 @@ export default function SeatSelection() {
               movie, // ✅ truyền đầy đủ movie để CheckoutPage hiển thị thông tin
             };
 
-            navigate("/checkout", { state: bookingInfo });
+            navigate(`/phim/${movieId}/checkout`, { state: bookingInfo });
           }}
         >
           Đặt vé

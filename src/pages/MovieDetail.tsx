@@ -8,6 +8,7 @@ import { getMovieById } from "@/api/movie.api";
 import { IShowtime } from "@/types/showtime";
 import { IMovie } from "@/types/movie";
 import { useQuery } from "@tanstack/react-query";
+import MovieTrailer from "@/components/trailer/MovieTrailer";
 
 export default function SelectShowtime() {
   const { id: movieId } = useParams();
@@ -149,18 +150,7 @@ export default function SelectShowtime() {
               </div>
             </div>
 
-            {movie.trailer && (
-              <div className="mt-6">
-                <a
-                  href={movie.trailer}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-yellow-400 underline hover:text-yellow-300"
-                >
-                  ▶ Xem trailer
-                </a>
-              </div>
-            )}
+            <MovieTrailer trailerUrl={movie.trailer} />
 
             <div className="mt-6 text-orange-500 text-sm">
               Lưu ý: Khán giả dưới 13 tuổi cần chọn suất chiếu trước 22h và khán giả dưới 16 tuổi cần chọn suất chiếu trước 23h.

@@ -33,6 +33,7 @@ import CategoryAdmin from './admin/pageAdmin/categoryAdmin/category.admin'
 import NewsList from './pages/NewsPage'
 import PolicyPage from './pages/Policy'
 import DashboardAdmin from './admin/pageAdmin/dashboardAdmin/dashboard.admin'
+import Checkout from './pages/Checkout'
 
 function App() {
   return (
@@ -51,10 +52,11 @@ function App() {
         <Route path="/dang-xuat" element={<Logout />} />
         <Route path="/phim/:id/selectSeat" element={<SelectSeat />} />
         <Route path="/gio-hang" element={<CartPage />} />
-        <Route path="/thanh-toan" element={<CheckoutPage />} />
+        <Route path="/phim/:id/thanh-toan" element={<CheckoutPage />} />
         <Route path="/payment-result" element={<CheckPayment />} />
         <Route path="/tin-tuc" element={<NewsList />} />
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
+        <Route path="/phim/:id/checkout" element={<Checkout />} />
       </Route>
 
       {/* Giao diện admin */}
