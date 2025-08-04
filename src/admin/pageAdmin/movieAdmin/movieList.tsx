@@ -379,12 +379,25 @@ export default function MovieList() {
               {userRole === "admin" && (
                 <div>
                   <Space direction="vertical">
-                    <Button size="small" onClick={() => navigate(`/movie/${movie._id}`)}>
+                    <Button
+                      size="small"
+                      icon={<EyeOutlined />}
+                      onClick={() => navigate(`/admin/movies/${movie._id}`)}
+                      block
+                      style={{ minWidth: 100 }}
+                    >
                       Chi tiết
                     </Button>
+
                     {userRole === "admin" && (
                       <>
-                        <Button size="small" onClick={() => handleEdit(movie)}>
+                        <Button
+                          size="small"
+                          icon={<EditOutlined />}
+                          onClick={() => handleEdit(movie)}
+                          block
+                          style={{ minWidth: 100 }}
+                        >
                           Sửa
                         </Button>
                         <Popconfirm
@@ -393,13 +406,21 @@ export default function MovieList() {
                           okText="Xoá"
                           cancelText="Huỷ"
                         >
-                          <Button size="small" danger>
+                          <Button
+                            size="small"
+                            danger
+                            icon={<DeleteOutlined />}
+                            block
+                            style={{ minWidth: 100 }}
+                          >
                             Xoá
                           </Button>
                         </Popconfirm>
                       </>
                     )}
                   </Space>
+
+
                 </div>
               )}
             </Card>

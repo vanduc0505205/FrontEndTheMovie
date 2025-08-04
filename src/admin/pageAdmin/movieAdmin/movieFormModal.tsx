@@ -150,7 +150,6 @@ export default function MovieModal({
           });
         }
       }
-
       const result = movieSchema.safeParse(formatted);
       if (!result.success) {
         const errors = result.error.errors.map((e) => e.message).join("\n");

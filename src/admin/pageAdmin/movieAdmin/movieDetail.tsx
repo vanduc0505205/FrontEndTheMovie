@@ -9,6 +9,7 @@ import {
   message,
   Button,
   Modal,
+  Popconfirm,
 } from "antd";
 import axios from "axios";
 import { IMovie } from "@/types/movie";
@@ -35,7 +36,7 @@ function getYoutubeEmbedUrl(url: string): string {
   }
 }
 
-export default function MovieDetail() {
+export default function MovieDetailAdmin() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState<IMovie | null>(null);
@@ -45,12 +46,22 @@ export default function MovieDetail() {
   const fetchDetail = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data; 
+      const data = res.data?.newMovie || res.data;
       setMovie(data);
     } catch (err) {
       message.error("Không thể tải thông tin phim");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`http://localhost:3000/movie/${id}`);
+      message.success("Đã xóa phim");
+      navigate("/admin/movies");
+    } catch (error) {
+      message.error("Xóa phim thất bại");
     }
   };
 
@@ -72,6 +83,10 @@ export default function MovieDetail() {
 
   const embedUrl = getYoutubeEmbedUrl(movie.trailer || "");
 
+  function handleEdit(movie: IMovie): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <Card
       style={{
@@ -83,20 +98,33 @@ export default function MovieDetail() {
         background: "#fff",
       }}
     >
-      <Button
-        type="link"
-        icon={<ArrowLeftOutlined />}
-        onClick={() => navigate(-1)}
-         style={{
-          marginBottom: 16,
-          padding: '8px 16px',      
-          fontSize: '16px',         
-          height: 'auto',           
-  }}
-        
-      >
-        Quay lại danh sách phim
-      </Button>
+      <div style={{ marginBottom: 16 }}>
+        <Button
+          type="link"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate(-1)}
+          style={{ marginRight: 8 }}
+        >
+          Quay lại
+        </Button>
+
+        {/* <Button
+          type="default"
+          onClick={() => handleEdit(movie)}
+          style={{ marginRight: 8 }}
+        >
+          Chỉnh sửa
+        </Button>
+
+        <Popconfirm
+          title="Bạn có chắc chắn muốn xóa phim này không?"
+          onConfirm={() => handleDelete(movie._id)}
+          okText="Xóa"
+          cancelText="Hủy"
+        >
+          <Button danger>Xóa</Button>
+        </Popconfirm> */}
+      </div>
 
       <div
         style={{
@@ -120,6 +148,7 @@ export default function MovieDetail() {
           }}
           preview={false}
         />
+
         <div
           style={{
             flex: 1,
@@ -131,38 +160,23 @@ export default function MovieDetail() {
           }}
         >
           <Title level={3} style={{ marginBottom: 8 }}>
-            {movie.title}{" "}
-            <Tag color={statusMap[movie.status]?.color}>
-              {statusMap[movie.status]?.label}
-            </Tag>
+            {movie.title} <Tag color={statusMap[movie.status]?.color}>{statusMap[movie.status]?.label}</Tag>
           </Title>
+
           <Paragraph strong style={{ marginBottom: 4 }}>Mô tả:</Paragraph>
           <Paragraph style={{ marginBottom: 12 }}>{movie.description}</Paragraph>
-          <Paragraph style={{ marginBottom: 4 }}>
-            ⏱ <b>Thời lượng:</b> {movie.duration} phút
-          </Paragraph>
-          <Paragraph style={{ marginBottom: 4 }}>
-            🎬 <b>Ngày phát hành:</b>{" "}
-            {new Date(movie.releaseDate).toLocaleDateString()}
-          </Paragraph>
-          <Paragraph style={{ marginBottom: 4 }}>
-            👨‍💼 <b>Đạo diễn:</b> {movie.director}
-          </Paragraph>
-          <Paragraph style={{ marginBottom: 4 }}>
-            👥 <b>Diễn viên:</b> {movie.actors?.join(", ") || "Không có thông tin"}
-          </Paragraph>
-          <Paragraph style={{ marginBottom: 4 }}>
-            🗣 <b>Ngôn ngữ:</b> {movie.language}
-          </Paragraph>
-          <Paragraph style={{ marginBottom: 4 }}>
-            🔞 <b>Giới hạn tuổi:</b> {movie.ageRating}
-          </Paragraph>
-          <Paragraph style={{ marginBottom: 0 }}>
-            📂 <b>Danh mục:</b>{" "}
-            {movie.categories?.map((cat) => (
-              <Tag key={cat._id} >{cat.categoryName}</Tag>
-            )) || "Không có danh mục"}
-          </Paragraph>
+
+          <Paragraph style={{ marginBottom: 4 }}>⏱ <b>Thời lượng:</b> {movie.duration} phút</Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>🎬 <b>Ngày phát hành:</b> {new Date(movie.releaseDate).toLocaleDateString()}</Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>👨‍💼 <b>Đạo diễn:</b> {movie.director}</Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>👥 <b>Diễn viên:</b> {movie.actors?.join(", ") || "Không có thông tin"}</Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>🗣 <b>Ngôn ngữ:</b> {movie.language}</Paragraph>
+          <Paragraph style={{ marginBottom: 4 }}>🔞 <b>Giới hạn tuổi:</b> {movie.ageRating}</Paragraph>
+
+          <Paragraph style={{ marginBottom: 0 }}>📂 <b>Danh mục:</b> {movie.categories?.map((cat) => (
+            <Tag key={cat._id}>{cat.categoryName}</Tag>
+          )) || "Không có danh mục"}</Paragraph>
+
           {embedUrl && (
             <Paragraph style={{ marginBottom: 4 }}>
               📽 <b>Trailer:</b>{" "}
@@ -172,67 +186,40 @@ export default function MovieDetail() {
             </Paragraph>
           )}
 
-          {/* Modal Trailer */}
-          <Modal
-            open={trailerVisible}
-            onCancel={() => setTrailerVisible(false)}
-            footer={null}
-            width={1000}
-          // bodyStyle={{ padding: 20 }}
-          // destroyOnClose
-          >
-            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
-              <iframe
-                src={embedUrl}
-                title="Trailer"
-                allowFullScreen
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  border: 0,
-                }}
-              />
-            </div>
-          </Modal>
-                <Button
-        type="primary"
-        size="large"
-        style={{ marginTop: 20 }}
-        onClick={() => navigate("/selectSeat", { state: { movieId: movie._id ,movie} })}
-      >
-        🎟️ Đặt vé ngay
-      </Button>
-          {movie.banner?.length > 0 && (
+          {movie.banner && (
             <>
               <Paragraph strong style={{ marginTop: 24 }}>Banner:</Paragraph>
               <div className="flex flex-wrap gap-2">
-                {movie.banner.map((url, index) => (
+                {Array.isArray(movie.banner) ? (
+                  movie.banner.map((url, index) => (
+                    <Image
+                      key={index}
+                      src={url}
+                      width={300}
+                      height={160}
+                      style={{ objectFit: "cover", borderRadius: 4 }}
+                    />
+                  ))
+                ) : (
                   <Image
-                    key={index}
-                    src={url}
+                    src={movie.banner}
                     width={300}
                     height={160}
                     style={{ objectFit: "cover", borderRadius: 4 }}
                   />
-                ))}
+                )}
               </div>
             </>
           )}
         </div>
       </div>
 
-      {/* Modal Trailer */}
       <Modal
         open={trailerVisible}
         onCancel={() => setTrailerVisible(false)}
         footer={null}
         width={1000}
-        closeIcon={
-          <CloseCircleTwoTone twoToneColor="#ff4d4f" style={{ fontSize: 32 }} />
-        }
+        closeIcon={<CloseCircleTwoTone twoToneColor="#ff4d4f" style={{ fontSize: 32 }} />}
       >
         <div style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
           <iframe
@@ -250,8 +237,6 @@ export default function MovieDetail() {
           />
         </div>
       </Modal>
-
-      
     </Card>
   );
 }
