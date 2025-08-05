@@ -1,4 +1,3 @@
-// src/lib/auth.ts
 
 // Lấy user từ localStorage
 export const getUserFromLocalStorage = () => {
@@ -15,4 +14,8 @@ export const getAccessToken = () => {
 export const clearUserData = () => {
   localStorage.removeItem("user");
   localStorage.removeItem("accessToken");
+};
+export const getUserRole = () => {
+  const user = getUserFromLocalStorage();
+  return user?.role || null;
 };

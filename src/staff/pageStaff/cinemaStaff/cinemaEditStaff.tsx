@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getCinemaById, updateCinema } from "@/api/cinema.api";
 import { Cinema } from "@/interface/cinema";
 
-const EditCinema = () => {
+const EditCinemaStaff = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -20,7 +20,7 @@ const EditCinema = () => {
     mutationFn: (values: Partial<Cinema>) => updateCinema(id!, values),
     onSuccess: () => {
       message.success("Cập nhật thành công!");
-      navigate("/admin/cinemas");
+      navigate("/staff/cinemas");
     },
     onError: (error: any) => {
       const errorMsg = error.response?.data?.message || "Cập nhật thất bại!";
@@ -73,4 +73,4 @@ const EditCinema = () => {
   );
 };
 
-export default EditCinema;
+export default EditCinemaStaff;
