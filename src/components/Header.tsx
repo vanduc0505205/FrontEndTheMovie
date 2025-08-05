@@ -3,6 +3,7 @@ import logo from "@/assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
+import { ShoppingCart } from "lucide-react";
 
 const Header = () => {
   const isMobile = useIsMobile();
@@ -163,17 +164,17 @@ const Header = () => {
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
             <Link
-              to="/mo-hinh-van-hanh"
+              to="/tin-tuc"
               className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
             >
               Tin Tức
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
             <Link
-              to="/cong-nghe"
+              to="/quy-dinh-va-chinh-sach"
               className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
             >
-              Khuyến Mãi
+              Quy định và Chính sách
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
             <Link
@@ -186,16 +187,28 @@ const Header = () => {
             <div className="space-x-2 mx-4">
               {user ? (
                 <>
-                  <span className="text-white">👋 {user.username}</span>
-                  <Link to="/dang-xuat">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border border-red-500 text-red-500 hover:bg-red-500/10 h-9"
-                    >
-                      Đăng xuất
-                    </Button>
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white leading-[36px]">👋 {user.username}</span>
+                    <Link to="/dang-xuat">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border border-red-500 text-red-500 hover:bg-red-500/10 h-9"
+                      >
+                        Đăng xuất
+                      </Button>
+                    </Link>
+                    <Link to="/gio-hang">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border border-primary-green-100 text-primary-green-100 hover:bg-primary-green-100/10 h-9"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-1" /> Giỏ hàng
+                      </Button>
+                    </Link>
+                  </div>
+
                 </>
               ) : (
                 <>

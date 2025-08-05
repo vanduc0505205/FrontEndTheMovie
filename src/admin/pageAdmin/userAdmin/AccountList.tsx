@@ -29,7 +29,6 @@ const UserAdmin: React.FC = () => {
         try {
             const res = await getAllUsers();
             setUsers(res.users);
-            console.log(res)
         } catch (err) {
             message.error('Lỗi khi tải danh sách tài khoản');
         }
