@@ -36,6 +36,8 @@ import MovieListStaff from './staff/pageStaff/movieStaff/movieListStaff'
 import EditCinemaStaff from './staff/pageStaff/cinemaStaff/cinemaEditStaff'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import OAuthSuccess from './pages/OAuthSuccess'
+
 
 
 
@@ -60,6 +62,7 @@ function App() {
         <Route path="/payment-result" element={<CheckPayment />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
       </Route>
 
       {/* Giao diện admin */}

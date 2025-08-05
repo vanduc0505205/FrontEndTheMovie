@@ -1,4 +1,3 @@
-// src/lib/auth.ts
 
 // Lấy user từ localStorage
 export const getUserFromLocalStorage = () => {

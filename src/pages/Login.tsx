@@ -95,6 +95,19 @@ const Login: React.FC = () => {
               </Button>
             </Form.Item>
 
+            <Form.Item>
+              <Button
+                icon={<img src="https://developers.google.com/identity/images/g-logo.png" alt="google" className="w-5 h-5 mr-2" />}
+                block
+                size="large"
+                onClick={() => {
+                  window.location.href = "http://localhost:3000/auth/google";
+                }}
+              >
+                Đăng nhập bằng Google
+              </Button>
+            </Form.Item>
+
             <div className="text-center mb-2">
               <Link to="/forgot-password" className="text-blue-500 hover:underline">
                 Quên mật khẩu?
