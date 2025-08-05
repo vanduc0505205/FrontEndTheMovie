@@ -37,10 +37,11 @@ export default function SelectShowtime() {
   // Lọc các lịch chiếu theo phim hiện tại và sau thời điểm hiện tại
   const filteredShowtimes = useMemo(() => {
     return showtimes.filter(
-      (s) => s.movieId._id === movieId && dayjs(s.startTime).isAfter(now)
+      (s) => s?.movieId?._id === movieId && s?.startTime && dayjs(s.startTime).isAfter(now)
     );
   }, [showtimes, movieId]);
 
+  
   // Nhóm theo ngày
   const groupedByDate = useMemo(() => {
     const map: Record<string, IShowtime[]> = {};
