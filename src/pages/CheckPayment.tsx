@@ -20,7 +20,7 @@ const CheckPayment = () => {
           setTitle("Thanh toán thất bại");
         }
       } catch (error) {
-        console.log(error);
+
       }
     };
     checkPayment();

@@ -59,7 +59,6 @@ export default function SelectShowtime() {
   const [selectedDate, setSelectedDate] = useState(sortedDates[0] || "");
 
   const handleSelectShowtime = (s: IShowtime) => {
-    console.log("Chọn suất chiếu:", s);
 
     navigate(
       `/phim/${s.movieId._id}/selectSeat?roomId=${s.roomId._id}&showtimeId=${s._id}&userId=${user.id}`,

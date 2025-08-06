@@ -133,23 +133,85 @@ export default function MovieList() {
     }
   };
 
-  const handleSubmit = async (data: IMovie) => {
+  const handleSubmit = async (data: any) => {
     setLoading(true);
     try {
+      // Lấy URL banner đầu tiên nếu là mảng, nếu không lấy nguyên giá trị
+      const bannerUrl = Array.isArray(data.banner)
+        ? data.banner[0]
+        : data.banner;
+
+      // Format lại dữ liệu trước khi gửi
+      const formattedData = {
+        title: data.title?.trim(),
+        description: data.description?.trim(),
+        director: data.director?.trim(),
+        language: data.language?.trim(),
+        duration: Number(data.duration) || 0,
+        releaseDate: data.releaseDate
+          ? new Date(data.releaseDate).toISOString()
+          : new Date().toISOString(),
+        categories: Array.isArray(data.categories)
+          ? data.categories.map((c: any) => c?.trim?.() || c).filter(Boolean)
+          : data.categories
+          ? [data.categories].filter(Boolean)
+          : [],
+        actors: (() => {
+          if (Array.isArray(data.actors)) {
+            return data.actors
+              .map((a: any) => a?.trim?.() || a)
+              .filter(Boolean);
+          }
+          if (typeof data.actors === "string") {
+            return data.actors
+              .split(",")
+              .map((a: string) => a.trim())
+              .filter(Boolean);
+          }
+          return [];
+        })(),
+        banner: bannerUrl, // Sử dụng banner dạng string
+        poster: data.poster?.trim() || "",
+        // Loại bỏ trường trailer vì server không chấp nhận
+        status: data.status || "sap_chieu",
+        ageRating: data.ageRating || "P",
+      };
+
+
+      // Kiểm tra dữ liệu bắt buộc
+      if (
+        !formattedData.title ||
+        !formattedData.description ||
+        !formattedData.director ||
+        !formattedData.language ||
+        !formattedData.poster ||
+        !formattedData.banner
+      ) {
+        throw new Error("Vui lòng điền đầy đủ thông tin bắt buộc");
+      }
+
       if (isEditing && selectedMovie) {
         await axios.put(
           `http://localhost:3000/movie/${selectedMovie._id}`,
-          data
+          formattedData
         );
         message.success("Cập nhật thành công");
       } else {
-        await axios.post("http://localhost:3000/movie", data);
+        const response = await axios.post(
+          "http://localhost:3000/movie",
+          formattedData
+        );
         message.success("Thêm phim thành công");
       }
+
       setModalOpen(false);
       fetchMovies();
-    } catch (error) {
-      message.error("Có lỗi xảy ra");
+    } catch (error: any) {
+      console.error("Error details:", error.response?.data || error.message);
+      message.error(
+        error.response?.data?.message ||
+          `Không thể ${isEditing ? "cập nhật" : "thêm"} phim. Vui lòng thử lại.`
+      );
     } finally {
       setLoading(false);
     }
