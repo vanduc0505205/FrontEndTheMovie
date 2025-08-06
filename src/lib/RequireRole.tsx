@@ -18,8 +18,6 @@ const RequireRole: React.FC<RequireRoleProps> = ({ allowedRoles, children }) => 
 
   try {
     const user = JSON.parse(userString);
-    console.log("User role:", user);
-    console.log("Allowed roles:", allowedRoles);
     if (!user?.role || !allowedRoles.includes(user.role.toLowerCase())) {
       message.error("Bạn không có quyền truy cập vào tác vụ này");
       return <Navigate to="/403" state={{ from: location }} replace />;

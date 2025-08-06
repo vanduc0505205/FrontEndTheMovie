@@ -91,12 +91,7 @@ function Checkout() {
     },
   ];
 
-  const handlePayment = async () => {
-    try {
-      const values = await form.validateFields();
-    } catch (error) {
-      return;
-    }
+  const handlePayment = async (values: any) => {
 
     const total = data.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -108,12 +103,12 @@ function Checkout() {
         const res = await axios.post(`http://localhost:3000/create_zalopay_order?amount=${total}`);
         window.location.href = res.data.order_url;
       } else {
-        alert("✅ Đặt hàng thành công với COD!");
+        alert("Đặt hàng thành công với COD!");
         nav("/");
       }
     } catch (error) {
       console.error("Lỗi thanh toán:", error);
-      alert("❌ Thanh toán thất bại");
+      alert("Thanh toán thất bại");
     }
   };
 
@@ -122,13 +117,17 @@ function Checkout() {
       <h1 className={styles['checkout-title']}>Thanh toán</h1>
       <div className={styles['checkout-row']}>
         <div className={styles['checkout-form']}>
-          <Form layout="vertical" form={form}>
+          <Form 
+            layout="vertical" 
+            form={form}
+            onFinish={handlePayment}
+          >
             <Form.Item
               label="Họ và tên"
               name="name"
               rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}
             >
-              <Input />
+              <Input placeholder="Nhập họ và tên" />
             </Form.Item>
 
             <Form.Item
@@ -139,7 +138,7 @@ function Checkout() {
                 { type: 'email', message: 'Email không hợp lệ' },
               ]}
             >
-              <Input type="email" />
+              <Input type="email" placeholder="Nhập email" />
             </Form.Item>
 
             <Form.Item
@@ -153,7 +152,7 @@ function Checkout() {
                 },
               ]}
             >
-              <Input type="number" />
+              <Input type="tel" placeholder="Nhập số điện thoại" />
             </Form.Item>
 
             <Form.Item
@@ -161,7 +160,17 @@ function Checkout() {
               name="address"
               rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
             >
-              <TextArea rows={4} />
+              <TextArea rows={4} placeholder="Nhập địa chỉ nhận hàng" />
+            </Form.Item>
+            
+            <Form.Item>
+              <Button 
+                type="primary" 
+                htmlType="submit"
+                style={{ width: '100%', marginTop: '16px' }}
+              >
+                Thanh toán
+              </Button>
             </Form.Item>
           </Form>
         </div>
@@ -180,9 +189,9 @@ function Checkout() {
               }
             >
               <h3>{movies.title}</h3>
-              <p>⏱ Thời lượng: {movies.duration} phút</p>
-              <p>🎬 Đạo diễn: {movies.director}</p>
-              <p>🔞 Giới hạn tuổi: {movies.ageRating}</p>
+              <p>Thời lượng: {movies.duration} phút</p>
+              <p>Đạo diễn: {movies.director}</p>
+              <p>Giới hạn tuổi: {movies.ageRating}</p>
             </Card>
           )}
 
@@ -208,14 +217,6 @@ function Checkout() {
               {/* <Radio value={"ZALOPAY"}>ZALOPAY</Radio> */}
               {/* <Radio value={"COD"}>Ship COD</Radio> */}
             </Radio.Group>
-
-            <Button
-              onClick={handlePayment}
-              type="primary"
-              style={{ marginTop: 20 }}
-            >
-              Thanh toán
-            </Button>
           </Card>
         </div>
       </div>
