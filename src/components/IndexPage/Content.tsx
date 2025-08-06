@@ -19,7 +19,6 @@ export default function HomePageContent() {
     queryKey: ["movies"],
     queryFn: getAllMovies,
   });
-  console.log(movieList);
 
   const nowShowing = movieList.filter((movie) => movie.status === "dang_chieu");
   const comingSoon = movieList.filter((movie) => movie.status === "sap_chieu");
@@ -172,7 +171,7 @@ export default function HomePageContent() {
                           <img
                             src={slide.image}
                             alt={slide.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                           <div className="absolute inset-0 z-20">
                             <div className="absolute inset-0 flex flex-col justify-end p-6">

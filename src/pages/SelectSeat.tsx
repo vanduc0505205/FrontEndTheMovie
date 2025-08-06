@@ -74,13 +74,13 @@ export default function SeatSelection() {
     </div>
   )
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white rounded-md shadow-lg">
-      <div className="mb-6 text-center font-semibold text-gray-700 tracking-widest">
+    <div className="max-w-5xl mx-auto px-10 py-10 bg-white rounded-md shadow-lg mt-20">
+      <div className="mb-20 text-center font-semibold text-gray-700 tracking-widest">
         MÀN HÌNH
       </div>
       <button
         onClick={() => navigate(-1)}
-        className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
+        className="bg-gray-500 text-white px-4 py-2 rounded mb-10"
       >
         Quay lại
       </button>

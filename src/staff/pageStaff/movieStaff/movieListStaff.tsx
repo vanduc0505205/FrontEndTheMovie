@@ -99,7 +99,7 @@ export default function MovieListStaff() {
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await axios.get("http://localhost:3000/category");
-      console.log("Categories fetched:", res.data.list);
+
       setCategories(res.data.list);
     };
     fetchCategories();

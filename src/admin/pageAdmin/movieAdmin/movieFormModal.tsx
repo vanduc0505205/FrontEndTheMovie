@@ -10,6 +10,7 @@ import {
   Typography,
   message,
   Upload,
+  Button,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -283,27 +284,31 @@ export default function MovieModal({
               )}
 
             <Form.Item name="poster" label="Poster" rules={[{ required: true }]}>
-              <Upload
-                beforeUpload={(file) => handleUpload(file, "poster")}
-                showUploadList={false}
-              >
-                <UploadOutlined /> Tải ảnh poster
-              </Upload>
-              {posterUrl && (
-                <img src={posterUrl} alt="Poster" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
-              )}
+              <div>
+                <Upload
+                  beforeUpload={(file) => handleUpload(file, "poster")}
+                  showUploadList={false}
+                >
+                  <Button icon={<UploadOutlined />}>Tải ảnh poster</Button>
+                </Upload>
+                {posterUrl && (
+                  <img src={posterUrl} alt="Poster" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
+                )}
+              </div>
             </Form.Item>
 
             <Form.Item name="banner" label="Banner" rules={[{ required: true }]}>
-              <Upload
-                beforeUpload={(file) => handleUpload(file, "banner")}
-                showUploadList={false}
-              >
-                <UploadOutlined /> Tải ảnh banner
-              </Upload>
-              {bannerUrl && (
-                <img src={bannerUrl} alt="Banner" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
-              )}
+              <div>
+                <Upload
+                  beforeUpload={(file) => handleUpload(file, "banner")}
+                  showUploadList={false}
+                >
+                  <Button icon={<UploadOutlined />}>Tải ảnh banner</Button>
+                </Upload>
+                {bannerUrl && (
+                  <img src={bannerUrl} alt="Banner" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
+                )}
+              </div>
             </Form.Item>
           </Col>
         </Row>
