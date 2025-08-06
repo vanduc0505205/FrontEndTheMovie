@@ -50,11 +50,6 @@ export default function Checkout() {
   const { userId, showtimeId, seatList, totalPrice, movie } = bookingData;
 
   const handlePayment = async (method: "vnpay" | "cash") => {
-    if (method === "vnpay") {
-      message.warning('Tính năng thanh toán VNPay đang được bảo trì. Vui lòng chọn phương thức thanh toán khác.');
-      return;
-    }
-
     setIsLoading(true);
     try {
       // Validate dữ liệu
@@ -94,25 +89,51 @@ export default function Checkout() {
         headers: res.headers
       });
 
-      // Xử lý kết quả đặt vé thành công
-      message.success({
-        content: (
-          <div>
-            <div className="font-bold text-lg mb-2">Đặt vé thành công!</div>
-            <div className="text-gray-700">
-              <p>Mã đơn hàng: <span className="font-medium">{res.data.booking?._id}</span></p>
-              <p>Tổng tiền: <span className="font-medium">{res.data.booking?.totalPrice?.toLocaleString()} VNĐ</span></p>
-              <p className="mt-2">Vui lòng đến quầy vé thanh toán trước 15 phút khi đến xem phim.</p>
+      // Xử lý thanh toán VNPay
+      if (method === "vnpay" && res.data.booking?._id) {
+        try {
+          // Gọi API tạo URL thanh toán VNPay
+          const vnpayRes = await axios.get(
+            `http://localhost:3000/create_payment?amount=${totalPrice}`,
+            {
+              headers: {
+                'Accept': 'application/json',
+              }
+            }
+          );
+          
+          if (vnpayRes.data?.paymentUrl) {
+            // Chuyển hướng đến cổng thanh toán VNPay
+            window.location.href = vnpayRes.data.paymentUrl;
+            return;
+          } else {
+            throw new Error('Không nhận được URL thanh toán từ VNPay');
+          }
+        } catch (vnpayError: any) {
+          console.error('Lỗi khi tạo URL thanh toán VNPay:', vnpayError);
+          throw new Error('Lỗi khi kết nối với cổng thanh toán VNPay');
+        }
+      } else {
+        // Xử lý thanh toán tiền mặt
+        message.success({
+          content: (
+            <div>
+              <div className="font-bold text-lg mb-2">Đặt vé thành công!</div>
+              <div className="text-gray-700">
+                <p>Mã đơn hàng: <span className="font-medium">{res.data.booking?._id}</span></p>
+                <p>Tổng tiền: <span className="font-medium">{res.data.booking?.totalPrice?.toLocaleString()} VNĐ</span></p>
+                <p className="mt-2">Vui lòng đến quầy vé thanh toán trước 15 phút khi đến xem phim.</p>
+              </div>
             </div>
-          </div>
-        ),
-        duration: 8,
-      });
-      
-      // Chuyển hướng về trang lịch sử đặt vé sau 3 giây
-      setTimeout(() => {
-        navigate("/tickets");
-      }, 3000);  
+          ),
+          duration: 8,
+        });
+        
+        // Chuyển hướng về trang lịch sử đặt vé sau 3 giây
+        setTimeout(() => {
+          navigate("/tickets");
+        }, 3000);
+      }
     } catch (error: any) {
       console.error("Lỗi thanh toán:", error);
       
@@ -251,23 +272,31 @@ export default function Checkout() {
             </button>
             
             <div className="flex flex-col gap-4 mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gray-100 bg-opacity-80 rounded-lg flex items-center justify-center z-10">
-                  <span className="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">Sắp ra mắt</span>
-                </div>
-                <button
-                  disabled={true}
-                  className="w-full flex items-center justify-center gap-2 bg-gray-200 text-gray-500 py-3 px-6 rounded-lg font-semibold cursor-not-allowed opacity-70"
-                >
-                  <img src="https://sandbox.vnpayment.vn/merchant_website/assets/img/logo/logo-vnpay.svg" alt="VNPay" className="h-6 grayscale" />
-                  Thanh toán VNPay (Đang bảo trì)
-                </button>
-              </div>
+              <button
+                onClick={() => handlePayment("vnpay")}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Đang chuyển hướng...
+                  </>
+                ) : (
+                  <>
+                    <img src="https://sandbox.vnpayment.vn/merchant_website/assets/img/logo/logo-vnpay.svg" alt="VNPay" className="h-6" />
+                    Thanh toán VNPay
+                  </>
+                )}
+              </button>
 
               <button
                 onClick={() => handlePayment("cash")}
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>
