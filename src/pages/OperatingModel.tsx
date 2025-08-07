@@ -1,5 +1,5 @@
 
-import Hero from '@/components/IndexPage/Hero'
+import Hero from '@/components/LandingPage/Hero'
 import FarmingMethod from '@/components/OperatingModel/FarmingMethod'
 import Last from '@/components/OperatingModel/Last'
 import RealImage from '@/components/OperatingModel/RealImage'
