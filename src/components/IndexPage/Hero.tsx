@@ -13,9 +13,9 @@ const Hero = () => {
         </img>
       <div className="absolute inset-0 bg-black/30 z-20" />
 
-      <div className="absolute bottom-4 right-0 w-full z-40 text-primary-green-50">
+      <div className="absolute bottom-4 right-0 w-full z-40 text-main-color-50">
         <div className="container text-center md:text-left items-center md:items-start justify-center md:justify-start">
-          <p className="text-2xl font-semibold text-primary-green-100 mb-4 opacity-90 leading-loose">
+          <p className="text-2xl font-semibold text-main-color-100 mb-4 opacity-90 leading-loose">
             Khám phá thế giới điện ảnh đỉnh cao
           </p>
 
