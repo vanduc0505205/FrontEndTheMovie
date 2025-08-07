@@ -4,7 +4,7 @@ import Content from "@/components/IndexPage/Content";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background font-['Archivo']">
+    <div className="min-h-screen bg-[#121212] font-['Archivo']">
       {/* Hero Section */}
       <Hero />
 
