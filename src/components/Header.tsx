@@ -61,7 +61,7 @@ const Header = () => {
             <Button
               variant="secondary"
               size="sm"
-              className="border-2 border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100"
+              className="border-2 border-main-color-100 bg-main-color-400 hover:bg-main-color-300 text-main-color-100"
               onClick={toggleMenu}
             >
               Menu
@@ -80,35 +80,35 @@ const Header = () => {
                 </button>
                 <Link
                   to="/"
-                  className="block text-base text-primary-green-50 mb-4"
+                  className="block text-base text-main-color-50 mb-4"
                   onClick={toggleMenu}
                 >
                   Trang chủ
                 </Link>
                 <Link
                   to="/ve-chung-toi"
-                  className="block text-base text-primary-green-50 mb-4"
+                  className="block text-base text-main-color-50 mb-4"
                   onClick={toggleMenu}
                 >
                   Lịch Chiếu
                 </Link>
                 <Link
                   to="/mo-hinh-van-hanh"
-                  className="block text-base text-primary-green-50 mb-4"
+                  className="block text-base text-main-color-50 mb-4"
                   onClick={toggleMenu}
                 >
                   Tin Tức
                 </Link>
                 <Link
                   to="/cong-nghe"
-                  className="block text-base text-primary-green-50 mb-4"
+                  className="block text-base text-main-color-50 mb-4"
                   onClick={toggleMenu}
                 >
                   Khuyến Mãi
                 </Link>
                 <Link
                   to="/lien-he"
-                  className="block text-base text-primary-green-50 mb-4"
+                  className="block text-base text-main-color-50 mb-4"
                   onClick={toggleMenu}
                 >
                   Liên hệ
@@ -130,7 +130,7 @@ const Header = () => {
                         <Button
                           variant="secondary"
                           size="lg"
-                          className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 w-full"
+                          className="border border-main-color-100 bg-main-color-400 hover:bg-main-color-300 text-main-color-100 w-full"
                         >
                           Đăng nhập
                         </Button>
@@ -139,7 +139,7 @@ const Header = () => {
                         <Button
                           variant="outline"
                           size="lg"
-                          className="border-2 border-primary-green-100 bg-transparent hover:bg-primary-green-100/20 text-primary-green-100 w-full"
+                          className="border-2 border-main-color-100 bg-transparent hover:bg-main-color-100/20 text-main-color-100 w-full"
                         >
                           Đăng ký
                         </Button>
@@ -202,7 +202,7 @@ const Header = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border border-primary-green-100 text-primary-green-100 hover:bg-primary-green-100/10 h-9"
+                        className="border border-main-color-100 text-main-color-100 hover:bg-main-color-100/10 h-9"
                       >
                         <ShoppingCart className="w-4 h-4 mr-1" /> Giỏ hàng
                       </Button>
@@ -216,7 +216,7 @@ const Header = () => {
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+                      className="border border-main-color-100 bg-main-color-400 hover:bg-main-color-300 text-main-color-100 h-9"
                     >
                       Đăng Nhập
                     </Button>
@@ -225,7 +225,7 @@ const Header = () => {
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="border border-primary-green-100 bg-primary-green-400 hover:bg-primary-green-300 text-primary-green-100 h-9"
+                      className="border border-main-color-100 bg-main-color-400 hover:bg-main-color-300 text-main-color-100 h-9"
                     >
                       Đăng ký
                     </Button>

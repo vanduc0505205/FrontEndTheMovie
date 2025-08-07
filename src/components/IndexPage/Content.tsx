@@ -26,7 +26,7 @@ export default function HomePageContent() {
   return (
     <div>
       {isLoading ? (
-        <p className="col-span-full text-center text-primary-green-300">Đang tải phim...</p>
+        <p className="col-span-full text-center text-main-color-300">Đang tải phim...</p>
       ) : isError ? (
         <p className="col-span-full text-center text-red-500">Không thể tải danh sách phim.</p>
       ) : (
@@ -34,7 +34,7 @@ export default function HomePageContent() {
           {/* Hero Section */}
           <section className="pt-20 pb-20 bg-custom-gradient-content">
             <div className="container">
-              <div className="rounded-xl overflow-hidden bg-primary-green-10">
+              <div className="rounded-xl overflow-hidden bg-main-color-10">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                   <div className="order-1 lg:order-1">
                     <img
@@ -44,15 +44,15 @@ export default function HomePageContent() {
                     />
                   </div>
                   <div className="order-2 lg:order-2 space-y-6 px-4 lg:px-0">
-                    <h1 className="text-3xl lg:text-5xl font-bold text-primary-green-200 leading-tight">
+                    <h1 className="text-3xl lg:text-5xl font-bold text-main-color-200 leading-tight">
                       Đặt vé xem phim trực tuyến dễ dàng
                     </h1>
-                    <p className="text-base text-primary-green-400 leading-relaxed pr-6">
+                    <p className="text-base text-main-color-400 leading-relaxed pr-6">
                       Trải nghiệm đặt vé xem phim nhanh chóng, tiện lợi và bảo mật.
                       Khám phá các bộ phim hot nhất, chọn suất chiếu phù hợp và nhận vé
                       ngay trên website!
                     </p>
-                    <ul className="list-disc pl-5 text-primary-green-400 text-sm">
+                    <ul className="list-disc pl-5 text-main-color-400 text-sm">
                       <li>Đặt vé mọi lúc, mọi nơi</li>
                       <li>Thanh toán trực tuyến an toàn</li>
                       <li>Chọn chỗ ngồi yêu thích</li>
@@ -72,7 +72,7 @@ export default function HomePageContent() {
           <section className="py-16 bg-white">
             <div className="container mx-auto px-4">
               <div className="text-left mb-8">
-                <h2 className="text-2xl lg:text-3xl font-bold text-primary-green-300 mb-4">
+                <h2 className="text-2xl lg:text-3xl font-bold text-main-color-300 mb-4">
                   Phim đang chiếu
                 </h2>
               </div>
@@ -81,7 +81,7 @@ export default function HomePageContent() {
                   <Link
                     to={`/phim/${movie._id}`}
                     key={movie._id}
-                    className="bg-primary-green-10 rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition"
+                    className="bg-main-color-10 rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition"
                   >
                     <img
                       src={movie.poster}
@@ -89,10 +89,10 @@ export default function HomePageContent() {
                       className="w-full h-48 object-cover"
                     />
                     <div className="p-3 flex-1 flex flex-col">
-                      <h3 className="font-bold text-base text-primary-green-200 mb-1 line-clamp-2">
+                      <h3 className="font-bold text-base text-main-color-200 mb-1 line-clamp-2">
                         {movie.title}
                       </h3>
-                      <div className="flex flex-col text-xs text-primary-green-400 space-y-1">
+                      <div className="flex flex-col text-xs text-main-color-400 space-y-1">
                         <div className="flex items-center justify-between">
                           <div className="flex flex-wrap gap-1">
                             {movie.categories.map((cat) => (
@@ -111,27 +111,27 @@ export default function HomePageContent() {
           </section>
 
           {/* Phim sắp chiếu */}
-          <section className="py-16 bg-primary-green-50">
+          <section className="py-16 bg-main-color-50">
             <div className="container mx-auto px-4">
               <div className="text-left mb-8">
-                <h2 className="text-2xl lg:text-3xl font-bold text-primary-green-300 mb-4">
+                <h2 className="text-2xl lg:text-3xl font-bold text-main-color-300 mb-4">
                   Phim sắp chiếu
                 </h2>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 {comingSoon.map((movie) => (
                   <Link to={`/phim/${movie._id}`} key={movie._id} className="block">
-                    <div className="bg-primary-green-10 rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition">
+                    <div className="bg-main-color-10 rounded-xl shadow-md overflow-hidden flex flex-col hover:shadow-xl transition">
                       <img
                         src={movie.poster}
                         alt={movie.title}
                         className="w-full h-48 object-cover"
                       />
                       <div className="p-3 flex-1 flex flex-col">
-                        <h3 className="font-bold text-base text-primary-green-200 mb-1 line-clamp-2">
+                        <h3 className="font-bold text-base text-main-color-200 mb-1 line-clamp-2">
                           {movie.title}
                         </h3>
-                        <div className="flex flex-col text-xs text-primary-green-400 space-y-1">
+                        <div className="flex flex-col text-xs text-main-color-400 space-y-1">
                           <div className="flex items-center justify-between">
                             <div className="flex flex-wrap gap-1">
                               {movie.categories.map((cat) => (
@@ -151,13 +151,13 @@ export default function HomePageContent() {
           </section>
 
           {/* Carousel Section */}
-          <section className="py-10 lg:py-20 bg-primary-green-50">
+          <section className="py-10 lg:py-20 bg-main-color-50">
             <div className="mx-auto">
               <div className="text-center mb-16">
-                <h2 className="text-2xl font-bold text-primary-green-300 mb-6">
+                <h2 className="text-2xl font-bold text-main-color-300 mb-6">
                   Công nghệ của ALPHACINEMA
                 </h2>
-                <p className="main-title font-bold text-primary-green-400 mx-auto">
+                <p className="main-title font-bold text-main-color-400 mx-auto">
                   Trải nghiệm điện ảnh đỉnh cao với công nghệ
                 </p>
               </div>
@@ -175,10 +175,10 @@ export default function HomePageContent() {
                           />
                           <div className="absolute inset-0 z-20">
                             <div className="absolute inset-0 flex flex-col justify-end p-6">
-                              <h3 className="text-3xl font-bold text-primary-green-100 mb-3">
+                              <h3 className="text-3xl font-bold text-main-color-100 mb-3">
                                 {slide.title}
                               </h3>
-                              <p className="text-primary-green-50 text-base leading-relaxed">
+                              <p className="text-main-color-50 text-base leading-relaxed">
                                 {slide.desc}
                               </p>
                             </div>
@@ -202,10 +202,10 @@ export default function HomePageContent() {
           <section className="py-16 bg-white">
             <div className="container mx-auto px-4">
               <div className="text-center mb-12">
-                <h2 className="text-2xl lg:text-4xl font-bold text-primary-green-300 mb-4">
+                <h2 className="text-2xl lg:text-4xl font-bold text-main-color-300 mb-4">
                   Tại sao chọn chúng tôi?
                 </h2>
-                <p className="text-primary-green-400 text-base">
+                <p className="text-main-color-400 text-base">
                   Website đặt vé xem phim hàng đầu Việt Nam với trải nghiệm người dùng tuyệt vời.
                 </p>
               </div>
@@ -217,10 +217,10 @@ export default function HomePageContent() {
                 ].map((feature, idx) => (
                   <div
                     key={idx}
-                    className="bg-primary-green-10 rounded-xl p-8 shadow-md text-center"
+                    className="bg-main-color-10 rounded-xl p-8 shadow-md text-center"
                   >
-                    <h3 className="font-bold text-xl text-primary-green-200 mb-2">{feature.title}</h3>
-                    <p className="text-primary-green-400">{feature.desc}</p>
+                    <h3 className="font-bold text-xl text-main-color-200 mb-2">{feature.title}</h3>
+                    <p className="text-main-color-400">{feature.desc}</p>
                   </div>
                 ))}
               </div>
@@ -228,12 +228,12 @@ export default function HomePageContent() {
           </section>
 
           {/* Call to Action Section */}
-          <section className="py-16 bg-primary-green-50">
+          <section className="py-16 bg-main-color-50">
             <div className="container mx-auto text-center">
-              <h2 className="text-2xl lg:text-4xl font-bold text-primary-green-300 mb-6">
+              <h2 className="text-2xl lg:text-4xl font-bold text-main-color-300 mb-6">
                 Sẵn sàng đặt vé xem phim?
               </h2>
-              <p className="text-primary-green-400 text-base mb-8">
+              <p className="text-main-color-400 text-base mb-8">
                 Đăng ký tài khoản ngay để nhận nhiều ưu đãi và trải nghiệm dịch vụ tốt nhất!
               </p>
               <Button className="bg-custom-gradient-button text-white text-xl font-semibold px-8 py-4">
