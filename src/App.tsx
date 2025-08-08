@@ -5,7 +5,6 @@ import SeatList from './admin/pageAdmin/seatAdmin/SeatList'
 import DefaultLayout from './layouts/DefaultLayout'
 import Index from './pages/LandingPage'
 import Contact from './pages/Contact'
-import OperatingModel from './pages/OperatingModel'
 import NotFound from './pages/NotFound'
 import 'antd/dist/reset.css';
 import MovieDetail from './admin/pageAdmin/movieAdmin/movieDetail'

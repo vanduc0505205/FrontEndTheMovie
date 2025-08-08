@@ -198,7 +198,7 @@ const Header = () => {
                         Đăng xuất
                       </Button>
                     </Link>
-                    <Link to="/gio-hang">
+                    {/* <Link to="/gio-hang">
                       <Button
                         variant="outline"
                         size="sm"
@@ -206,7 +206,7 @@ const Header = () => {
                       >
                         <ShoppingCart className="w-4 h-4 mr-1" /> Giỏ hàng
                       </Button>
-                    </Link>
+                    </Link> */}
                   </div>
 
                 </>

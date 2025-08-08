@@ -26,8 +26,8 @@ const Footer = () => {
             </h3>
             <ul className="text-main-color-10/80 space-y-6 text-xl">
               <li className="hover:text-main-color-200 transition-colors cursor-pointer">Trang chủ</li>
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Về Chúng tôi</li>
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Mô hình vận hành</li>
+              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Tin tức</li>
+              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Liên hệ</li>
               <li className="hover:text-main-color-200 transition-colors cursor-pointer">Blog</li>
             </ul>
           </div>
@@ -49,7 +49,7 @@ const Footer = () => {
             </h3>
             <div className="text-xl space-y-6">
               <p className="text-main-color-10/80">
-                <span className="text-main-color-200 font-medium">Địa chỉ:</span> 120 phố A, Phường B, Quận C, Thành phố D, Hà Nội, Việt Nam
+                <span className="text-main-color-200 font-medium">Địa chỉ:</span> số 13, phố Trịnh Văn Bô, Quận Nam Từ Liêm, Hà Nội, Việt Nam
               </p>
               <p className="text-main-color-10/80">
                 <span className="text-main-color-200 font-medium">Số điện thoại:</span> +841-900-247-05

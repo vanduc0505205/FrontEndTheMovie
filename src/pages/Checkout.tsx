@@ -230,195 +230,286 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 flex items-center justify-center py-8 px-4">
-      <div className="max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-blue-600 text-white p-6 text-center">
-          <h1 className="text-2xl font-bold">XÁC NHẬN THANH TOÁN</h1>
-          <p className="text-blue-100 mt-2">
-            Vui lòng kiểm tra kỹ thông tin đặt vé
-          </p>
-        </div>
-
-        <div className="p-6">
-          {movies && (
-            <div className="flex flex-col md:flex-row gap-6 mb-8 p-4 bg-gray-50 rounded-lg">
-              <div className="w-full md:w-48 h-64 md:h-40 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                {movies.poster ? (
-                  <img
-                    src={movies.poster}
-                    alt={movies.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
-                    Không có poster
-                  </div>
-                )}
+    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden pt-20">
+            
+      <div className="relative z-10 flex items-center justify-center py-8 px-4 min-h-screen">
+        <div className="max-w-4xl w-full bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+          
+          {/* Header */}
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 text-center relative">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <h1 className="text-3xl font-bold">XÁC NHẬN THANH TOÁN</h1>
               </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">
-                  {movies.title}
+              <p className="text-red-100 text-lg">
+                Vui lòng kiểm tra kỹ thông tin đặt vé
+              </p>
+            </div>
+          </div>
+
+          <div className="p-8">
+            {/* Movie Information */}
+            {movies && (
+              <div className="mb-8">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <svg className="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+                  </svg>
+                  Thông tin phim
                 </h2>
-                <div className="space-y-1 text-gray-600">
-                  <p>⏱ Thời lượng: {movies.duration} phút</p>
-                  <p>🎬 Đạo diễn: {movies.director || "Đang cập nhật"}</p>
-                  <p>
-                    🔞 Độ tuổi:{" "}
-                    {movies.ageRating || "P - Phim dành cho mọi lứa tuổi"}
-                  </p>
+                <div className="bg-black/20 rounded-xl border border-white/10 p-6">
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    <div className="w-full lg:w-48 h-72 lg:h-64 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 group">
+                      {movies.poster ? (
+                        <img
+                          src={movies.poster}
+                          alt={movies.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-800">
+                          <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-4">
+                      <h3 className="text-2xl font-bold text-white mb-3">
+                        {movies.title}
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3 text-gray-300">
+                            <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/>
+                            </svg>
+                            <span className="text-white font-medium">Thời lượng:</span>
+                            <span>{movies.duration} phút</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-gray-300">
+                            <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                            </svg>
+                            <span className="text-white font-medium">Đạo diễn:</span>
+                            <span>{movies.director || "Đang cập nhật"}</span>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3 text-gray-300">
+                            <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/>
+                            </svg>
+                            <span className="text-white font-medium">Độ tuổi:</span>
+                            <span className="bg-amber-500 text-black px-2 py-1 rounded text-xs font-bold">
+                              {movies.ageRating || "P"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Booking Information */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M22,10V6C22,4.89 21.1,4 20,4H4A2,2 0 0,0 2,6V10C3.11,10 4,10.89 4,12A2,2 0 0,1 2,14V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V14A2,2 0 0,1 20,12A2,2 0 0,1 22,10M13,17.5H11V16H13V17.5M13,14.5H11V9H13V14.5Z"/>
+                </svg>
+                Thông tin đặt vé
+              </h2>
+              <div className="bg-black/20 rounded-xl border border-white/10 p-6">
+                <div className="mb-6">
+                  <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M4,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M4,6V18H11V6H4M20,18V6H18.76C19,6.54 18.95,7.07 18.95,7.13C18.88,7.8 18.41,8.5 18.24,8.75L15.91,11.3L19.23,11.28L19.24,12.5L14.04,12.47L14,11.47C14,11.47 17.05,8.24 17.2,7.95C17.34,7.67 17.91,6 16.5,6C15.27,6.05 15.41,7.3 15.41,7.3L14.5,7.29C14.5,7.29 14.51,5.26 16.5,5.26C18.22,5.26 18.95,6.6 18.95,7.13C18.85,7.49 18.76,7.87 18.73,8.09C18.8,8.05 18.89,8.03 18.95,8H20M8.91,7.26C9.88,7.26 10.73,8.39 10.73,9.25C10.73,10.11 9.88,11.24 8.91,11.24C7.95,11.24 7.1,10.11 7.1,9.25C7.1,8.39 7.95,7.26 8.91,7.26M8.91,8.75C8.57,8.75 8.29,9.08 8.29,9.25C8.29,9.42 8.57,9.75 8.91,9.75C9.26,9.75 9.54,9.42 9.54,9.25C9.54,9.08 9.26,8.75 8.91,8.75Z"/>
+                    </svg>
+                    Ghế đã chọn:
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {seatList.map(
+                      (seat: {
+                        seatId: string;
+                        seatCode: string;
+                        seatType: string;
+                      }) => (
+                        <div
+                          key={seat.seatId}
+                          className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all duration-200 ${
+                            seat.seatType === "VIP"
+                              ? "bg-gradient-to-r from-amber-400 to-amber-500 text-black border-amber-300 shadow-md"
+                              : "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 border-gray-300 shadow-md"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1">
+                            {seat.seatCode} 
+                            <span className="text-xs opacity-75">({seat.seatType})</span>
+                            {seat.seatType === "VIP" && (
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5,16L3,5H1V3H4L6,14L7,18H20V16H8L5,16M19,7V9H17V11H15V9H13V7H15V5H17V7H19Z"/>
+                              </svg>
+                            )}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Total Price */}
+                <div className="flex justify-between items-center pt-4 border-t border-white/20">
+                  <span className="text-xl font-semibold text-white">
+                    Tổng tiền:
+                  </span>
+                  <div className="text-right">
+                    <span className="text-3xl font-bold text-amber-400">
+                      {totalPrice?.toLocaleString()} VNĐ
+                    </span>
+                    <p className="text-sm text-gray-400 mt-1">
+                      {seatList.length} ghế đã chọn
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
 
-          <div className="mb-8 bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Thông tin đặt vé
-            </h3>
+            {/* Payment Buttons */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20,8H4V6C4,4.89 4.89,4 6,4H18A2,2 0 0,1 20,6V8M20,18A2,2 0 0,1 18,20H6C4.89,20 4,19.1 4,18V10H20V18Z"/>
+                </svg>
+                Chọn phương thức thanh toán
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* VNPay Button */}
+                <button
+                  onClick={() => handlePayment("vnpay")}
+                  disabled={isLoading}
+                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-blue-500/25"
+                >
+                  <div className="absolute inset-0 bg-white/20 transform translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                  <div className="relative z-10 flex items-center justify-center gap-3">
+                    {isLoading ? (
+                      <>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        <span>Đang chuyển hướng...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M20,8H4V6C4,4.89 4.89,4 6,4H18A2,2 0 0,1 20,6V8M20,18A2,2 0 0,1 18,20H6C4.89,20 4,19.1 4,18V10H20V18Z"/>
+                        </svg>
+                        <span>Thanh toán VNPay</span>
+                        <span className="text-xs bg-white/20 px-2 py-1 rounded">Nhanh chóng</span>
+                      </>
+                    )}
+                  </div>
+                </button>
 
-            <div className="mb-4">
-              <h4 className="font-medium text-gray-700 mb-2">Ghế đã chọn:</h4>
-              <div className="flex flex-wrap gap-2">
-                {seatList.map(
-                  (seat: {
-                    seatId: string;
-                    seatCode: string;
-                    seatType: string;
-                  }) => (
-                    <div
-                      key={seat.seatId}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        seat.seatType === "VIP"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {seat.seatCode} ({seat.seatType})
-                    </div>
-                  )
-                )}
+                {/* Cash Button */}
+                <button
+                  onClick={() => handlePayment("cash")}
+                  disabled={isLoading}
+                  className="group relative overflow-hidden bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-green-500/25"
+                >
+                  <div className="absolute inset-0 bg-white/20 transform translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                  <div className="relative z-10 flex items-center justify-center gap-3">
+                    {isLoading ? (
+                      <>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        <span>Đang xử lý...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M3,6H21V8H21A2,2 0 0,1 19,10V14A2,2 0 0,1 21,16H21V18H3V16H3A2,2 0 0,1 5,14V10A2,2 0 0,1 3,8V6M12,16A3,3 0 0,0 15,13A3,3 0 0,0 12,10A3,3 0 0,0 9,13A3,3 0 0,0 12,16Z"/>
+                        </svg>
+                        <span>Thanh toán tiền mặt</span>
+                        <span className="text-xs bg-white/20 px-2 py-1 rounded">Tại quầy</span>
+                      </>
+                    )}
+                  </div>
+                </button>
               </div>
-            </div>
 
-            <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-              <span className="text-lg font-semibold text-gray-700">
-                Tổng tiền:
-              </span>
-              <span className="text-2xl font-bold text-blue-600">
-                {totalPrice?.toLocaleString()} VNĐ
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
-            <button
-              onClick={() => navigate(-1)}
-              disabled={isLoading}
-              className="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
-            >
-              Quay lại
-            </button>
-
-            <div className="flex flex-col gap-4 mt-6">
-              <button
-                onClick={() => handlePayment("vnpay")}
-                disabled={isLoading}
-                className="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Đang chuyển hướng...
-                  </>
-                ) : (
-                  <>Thanh toán VNPay</>
-                )}
-              </button>
-
-              <button
-                onClick={() => handlePayment("cash")}
-                disabled={isLoading}
-                className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Đang xử lý...
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                      />
-                    </svg>
-                    Thanh toán tiền mặt
-                  </>
-                )}
-              </button>
-
-              <div className="bg-gray-50 p-4 text-center text-sm text-gray-500 border-t border-gray-200">
-                <p>Vui lòng kiểm tra kỹ thông tin trước khi thanh toán</p>
-                <p className="mt-1">
-                  Mọi thắc mắc vui lòng liên hệ hotline: 1900 1234
-                </p>
+              {/* Back Button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={() => navigate(-1)}
+                  disabled={isLoading}
+                  className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-6 py-3 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                  </svg>
+                  Quay lại chọn ghế
+                </button>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="bg-gray-50 p-4 text-center text-sm text-gray-500 border-t border-gray-200">
-          <p>Vui lòng kiểm tra kỹ thông tin trước khi thanh toán</p>
-          <p className="mt-1">
-            Mọi thắc mắc vui lòng liên hệ hotline: 1900 1234
-          </p>
+          {/* Footer */}
+          <div className="bg-black/30 border-t border-white/10 p-6 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12,2L13.09,8.26L22,9L14.74,15.17L17.18,22L12,17.27L6.82,22L9.26,15.17L2,9L10.91,8.26L12,2Z"/>
+              </svg>
+              <p className="text-gray-300 text-sm font-medium">
+                Vui lòng kiểm tra kỹ thông tin trước khi thanh toán
+              </p>
+            </div>
+            <p className="text-gray-400 text-sm">
+              Mọi thắc mắc vui lòng liên hệ hotline:{" "}
+              <span className="text-red-400 font-semibold">1900 1234</span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
