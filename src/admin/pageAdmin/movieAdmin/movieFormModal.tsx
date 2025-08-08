@@ -309,7 +309,7 @@ export default function MovieModal({
                   <img src={bannerUrl} alt="Banner" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
                 )}
               </div>
-            </Form.Item>
+              </Form.Item>
           </Col>
         </Row>
       </Form>

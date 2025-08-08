@@ -42,6 +42,7 @@ import DashboardAdmin from './admin/pageAdmin/dashboardAdmin/dashboard.admin'
 import PolicyPage from './pages/Policy'
 import Checkout from './pages/Checkout'
 import NewsPage from './pages/NewsPage'
+import DiscountList from './admin/pageAdmin/discountAdmin/discountList'
 
 
 function App() {
@@ -89,6 +90,7 @@ function App() {
         <Route path="cinemas/edit/:id" element={<EditCinema />} />
         <Route path="cinemas/:id" element={<CinemaDetail />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
+        <Route path="discounts" element={<DiscountList />} />
       </Route>
       {/* Giao diện staff */}
       <Route path='staff' element={
