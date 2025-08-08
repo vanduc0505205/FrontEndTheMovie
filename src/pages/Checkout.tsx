@@ -62,24 +62,26 @@ export default function Checkout() {
         throw new Error("Thiếu thông tin đặt vé. Vui lòng thử lại.");
       }
 
+      // Tính lại tổng tiền từ seatList (giá đã đồng bộ)
+      const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
+
       // Chuẩn bị dữ liệu gửi đi
-      const bookingData = {
+      const bookingPayload = {
         userId,
         showtimeId,
-        seatList: seatList.map((seat) => ({
+        seatList: seatList.map((seat: any) => ({
           seatId: seat.seatId,
-          seatType: seat.seatType.toLowerCase(),
-          seatCode: seat.seatCode,
+          seatType: seat.seatType,
+          price: seat.price
         })),
-        paymentMethod: method,
+        totalPrice: total,
+        paymentMethod: method === "vnpay" ? "VNPAY" : "COD"
       };
 
-      console.log("Dữ liệu gửi đi:", JSON.stringify(bookingData, null, 2));
-
-      // Gọi API đặt vé
+      // Gọi API đặt vé mới
       const res = await axios.post(
         "http://localhost:3000/booking/book",
-        bookingData,
+        bookingPayload,
         {
           headers: {
             "Content-Type": "application/json",
@@ -88,18 +90,12 @@ export default function Checkout() {
         }
       );
 
-      console.log("Phản hồi từ server:", {
-        status: res.status,
-        data: res.data,
-        headers: res.headers,
-      });
-
       // Xử lý thanh toán VNPay
       if (method === "vnpay" && res.data.booking?._id) {
         try {
-          // Gọi API tạo URL thanh toán VNPay
+          // Gọi API tạo URL thanh toán VNPay, truyền đúng bookingId
           const vnpayRes = await axios.get(
-            `http://localhost:3000/create_payment?amount=${totalPrice}`,
+            `http://localhost:3000/create_payment?amount=${total}&bookingId=${res.data.booking._id}`,
             {
               headers: {
                 Accept: "application/json",
@@ -108,7 +104,6 @@ export default function Checkout() {
           );
 
           if (vnpayRes.data?.paymentUrl) {
-            // Chuyển hướng đến cổng thanh toán VNPay
             window.location.href = vnpayRes.data.paymentUrl;
             return;
           } else {
@@ -231,7 +226,7 @@ export default function Checkout() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden pt-20">
-            
+
       <div className="relative z-10 flex items-center justify-center py-8 px-4 min-h-screen">
         <div className="max-w-4xl w-full bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
           
@@ -499,7 +494,7 @@ export default function Checkout() {
           <div className="bg-black/30 border-t border-white/10 p-6 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12,2L13.09,8.26L22,9L14.74,15.17L17.18,22L12,17.27L6.82,22L9.26,15.17L2,9L10.91,8.26L12,2Z"/>
+                <path d="M12 1.5L14.76 8.06L22 9.18L16.88 14.12L18.36 21.5L12 17.82L5.64 21.5L7.12 14.12L2 9.18L9.24 8.06L12 1.5Z"/>
               </svg>
               <p className="text-gray-300 text-sm font-medium">
                 Vui lòng kiểm tra kỹ thông tin trước khi thanh toán

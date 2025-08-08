@@ -230,27 +230,17 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
                 {/* Giá vé */}
                 <Form.Item
-                    name="defaultPrice"
-                    label="Giá vé mặc định"
-                    rules={[
-                        { required: true, message: "Vui lòng nhập giá vé" },
-                        {
-                            validator: (_, value) => {
-                                if (value % 1000 !== 0) {
-                                    return Promise.reject("Giá vé phải chia hết cho 1000");
-                                }
-                                return Promise.resolve();
-                            },
-                        },
-                    ]}
-                >
-                    <InputNumber
-                        placeholder="Nhập giá vé"
-                        min={0}
-                        step={1000}
-                        style={{ width: "100%" }}
-                    />
-                </Form.Item>
+  name="defaultPrice"
+  label="Giá vé mặc định"
+  rules={[{ required: true, message: "Vui lòng chọn giá vé" }]}
+>
+  <Select placeholder="Chọn giá vé">
+    <Select.Option value={80000}>80.000 VNĐ</Select.Option>
+    <Select.Option value={100000}>100.000 VNĐ</Select.Option>
+    <Select.Option value={120000}>120.000 VNĐ</Select.Option>
+    <Select.Option value={150000}>150.000 VNĐ</Select.Option>
+  </Select>
+</Form.Item>
 
             </Form>
         </Modal>
