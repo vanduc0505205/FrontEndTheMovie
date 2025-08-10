@@ -23,6 +23,11 @@ const Login: React.FC = () => {
       const data = await res.json();
 
       if (res.ok && data.accessToken) {
+        if (data.user?.status === "blocked") {
+          message.error("Tài khoản của bạn đã bị khóa.");
+          return;
+        }
+
         message.success("Đăng nhập thành công!");
         localStorage.setItem("access_token", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));

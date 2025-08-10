@@ -1,46 +1,44 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import MainLayout from './admin/layoutAdmin/MainLayout'
-import ShowtimeList from './admin/pageAdmin/showtimeAdmin/ShowtimeList'
-import SeatList from './admin/pageAdmin/seatAdmin/SeatList'
+import ShowtimeList from './management/admin/showtimeAdmin/ShowtimeList'
+import SeatList from './management/admin/seatAdmin/SeatList'
 import DefaultLayout from './layouts/DefaultLayout'
 import Index from './pages/LandingPage'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import 'antd/dist/reset.css';
-import MovieDetail from './admin/pageAdmin/movieAdmin/movieDetail'
+import MovieDetail from './management/admin/movieAdmin/movieDetail'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
-import ListCinema from './admin/pageAdmin/cinemaAdmin/CinemaList'
-import AddCinema from './admin/pageAdmin/cinemaAdmin/CinemaAdd'
-import EditCinema from './admin/pageAdmin/cinemaAdmin/CinemaEdit'
-import CinemaDetail from './admin/pageAdmin/cinemaAdmin/CinemaDetail'
-import UserList from './admin/pageAdmin/userAdmin/AccountList'
+import ListCinema from './management/admin/cinemaAdmin/CinemaList'
+import AddCinema from './management/admin/cinemaAdmin/CinemaAdd'
+import EditCinema from './management/admin/cinemaAdmin/CinemaEdit'
+import CinemaDetail from './management/admin/cinemaAdmin/CinemaDetail'
+import UserList from './management/admin/userAdmin/AccountList'
 import SelectSeat from './pages/SelectSeat'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
-import MovieList from './admin/pageAdmin/movieAdmin/movieList'
+import MovieList from './management/admin/movieAdmin/movieList'
 import MovieDetailPage from '@/pages/MovieDetail'
 
 import TicketPrice from './pages/TicketPrice'
-import RoomList from './admin/pageAdmin/roomAdmin/RoomAdmin'
+import RoomList from './management/admin/roomAdmin/RoomAdmin'
 import RequireRole from './lib/RequireRole'
-import StaffMainLayout from './staff/layoutStaff/mainLayout'
 import ForbiddenPage from './pages/403'
-import CinemaDetailStaff from './staff/pageStaff/cinemaStaff/CinemaDetailStaff'
-import CinemaListStaff from './staff/pageStaff/cinemaStaff/cinemaListStaff'
-import MovieDetailStaff from './staff/pageStaff/movieStaff/movieDetailStaff'
-import MovieListStaff from './staff/pageStaff/movieStaff/movieListStaff'
-import EditCinemaStaff from './staff/pageStaff/cinemaStaff/cinemaEditStaff'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import OAuthSuccess from './pages/OAuthSuccess'
-import CategoryAdmin from './admin/pageAdmin/categoryAdmin/category.admin'
-import DashboardAdmin from './admin/pageAdmin/dashboardAdmin/dashboard.admin'
+import CategoryAdmin from './management/admin/categoryAdmin/category.admin'
+import DashboardAdmin from './management/admin/dashboardAdmin/dashboard.admin'
 import PolicyPage from './pages/Policy'
 import Checkout from './pages/Checkout'
 import NewsPage from './pages/NewsPage'
+import DashboardLayout from './management/layouts/DashboardLayout'
+import BookingsPage from './management/staff/bookingStaff/BookingsPage'
+import PaymentsPage from './management/staff/paymentStaff/PaymentsPage'
+import MoviesPage from './management/staff/movieStaff/MoviesPage'
+import ShowtimesPage from './management/staff/showtimeStaff/ShowtimesPage'
 
 
 function App() {
@@ -70,12 +68,15 @@ function App() {
         <Route path="/phim/:id/checkout" element={<Checkout />} />
       </Route>
 
-      {/* Giao diện admin */}
+      {/* Admin layout */}
       <Route path='admin' element={
         <RequireRole allowedRoles={['admin']}>
-          <MainLayout />
+          <DashboardLayout role={'admin'} />
         </RequireRole>
       }>
+        {/* router mặc định */}
+        <Route index element={<DashboardAdmin />} />
+        {/* router chính */}
         <Route path="showtimes" element={<ShowtimeList />} />
         <Route path="seats" element={<SeatList />} />
         <Route path='rooms' element={<RoomList />} />
@@ -89,24 +90,20 @@ function App() {
         <Route path="cinemas/:id" element={<CinemaDetail />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
       </Route>
+
       {/* Giao diện staff */}
       <Route path='staff' element={
-        <RequireRole allowedRoles={['staff', 'admin']}>
-          <StaffMainLayout />
+        <RequireRole allowedRoles={['staff']}>
+          <DashboardLayout role={'staff'} />
         </RequireRole>
-      }
-      >
-        <Route path="showtimes" element={<ShowtimeList />} />
-        <Route path="seats" element={<SeatList />} />
-        <Route path='rooms' element={<RoomList />} />
-        <Route path="movies" element={<MovieListStaff />} />
-        <Route path="movies/:id" element={<MovieDetailStaff />} />
-        <Route path="categories" element={<CategoryAdmin />} />
-        <Route path="cinemas" element={<CinemaListStaff />} />
-        <Route path="cinemas/add" element={<AddCinema />} />
-        <Route path="cinemas/edit/:id" element={<EditCinemaStaff />} />
-        <Route path="cinemas/:id" element={< CinemaDetailStaff />} />
-
+      }>
+        {/* router mặc định */}
+        <Route index element={<BookingsPage />} />
+        {/* router chính */}
+        <Route path="bookings" element={<BookingsPage />} />
+        <Route path="payments" element={<PaymentsPage />} />
+        <Route path="showtimes" element={<ShowtimesPage />} />
+        <Route path="movies" element={<MoviesPage />} />
       </Route>
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
