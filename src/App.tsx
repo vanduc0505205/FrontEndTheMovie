@@ -41,6 +41,9 @@ import DashboardAdmin from './admin/pageAdmin/dashboardAdmin/dashboard.admin'
 import PolicyPage from './pages/Policy'
 import Checkout from './pages/Checkout'
 import NewsPage from './pages/NewsPage'
+import OrderHistoryPage from './pages/OrderHistoryPage'
+
+
 
 
 function App() {
@@ -68,6 +71,8 @@ function App() {
         <Route path="/tin-tuc" element={<NewsPage />} />
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
         <Route path="/phim/:id/checkout" element={<Checkout />} />
+        <Route path="/lichsudatve" element={<OrderHistoryPage />} />
+        
       </Route>
 
       {/* Giao diện admin */}
