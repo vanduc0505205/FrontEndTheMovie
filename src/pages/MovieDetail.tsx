@@ -11,6 +11,10 @@ import { useQuery } from "@tanstack/react-query";
 import MovieTrailer from "@/components/trailer/MovieTrailer";
 
 export default function SelectShowtime() {
+  // Tự động scroll lên đầu trang khi vào chi tiết phim
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const { id: movieId } = useParams();
 
   const navigate = useNavigate();

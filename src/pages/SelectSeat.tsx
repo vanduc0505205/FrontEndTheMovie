@@ -15,10 +15,6 @@ interface Seat {
   type: SeatType;
   status: SeatStatus;
 }
-
-// Đồng bộ giá vé theo suất chiếu
-// Không dùng constant cứng nữa
-
 export default function SeatSelection() {
   const navigate = useNavigate();
   const location = useLocation();

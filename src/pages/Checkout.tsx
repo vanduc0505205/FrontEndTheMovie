@@ -93,7 +93,7 @@ export default function Checkout() {
       // Xử lý thanh toán VNPay
       if (method === "vnpay" && res.data.booking?._id) {
         try {
-          // Gọi API tạo URL thanh toán VNPay, truyền đúng bookingId
+          // Gọi API tạo URL thanh toán VNPay
           const vnpayRes = await axios.get(
             `http://localhost:3000/create_payment?amount=${total}&bookingId=${res.data.booking._id}`,
             {
