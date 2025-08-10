@@ -142,7 +142,7 @@ export default function Checkout() {
 
         // Chuyển hướng về trang lịch sử đặt vé sau 3 giây
         setTimeout(() => {
-          navigate("/tickets");
+          navigate("/lichsudatve");
         }, 3000);
       }
     } catch (error: any) {
