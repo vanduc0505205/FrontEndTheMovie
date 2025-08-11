@@ -15,11 +15,14 @@ const DiscountList = () => {
 
   const fetchDiscounts = async () => {
   setLoading(true);
-  const res = await getAllDiscounts();
-  
-  const safeData = Array.isArray(res.data) ? res.data : [];
-  setDiscounts(safeData);
-  setLoading(false);
+  try {
+    const data = await getAllDiscounts(); 
+    setDiscounts(data);
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách discount:", error);
+  } finally {
+    setLoading(false);
+  }
 };
 
   useEffect(() => {
