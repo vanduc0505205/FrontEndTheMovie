@@ -62,22 +62,22 @@ const ContentContact = () => {
                     <SelectTrigger className="bg-main-color-50 h-12 rounded-none">
                       <SelectValue placeholder="Chọn danh xưng" />
                     </SelectTrigger>
-                    <SelectContent className="">
+                    <SelectContent className="text-white">
                       <SelectItem
                         value="1"
-                        className="h-12 bg-primary-background !hover:bg-main-color-100"
+                        className="h-12 bg-[#e74c3c] !hover:bg-main-color-100"
                       >
                         Ông
                       </SelectItem>
                       <SelectItem
                         value="0"
-                        className="h-12 bg-primary-background !hover:bg-main-color-100"
+                        className="h-12 bg-[#e74c3c] !hover:bg-main-color-100"
                       >
                         Bà
                       </SelectItem>
                       <SelectItem
                         value="2"
-                        className="h-12 bg-primary-background !hover:bg-main-color-100"
+                        className="h-12 bg-[#e74c3c] !hover:bg-main-color-100"
                       >
                         Công ty
                       </SelectItem>
