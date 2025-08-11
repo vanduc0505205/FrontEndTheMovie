@@ -30,10 +30,10 @@ const ContentContact = () => {
           <div className="grid lg:grid-cols-2 gap-10 mb-10 items-stretch">
             <div className="flex flex-col justify-between h-full">
               <div>
-                <h1 className="text-4xl md:text-5xl text-primary-green-100 font-bold mb-6 leading-tight">
+                <h1 className="text-4xl md:text-5xl text-main-color-100 font-bold mb-6 leading-tight">
                   Hãy cùng tạo nên kiệt tác điện ảnh!
                 </h1>
-                <div className="space-y-4 text-sm text-primary-green-50 leading-relaxed">
+                <div className="space-y-4 text-sm text-main-color-50 leading-relaxed">
                   <p>
                     Bạn có ý tưởng phim hay, kịch bản hấp dẫn hay đơn giản là mong muốn
                     hợp tác sản xuất phim chất lượng cao?
@@ -56,28 +56,28 @@ const ContentContact = () => {
             </div>
 
             <div className="flex flex-col justify-center h-full">
-              <form className="space-y-4 text-primary-green-400">
+              <form className="space-y-4 text-main-color-400">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <Select defaultValue="1">
-                    <SelectTrigger className="bg-primary-green-50 h-12 rounded-none">
+                    <SelectTrigger className="bg-main-color-50 h-12 rounded-none">
                       <SelectValue placeholder="Chọn danh xưng" />
                     </SelectTrigger>
                     <SelectContent className="">
                       <SelectItem
                         value="1"
-                        className="h-12 bg-primary-background !hover:bg-primary-green-100"
+                        className="h-12 bg-primary-background !hover:bg-main-color-100"
                       >
                         Ông
                       </SelectItem>
                       <SelectItem
                         value="0"
-                        className="h-12 bg-primary-background !hover:bg-primary-green-100"
+                        className="h-12 bg-primary-background !hover:bg-main-color-100"
                       >
                         Bà
                       </SelectItem>
                       <SelectItem
                         value="2"
-                        className="h-12 bg-primary-background !hover:bg-primary-green-100"
+                        className="h-12 bg-primary-background !hover:bg-main-color-100"
                       >
                         Công ty
                       </SelectItem>
@@ -86,27 +86,27 @@ const ContentContact = () => {
                   <Input
                     type="text"
                     placeholder="Họ và tên *"
-                    className="rounded-none h-12 p-3 bg-primary-green-50 text-sm w-full"
+                    className="rounded-none h-12 p-3 bg-main-color-50 text-sm w-full"
                     required
                   />
                   <Input
                     type="text"
                     placeholder="Số điện thoại *"
-                    className="rounded-none h-12 p-3 bg-primary-green-50 text-sm w-full"
+                    className="rounded-none h-12 p-3 bg-main-color-50 text-sm w-full"
                     required
                   />
 
                   <Input
                     type="email"
                     placeholder="E-Mail *"
-                    className="rounded-none h-12 p-3 bg-primary-green-50 text-sm w-full"
+                    className="rounded-none h-12 p-3 bg-main-color-50 text-sm w-full"
                     required
                   />
                 </div>
 
                 <Textarea
                   placeholder="Nội dung chi tiết về dự án/yêu cầu của bạn *"
-                  className="w-full p-3 rounded-none bg-primary-green-50 text-sm"
+                  className="w-full p-3 rounded-none bg-main-color-50 text-sm"
                   rows={5}
                   required
                 ></Textarea>
@@ -132,23 +132,23 @@ const ContentContact = () => {
             </div>
 
             <div className="lg:p-6 text-white flex flex-col justify-center order-1 lg:order-2">
-              <h3 className="text-4xl font-bold mb-4 text-primary-green-100">
+              <h3 className="text-4xl font-bold mb-4 text-main-color-100">
                 Thông tin liên hệ
               </h3>
               <div className="space-y-2 text-sm sm:text-base">
-                <p className="text-primary-green-50">
+                <p className="text-main-color-50">
                   <strong>Trụ sở chính:</strong> Tòa nhà Alpha, Số 1 Lương Yên, Quận Hai Bà Trưng, Hà Nội
                 </p>
-                <p className="text-primary-green-50">
+                <p className="text-main-color-50">
                   <strong>Văn phòng đại diện:</strong> Tầng 10, Tòa nhà Bitexco, 2 Hải Triều, Quận 1, TP.HCM
                 </p>
-                <p className="text-primary-green-50">
+                <p className="text-main-color-50">
                   <strong>Điện thoại:</strong> +84 24 7300 5555 - Ext: 1234
                 </p>
-                <p className="text-primary-green-50">
+                <p className="text-main-color-50">
                   <strong>Email:</strong> info@alphacinema.vn
                 </p>
-                <p className="text-primary-green-50">
+                <p className="text-main-color-50">
                   <strong>Giờ làm việc:</strong> Thứ 2 - Thứ 6: 8:30 - 18:00
                 </p>
               </div>

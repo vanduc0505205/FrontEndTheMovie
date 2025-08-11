@@ -11,13 +11,13 @@ import {
   message,
   Upload,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { movieSchema } from "@/validations/movie.schema";
 import { IMovie } from "@/types/movie";
 import { getCategories } from "@/api/category.api";
 import { getAllMovies } from "@/api/movie.api";
-import { RcFile } from "antd/es/upload";
+import { RcFile, UploadFile } from "antd/es/upload";
+import ImgCrop from "antd-img-crop";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -45,8 +45,10 @@ export default function MovieModal({
   form,
 }: MovieModalProps) {
   const [categories, setCategories] = useState<any[]>([]);
-  const [posterUrl, setPosterUrl] = useState<string>("");
-  const [bannerUrl, setBannerUrl] = useState<string>("");
+  const [posterFileList, setPosterFileList] = useState<UploadFile[]>([]);
+  const [bannerFileList, setBannerFileList] = useState<UploadFile[]>([]);
+  const [posterUrl, setPosterUrl] = useState("");
+  const [bannerUrl, setBannerUrl] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -74,19 +76,44 @@ export default function MovieModal({
           ? initialValues.banner[0]
           : initialValues.banner || "",
       });
+
+      if (initialValues.poster) {
+        setPosterFileList([
+          {
+            uid: "-1",
+            name: "poster.png",
+            status: "done",
+            url: initialValues.poster,
+          },
+        ]);
+        setPosterUrl(initialValues.poster);
+      }
+
+      if (initialValues.banner) {
+        const banner = Array.isArray(initialValues.banner)
+          ? initialValues.banner[0]
+          : initialValues.banner;
+        setBannerFileList([
+          {
+            uid: "-2",
+            name: "banner.png",
+            status: "done",
+            url: banner,
+          },
+        ]);
+        setBannerUrl(banner);
+      }
     }
   }, [initialValues, form]);
 
   useEffect(() => {
-    if (open) {
-      setPosterUrl(initialValues?.poster || "");
-      setBannerUrl(
-        Array.isArray(initialValues?.banner)
-          ? initialValues?.banner[0]
-          : initialValues?.banner || ""
-      );
+    if (!open) {
+      setPosterFileList([]);
+      setBannerFileList([]);
+      setPosterUrl("");
+      setBannerUrl("");
     }
-  }, [open, initialValues]);
+  }, [open]);
 
   const handleUpload = async (file: RcFile, type: "poster" | "banner") => {
     const formData = new FormData();
@@ -101,9 +128,25 @@ export default function MovieModal({
       if (res.ok) {
         if (type === "poster") {
           setPosterUrl(data.url);
+          setPosterFileList([
+            {
+              uid: file.uid,
+              name: file.name,
+              status: "done",
+              url: data.url,
+            },
+          ]);
           form.setFieldsValue({ poster: data.url });
         } else {
           setBannerUrl(data.url);
+          setBannerFileList([
+            {
+              uid: file.uid,
+              name: file.name,
+              status: "done",
+              url: data.url,
+            },
+          ]);
           form.setFieldsValue({ banner: data.url });
         }
         message.success("Tải ảnh lên thành công!");
@@ -115,6 +158,22 @@ export default function MovieModal({
     }
 
     return false;
+  };
+
+  // Preview ảnh khi click
+  const handlePreview = async (file: UploadFile) => {
+    let src = file.url || file.preview;
+    if (!src && file.originFileObj) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj as RcFile);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new Image();
+    image.src = src as string;
+    const imgWindow = window.open(src);
+    if (imgWindow) imgWindow.document.write(image.outerHTML);
   };
 
   const handleFinish = async (values: any) => {
@@ -131,8 +190,8 @@ export default function MovieModal({
           values.categories?.map((c: string) => c.trim()).filter(Boolean) || [],
         poster: posterUrl || values.poster || "",
         banner: bannerUrl || values.banner || "",
-
       };
+
       if (!isEditing) {
         const now = dayjs().startOf("day");
         if (dayjs(formatted.releaseDate).isBefore(now)) {
@@ -157,7 +216,7 @@ export default function MovieModal({
         return Modal.error({ title: "Lỗi xác thực", content: errors });
       }
 
-      onSubmit(result.data as unknown as IMovie);
+      onSubmit(result.data as IMovie);
       if (onSuccess) onSuccess();
       form.resetFields();
       onClose();
@@ -205,11 +264,7 @@ export default function MovieModal({
               <Input type="number" />
             </Form.Item>
 
-            <Form.Item
-              name="releaseDate"
-              label="Ngày khởi chiếu"
-              rules={[{ required: true }]}
-            >
+            <Form.Item name="releaseDate" label="Ngày khởi chiếu" rules={[{ required: true }]}>
               <DatePicker
                 style={{ width: "100%" }}
                 disabledDate={(current) => current && current < dayjs().startOf("day")}
@@ -220,7 +275,11 @@ export default function MovieModal({
               <Input />
             </Form.Item>
 
-            <Form.Item name="actors" label="Diễn viên (cách nhau bởi dấu phẩy)" rules={[{ required: true }]}>
+            <Form.Item
+              name="actors"
+              label="Diễn viên (cách nhau bởi dấu phẩy)"
+              rules={[{ required: true }]}
+            >
               <Input />
             </Form.Item>
 
@@ -284,27 +343,53 @@ export default function MovieModal({
               )}
 
             <Form.Item name="poster" label="Poster" rules={[{ required: true }]}>
-              <Upload
-                beforeUpload={(file) => handleUpload(file, "poster")}
-                showUploadList={false}
+              <ImgCrop
+                rotate
+                aspect={2 / 3}
+                modalTitle="Cắt ảnh Poster (tỉ lệ 2:3)"
+                quality={1}
               >
-                <UploadOutlined /> Tải ảnh poster
-              </Upload>
-              {posterUrl && (
-                <img src={posterUrl} alt="Poster" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
-              )}
+                <Upload
+                  listType="picture-card"
+                  fileList={posterFileList}
+                  onChange={({ fileList }) => setPosterFileList(fileList)}
+                  onRemove={() => {
+                    setPosterFileList([]);
+                    setPosterUrl("");
+                    form.setFieldsValue({ poster: "" });
+                  }}
+                  beforeUpload={(file) => handleUpload(file, "poster")}
+                  maxCount={1}
+                  onPreview={handlePreview}
+                >
+                  {posterFileList.length >= 1 ? null : "+ Upload"}
+                </Upload>
+              </ImgCrop>
             </Form.Item>
 
             <Form.Item name="banner" label="Banner" rules={[{ required: true }]}>
-              <Upload
-                beforeUpload={(file) => handleUpload(file, "banner")}
-                showUploadList={false}
+              <ImgCrop
+                rotate
+                aspect={16 / 9}
+                modalTitle="Cắt ảnh Banner (tỉ lệ 16:9)"
+                quality={1}
               >
-                <UploadOutlined /> Tải ảnh banner
-              </Upload>
-              {bannerUrl && (
-                <img src={bannerUrl} alt="Banner" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
-              )}
+                <Upload
+                  listType="picture-card"
+                  fileList={bannerFileList}
+                  onChange={({ fileList }) => setBannerFileList(fileList)}
+                  onRemove={() => {
+                    setBannerFileList([]);
+                    setBannerUrl("");
+                    form.setFieldsValue({ banner: "" });
+                  }}
+                  beforeUpload={(file) => handleUpload(file, "banner")}
+                  maxCount={1}
+                  onPreview={handlePreview}
+                >
+                  {bannerFileList.length >= 1 ? null : "+ Upload"}
+                </Upload>
+              </ImgCrop>
             </Form.Item>
           </Col>
         </Row>

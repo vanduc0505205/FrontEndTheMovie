@@ -24,13 +24,13 @@ export default {
       colors: {
         // --- Bảng màu đã được thay đổi sang tông ĐỎ ĐEN ---
         "primary-background": "#0D0D0D",         // nền chính (gần đen)
-        "primary-green-10": "#FFFFFF",           // hơi sáng hơn nền
-        "primary-green-50": "#FFFFFF",           // dùng cho section
-        "primary-green-100": "#FFFFFF",          // đỏ rất tối
-        "primary-green-150": "#8B0000",          // đỏ đậm (điểm nhấn)
-        "primary-green-200": "#CC0000",          // đỏ tươi (nút CTA)
-        "primary-green-300": "#990000",          // đỏ trung bình
-        "primary-green-400": "#4D0000", 
+        "main-color-10": "#FFFFFF",           // hơi sáng hơn nền
+        "main-color-50": "#FFFFFF",           // dùng cho section
+        "main-color-100": "#FFFFFF",          // đỏ rất tối
+        "main-color-150": "#8B0000",          // đỏ đậm (điểm nhấn)
+        "main-color-200": "#CC0000",          // đỏ tươi (nút CTA)
+        "main-color-300": "#990000",          // đỏ trung bình
+        "main-color-400": "#4D0000", 
         // ---------------------------------------------------
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -105,5 +105,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // plugins: [require("tailwindcss-animate")],
 } satisfies Config;
