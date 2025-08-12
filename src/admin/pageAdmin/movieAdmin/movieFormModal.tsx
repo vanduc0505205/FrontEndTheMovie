@@ -388,16 +388,8 @@ export default function MovieModal({
                 >
                   {bannerFileList.length >= 1 ? null : "+ Upload"}
                 </Upload>
-<<<<<<< HEAD
-                {bannerUrl && (
-                  <img src={bannerUrl} alt="Banner" style={{ width: "100%", marginTop: 8, borderRadius: 8 }} />
-                )}
-              </div>
-              </Form.Item>
-=======
               </ImgCrop>
             </Form.Item>
->>>>>>> f93393dc687d19894ad254ecae0de69a4d1b586a
           </Col>
         </Row>
       </Form>
