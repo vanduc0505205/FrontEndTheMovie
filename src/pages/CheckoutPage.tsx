@@ -28,16 +28,12 @@ function Checkout() {
 
   const { seatList, totalPrice, movie } = bookingData;
 
-  const priceMap = {
-    NORMAL: 100000,
-    VIP: 150000,
-  };
-
+    // Đảm bảo giá vé lấy từ seat.price đã truyền từ bước chọn ghế
   const [data, setData] = useState(
     seatList.map((seat: any, index: number) => ({
       key: index + 1,
       name: `Ghế ${seat.seatCode || seat.seatId}`,
-      price: priceMap[seat.seatType || "NORMAL"],
+      price: seat.price,
       quantity: 1,
     }))
   );
@@ -92,23 +88,32 @@ function Checkout() {
   ];
 
   const handlePayment = async (values: any) => {
-
-    const total = data.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // Tính lại tổng tiền từ seatList (đã có price chuẩn)
+    const total = bookingData.seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
 
     try {
+      // Gửi thông tin booking lên backend trước khi thanh toán
+      const bookingResponse = await axios.post('http://localhost:3000/api/bookings', {
+        ...bookingData,
+        ...values,
+        totalPrice: total,
+        seatList: bookingData.seatList.map((seat: any) => ({
+          seatId: seat.seatId,
+          seatType: seat.seatType,
+          price: seat.price
+        }))
+      });
+
       if (paymentMethod === "VNPAY") {
-        const res = await axios.get(`http://localhost:3000/create_payment?amount=${total}`);
+        const res = await axios.get(`http://localhost:3000/create_payment?amount=${total}&bookingId=${bookingResponse.data.booking._id}`);
         window.location.href = res.data.paymentUrl;
-      } else if (paymentMethod === "ZALOPAY") {
-        const res = await axios.post(`http://localhost:3000/create_zalopay_order?amount=${total}`);
-        window.location.href = res.data.order_url;
       } else {
-        alert("Đặt hàng thành công với COD!");
-        nav("/");
+        alert("Đặt vé thành công!");
+        nav("/tickets");
       }
     } catch (error) {
       console.error("Lỗi thanh toán:", error);
-      alert("Thanh toán thất bại");
+      alert("Đặt vé thất bại. Vui lòng thử lại sau.");
     }
   };
 
