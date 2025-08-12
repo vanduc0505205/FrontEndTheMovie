@@ -1,17 +1,14 @@
-// Interface Discount theo schema mongoose bạn cho
 export interface IDiscount {
   _id: string;
   code: string;
   description?: string;
-  type: "percent" | "amount";
-  value: number;
-  maxDiscount?: number | null;
-  quantity?: number;
-  usedCount?: number;
-  startDate?: string; // ISO string date
-  endDate?: string;
+  value: number;               // số tiền giảm trực tiếp (VNĐ)
+  quantity?: number;           // tổng số lượt được sử dụng (null/undefined = không giới hạn)
+  usedCount?: number;          // số lượt đã sử dụng
+  startDate?: string;          // ISO date string
+  endDate?: string;            // ISO date string
   isActive?: boolean;
-  allowedDays?: number[]; // ví dụ: [0,6]
+  allowedDays?: number[];      // ví dụ: [0,6] (Chủ nhật = 0, Thứ 7 = 6)
   createdAt?: string;
   updatedAt?: string;
 }

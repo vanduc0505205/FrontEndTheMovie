@@ -6,7 +6,6 @@ import {
   Modal,
   DatePicker,
   Switch,
-  Select,
   Checkbox,
   Row,
   Col,
@@ -30,25 +29,36 @@ const dayOptions = [
 const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [originalData, setOriginalData] = useState(null);
 
+  // Khi initialValues thay đổi (edit mode) → lưu bản gốc
   useEffect(() => {
     if (initialValues) {
-      const values = { ...initialValues };
-      if (initialValues.startDate && initialValues.endDate) {
-        values.dateRange = [
-          dayjs(initialValues.startDate),
-          dayjs(initialValues.endDate),
-        ];
-      }
-      form.setFieldsValue(values);
+      const data = {
+        ...initialValues,
+        dateRange:
+          initialValues.startDate && initialValues.endDate
+            ? [dayjs(initialValues.startDate), dayjs(initialValues.endDate)]
+            : [],
+      };
+      setOriginalData(data);
+      form.setFieldsValue(data);
     } else {
+      setOriginalData(null);
       form.resetFields();
-      form.setFieldsValue({ isActive: true });
+      form.setFieldsValue({ isActive: true, allowedDays: [] });
     }
   }, [initialValues, form]);
 
   const handleCancel = () => {
-    form.resetFields();
+    if (originalData) {
+      // Edit mode → trả về dữ liệu gốc
+      form.setFieldsValue(originalData);
+    } else {
+      // Create mode → reset rỗng
+      form.resetFields();
+      form.setFieldsValue({ isActive: true, allowedDays: [] });
+    }
     onClose();
   };
 
@@ -56,10 +66,12 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
     try {
       setLoading(true);
       const { dateRange, ...rest } = values;
+
       const payload = {
         ...rest,
-        startDate: dateRange?.[0]?.toISOString() || null,
-        endDate: dateRange?.[1]?.toISOString() || null,
+        value: Number(rest.value),
+        startDate: dateRange?.[0]?.toISOString(),
+        endDate: dateRange?.[1]?.toISOString(),
       };
 
       if (initialValues) {
@@ -93,8 +105,8 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
       title={initialValues ? "Chỉnh sửa mã giảm giá" : "Thêm mã giảm giá"}
       okText={initialValues ? "Cập nhật" : "Tạo mới"}
       confirmLoading={loading}
-      destroyOnClose
-      width={800} // tăng chiều rộng modal để đủ 2 cột
+      destroyOnClose={false} // để giữ lại form khi đóng
+      width={800}
     >
       <Form layout="vertical" form={form} onFinish={handleFinish}>
         <Row gutter={16}>
@@ -108,36 +120,16 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
             </Form.Item>
 
             <Form.Item
-              name="type"
-              label="Loại giảm"
-              rules={[{ required: true, message: "Chọn loại giảm giá" }]}
-            >
-              <Select>
-                <Select.Option value="percent">Theo phần trăm (%)</Select.Option>
-                <Select.Option value="amount">Theo số tiền (₫)</Select.Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label="Giá trị"
+              label="Số tiền giảm (₫)"
               name="value"
               rules={[
-                { required: true, type: "number", min: 0, message: "Vui lòng nhập giá trị" },
+                {
+                  required: true,
+                  type: "number",
+                  min: 0,
+                  message: "Vui lòng nhập số tiền giảm hợp lệ",
+                },
               ]}
-            >
-              <InputNumber
-                style={{ width: "100%" }}
-                min={0}
-                step={form.getFieldValue("type") === "percent" ? 1 : 10000}
-                formatter={numberFormatter}
-                parser={numberParser}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Số tiền tối đa được giảm (nếu là %)"
-              name="maxDiscount"
-              rules={[{ type: "number", min: 0, message: "Không được âm" }]}
             >
               <InputNumber
                 style={{ width: "100%" }}
@@ -145,23 +137,25 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
                 step={10000}
                 formatter={numberFormatter}
                 parser={numberParser}
-                onChange={(value) => {
-                  form.setFieldsValue({ maxDiscount: value === null ? undefined : value });
-                }}
               />
+            </Form.Item>
+
+            <Form.Item
+              name="quantity"
+              label="Số lượt sử dụng"
+              tooltip="Để trống = không giới hạn"
+              rules={[{ type: "number", min: 1, message: "Số lượt phải >= 1" }]}
+            >
+              <InputNumber min={1} style={{ width: "100%" }} />
             </Form.Item>
           </Col>
 
           <Col span={12}>
             <Form.Item
-              name="quantity"
-              label="Số lượt sử dụng (để trống = không giới hạn)"
-              rules={[{ type: "number", min: 1, message: "Số lượt phải >= 1" }]}
+              name="dateRange"
+              label="Thời gian áp dụng"
+              rules={[{ required: true, message: "Vui lòng chọn thời gian áp dụng" }]}
             >
-              <InputNumber min={1} style={{ width: "100%" }} />
-            </Form.Item>
-
-            <Form.Item name="dateRange" label="Thời gian áp dụng">
               <RangePicker
                 showTime
                 format="DD/MM/YYYY HH:mm"

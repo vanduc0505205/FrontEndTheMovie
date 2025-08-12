@@ -49,3 +49,5 @@ export const applyDiscount = async (
   const res = await axios.post("http://localhost:3000/discount/apply", data);
   return res.data;
 };
+
+export type { IDiscount };
