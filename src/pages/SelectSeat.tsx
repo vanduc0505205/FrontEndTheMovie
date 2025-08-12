@@ -26,7 +26,7 @@ export default function SeatSelection() {
   const userId = searchParams.get("userId");
 
   const { movie, showtime } = location.state || {};
-  const actualRoomId = roomId || "688b9c84554800b4468c61ef";
+  const actualRoomId = roomId || showtime?.roomId._id;
 
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -91,8 +91,6 @@ export default function SeatSelection() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden">
-      {/* Background overlay */}
-      {/* <div className="absolute inset-0 bg-black/20"></div> */}
 
       <div className="relative z-10 px-4 py-8 min-h-screen">
         <div className="max-w-6xl mx-auto">
@@ -132,7 +130,7 @@ export default function SeatSelection() {
                         <div className="flex items-center gap-1">
                           <Monitor size={14} className="text-red-400" />
                           <span>
-                            Phòng {showtime.roomId?.roomName || "N/A"}
+                            Phòng {showtime.roomId?.name || "N/A"}
                           </span>
                         </div>
                       </div>
