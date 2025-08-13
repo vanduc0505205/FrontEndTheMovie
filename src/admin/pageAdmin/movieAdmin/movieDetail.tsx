@@ -24,6 +24,9 @@ const statusMap: Record<IMovie["status"], { label: string; color: string }> = {
 
 function getYoutubeEmbedUrl(url: string): string {
   if (!url) return "";
+  if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+    return `https://www.youtube.com/embed/${url}`;
+  }
   try {
     const youtubeRegex =
       /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -197,15 +200,7 @@ export default function MovieDetail() {
               />
             </div>
           </Modal>
-                <Button
-        type="primary"
-        size="large"
-        style={{ marginTop: 20 }}
-        onClick={() => navigate("/selectSeat", { state: { movieId: movie._id ,movie} })}
-      >
-        🎟️ Đặt vé ngay
-      </Button>
-          {movie.banner?.length > 0 && (
+          {Array.isArray(movie.banner) && movie.banner.length > 0 && (
             <>
               <Paragraph strong style={{ marginTop: 24 }}>Banner:</Paragraph>
               <div className="flex flex-wrap gap-2">

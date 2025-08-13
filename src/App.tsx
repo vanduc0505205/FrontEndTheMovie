@@ -43,6 +43,7 @@ import Checkout from './pages/Checkout'
 import NewsPage from './pages/NewsPage'
 import OrderHistoryPage from './pages/OrderHistoryPage'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
+import DiscountList from './admin/pageAdmin/discountAdmin/discountList'
 
 
 
@@ -55,17 +56,15 @@ function App() {
         <Route index element={<Index />} />
         {/* chi tiết */}
         <Route path="/phim/:id" element={<MovieDetailPage />} />
-        {/* <Route path="/ve-chung-toi" element={<AboutUs />} /> */}
         <Route path="/lien-he" element={<Contact />} />
-        {/* <Route path="/mo-hinh-van-hanh" element={<OperatingModel />} /> */}
         <Route path="/ticket-price" element={<TicketPrice />} />
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
         <Route path="/phim/:id/selectSeat" element={<SelectSeat />} />
         <Route path="/gio-hang" element={<CartPage />} />
-        {/* <Route path="/phim/:id/thanh-toan" element={<CheckoutPage />} />
-        <Route path="/payment-result" element={<CheckPayment />} /> */}
+        {/* <Route path="/phim/:id/thanh-toan" element={<CheckoutPage />} /> */}
+        <Route path="/payment-result" element={<CheckPayment />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
@@ -94,7 +93,11 @@ function App() {
         <Route path="cinemas/edit/:id" element={<EditCinema />} />
         <Route path="cinemas/:id" element={<CinemaDetail />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
+<<<<<<< HEAD
         <Route path="bookings" element={<BookingAdmin />} />
+=======
+        <Route path="discounts" element={<DiscountList />} />
+>>>>>>> 75db18625dd4d27bf6dbe83872191c0a3335d880
       </Route>
       {/* Giao diện staff */}
       <Route path='staff' element={
