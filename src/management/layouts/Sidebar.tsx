@@ -6,6 +6,7 @@ import {
   HomeOutlined,
   TeamOutlined,
   DollarOutlined,
+  InsertRowAboveOutlined,
 } from '@ant-design/icons';
 import clsx from 'clsx';
 
@@ -25,6 +26,7 @@ const navItemsStaff = [
   { label: 'Thanh toán', path: 'payments', icon: <DollarOutlined /> },
   { label: 'Lịch chiếu', path: 'showtimes', icon: <VideoCameraOutlined /> },
   { label: 'Phim', path: 'movies', icon: <VideoCameraOutlined /> },
+  { label: 'Phòng chiếu', path: 'rooms', icon: <InsertRowAboveOutlined /> },
 ];
 
 export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {

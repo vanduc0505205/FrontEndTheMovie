@@ -1,23 +1,23 @@
-import axios from 'axios';
+import axiosInstance from '@/lib/authService';
 import { IUser } from '@/types/user';
 
 export const getAllUsers = async (): Promise<{ users: IUser[] }> => {
-  const res = await axios.get('http://localhost:3000/user/getAllUsers');
+  const res = await axiosInstance.get('/user/getAllUsers');
   return res.data;
 };
 
 export const createUser = async (user: Partial<IUser>) => {
-  return axios.post('http://localhost:3000/user', user);
+  return axiosInstance.post('/user', user);
 };
 
 export const updateUser = async (id: string, user: Partial<IUser>) => {
-  return axios.put(`http://localhost:3000/user/${id}`, user);
+  return axiosInstance.put(`/user/${id}`, user);
 };
 
 export const deleteUser = async (id: string) => {
-  return axios.delete(`http://localhost:3000/user/${id}`);
+  return axiosInstance.delete(`/user/${id}`);
 };
 
 export const toggleUserStatus = async (id: string, status: 'active' | 'blocked') => {
-  return axios.patch(`http://localhost:3000/user/${id}/status`, { status });
+  return axiosInstance.patch(`/user/${id}/status`, { status });
 };
