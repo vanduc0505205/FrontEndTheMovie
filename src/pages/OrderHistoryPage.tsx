@@ -43,10 +43,10 @@ const OrderHistoryPage = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`http://localhost:3000/booking/user/${userId}`);
+     const res = await fetch(`http://localhost:3000/booking/user/${userId}`);
+const json = await res.json();
+const raw = json?.bookings ?? json ?? [];
 
-      
-        const raw = res.data?.bookings ?? res.data ?? [];
 
         
         const normalized = raw.map((b) => {

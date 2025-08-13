@@ -93,11 +93,7 @@ function App() {
         <Route path="cinemas/edit/:id" element={<EditCinema />} />
         <Route path="cinemas/:id" element={<CinemaDetail />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
-<<<<<<< HEAD
         <Route path="bookings" element={<BookingAdmin />} />
-=======
-        <Route path="discounts" element={<DiscountList />} />
->>>>>>> 75db18625dd4d27bf6dbe83872191c0a3335d880
       </Route>
       {/* Giao diện staff */}
       <Route path='staff' element={
