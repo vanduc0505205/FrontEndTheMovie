@@ -4,18 +4,13 @@ import { Table, Spin, message } from "antd";
 import axios from "axios";
 
 
-/**
- * OrderHistoryPage
- * - Gọi: GET http://localhost:3000/booking/user/:userId
- * - Kỳ vọng response: { bookings: [...] } hoặc [...] (mảng)
- * - Lưu ý: user có thể được lưu vào localStorage dưới key "user" (object) hoặc "userId" (string)
- */
+
 
 const OrderHistoryPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Lấy userId từ localStorage - xử lý nhiều trường hợp (user object hoặc chỉ id)
+
   const getUserIdFromStorage = () => {
     const rawUser = localStorage.getItem("user");
     const rawUserId = localStorage.getItem("userId");
@@ -27,7 +22,7 @@ const OrderHistoryPage = () => {
       const parsed = JSON.parse(rawUser);
       return parsed?._id || parsed?.id || null;
     } catch {
-      // rawUser không phải JSON, có thể trực tiếp là id string
+     
       return rawUser;
     }
   };
@@ -49,19 +44,19 @@ const OrderHistoryPage = () => {
           `http://localhost:3000/booking/user/${userId}`
         );
 
-        // Hỗ trợ cả 2 kiểu response: { bookings: [...] } hoặc [...]
+      
         const raw = res.data?.bookings ?? res.data ?? [];
 
-        // Chuẩn hoá dữ liệu để hiển thị
+        
         const normalized = raw.map((b) => {
-          // Xử lý ghế: chỉ hiển thị seatCode hoặc name, bỏ qua ObjectId
+        
           const seatsArr = (b.seatList ?? [])
             .map((s) => {
               if (!s) return "";
               if (typeof s.seatId === "object") {
                 return s.seatId?.seatCode || s.seatId?.name || "";
               }
-              // Nếu là string (ObjectId) thì bỏ qua
+            
               return "";
             })
             .filter((seat) => seat); // bỏ ghế rỗng

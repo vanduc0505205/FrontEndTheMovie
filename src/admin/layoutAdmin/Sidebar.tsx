@@ -5,6 +5,7 @@ import {
   PictureOutlined,
   HomeOutlined,
   TeamOutlined,
+  ShoppingCartOutlined,
 } from '@ant-design/icons';
 import clsx from 'clsx';
 
@@ -17,6 +18,8 @@ const navItems = [
   { label: 'Ghế', path: 'seats', icon: <AppstoreOutlined /> },
   { label: 'Phòng', path: 'rooms', icon: <PictureOutlined /> },
   { label: 'Tài khoản', path: 'users', icon: <TeamOutlined /> },
+  { label: 'Quản lý đơn hàng', path: 'bookings', icon: <ShoppingCartOutlined /> },
+
 ];
 
 export default function Sidebar() {
