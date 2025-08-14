@@ -107,7 +107,7 @@ const data3D = [
 
 export default function TicketPrice() {
   return (
-    <div className="p-6 space-y-10">
+    <div className="p-6 py-20">
       <div>
         <h1 className="text-3xl font-bold mb-4">Bảng giá vé 2D</h1>
         <Table

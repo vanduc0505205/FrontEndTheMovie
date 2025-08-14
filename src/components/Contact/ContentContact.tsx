@@ -62,22 +62,22 @@ const ContentContact = () => {
                     <SelectTrigger className="bg-main-color-50 h-12 rounded-none">
                       <SelectValue placeholder="Chọn danh xưng" />
                     </SelectTrigger>
-                    <SelectContent className="">
+                    <SelectContent className="text-white">
                       <SelectItem
                         value="1"
-                        className="h-12 bg-primary-background !hover:bg-main-color-100"
+                        className="h-12 bg-[#e74c3c] !hover:bg-main-color-100"
                       >
                         Ông
                       </SelectItem>
                       <SelectItem
                         value="0"
-                        className="h-12 bg-primary-background !hover:bg-main-color-100"
+                        className="h-12 bg-[#e74c3c] !hover:bg-main-color-100"
                       >
                         Bà
                       </SelectItem>
                       <SelectItem
                         value="2"
-                        className="h-12 bg-primary-background !hover:bg-main-color-100"
+                        className="h-12 bg-[#e74c3c] !hover:bg-main-color-100"
                       >
                         Công ty
                       </SelectItem>
@@ -123,7 +123,7 @@ const ContentContact = () => {
           <div className="grid lg:grid-cols-2 gap-10 items-stretch mt-20 lg:h-80 ">
             <div className="order-2 lg:order-1">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.734034872638!2d105.84117131540286!3d21.003091786012245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab879eccc5d1%3A0x8d876fc1e95f932e!2zMTIwIFAuIEPhuqd1IEPhuqd1LCBQaMaw4budbmcgQsOsLCBRdeG6rW4gQ8O0LCBIw6AgTuG7mWksIFZpZXRuYW0!5e0!3m2!1sen!2s!4v1680000000000!5m2!1sen!2s"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5266.343249199594!2d105.74540966166991!3d21.03800607691924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313455e940879933%3A0xcf10b34e9f1a03df!2zVHLGsOG7nW5nIENhbyDEkeG6s25nIEZQVCBQb2x5dGVjaG5pYw!5e0!3m2!1svi!2s!4v1754561220534!5m2!1svi!2s"
                 className="w-full h-full border-0"
                 allowFullScreen
                 loading="lazy"
@@ -137,10 +137,10 @@ const ContentContact = () => {
               </h3>
               <div className="space-y-2 text-sm sm:text-base">
                 <p className="text-main-color-50">
-                  <strong>Trụ sở chính:</strong> Tòa nhà Alpha, Số 1 Lương Yên, Quận Hai Bà Trưng, Hà Nội
+                  <strong>Trụ sở chính:</strong> số 13, phố Trịnh Văn Bô, Quận Nam Từ Liêm, Hà Nội, Việt Nam
                 </p>
                 <p className="text-main-color-50">
-                  <strong>Văn phòng đại diện:</strong> Tầng 10, Tòa nhà Bitexco, 2 Hải Triều, Quận 1, TP.HCM
+                  <strong>Văn phòng đại diện:</strong> Tầng 1, Tòa nhà F, Cao đẳng FPT Polytechnic
                 </p>
                 <p className="text-main-color-50">
                   <strong>Điện thoại:</strong> +84 24 7300 5555 - Ext: 1234

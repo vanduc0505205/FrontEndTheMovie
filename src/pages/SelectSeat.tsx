@@ -15,12 +15,6 @@ interface Seat {
   type: SeatType;
   status: SeatStatus;
 }
-
-const priceMap = {
-  NORMAL: 100000,
-  VIP: 150000,
-};
-
 export default function SeatSelection() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,10 +58,13 @@ export default function SeatSelection() {
     );
   };
 
+  // Lấy giá từ showtime.defaultPrice
+  const defaultPrice = showtime?.defaultPrice || 100000;
+  const getSeatPrice = (type: string) => type === "VIP" ? defaultPrice * 1.5 : defaultPrice;
   const totalPrice = selectedSeats.reduce((acc, code) => {
     const seat = seats.find((s) => s.seatCode === code);
     if (!seat) return acc;
-    return acc + priceMap[seat.type];
+    return acc + getSeatPrice(seat?.type || "NORMAL");
   }, 0);
 
   if (loading) {
@@ -327,14 +324,18 @@ export default function SeatSelection() {
                         roomId: actualRoomId,
                         seatList: selectedSeats.map((code) => {
                           const seat = seats.find((s) => s.seatCode === code);
+                          const seatType = seat?.type || "NORMAL";
+                          const price = getSeatPrice(seatType);
                           return {
                             seatId: seat?._id || "",
                             seatCode: seat?.seatCode || "",
-                            seatType: seat?.type || "NORMAL",
+                            seatType,
+                            price
                           };
                         }),
                         totalPrice,
                         movie,
+                        showtime
                       };
 
                       navigate(`/phim/${movieId}/checkout`, {
