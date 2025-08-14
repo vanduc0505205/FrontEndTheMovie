@@ -65,7 +65,6 @@ export default function Checkout() {
       // Tính lại tổng tiền từ seatList (giá đã đồng bộ)
       const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
 
-      // Chuẩn bị dữ liệu gửi đi
       const bookingPayload = {
         userId,
         showtimeId,
@@ -95,8 +94,7 @@ export default function Checkout() {
         try {
           // Gọi API tạo URL thanh toán VNPay
           const vnpayRes = await axios.get(
-            `http://localhost:3000/create_payment?amount=${total}&bookingId=${res.data.booking._id}`,
-            {
+            `http://localhost:3000/create_payment?amount=${total}`, {
               headers: {
                 Accept: "application/json",
               },

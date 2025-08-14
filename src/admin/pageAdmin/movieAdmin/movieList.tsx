@@ -441,7 +441,7 @@ export default function MovieList() {
               {userRole === "admin" && (
                 <div>
                   <Space direction="vertical">
-                    <Button size="small" onClick={() => navigate(`/movie/${movie._id}`)}>
+                    <Button size="small" onClick={() => navigate(`/admin/movies/${movie._id}`)}>
                       Chi tiết
                     </Button>
                     {userRole === "admin" && (

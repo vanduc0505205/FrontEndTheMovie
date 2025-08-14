@@ -67,7 +67,7 @@ export default function SelectShowtime() {
       `/phim/${s.movieId._id}/selectSeat?roomId=${s.roomId._id}&showtimeId=${s._id}&userId=${user.id}`,
       {
         state: {
-          movie: s.movieId,
+          movie,
           showtime: s,
         },
       }
