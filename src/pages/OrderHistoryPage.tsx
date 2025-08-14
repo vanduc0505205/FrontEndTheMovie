@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Table, Spin, message } from "antd";
+import axios from "axios";
+
+
+
 import { Link } from "react-router-dom";
 
 const OrderHistoryPage = () => {
@@ -19,6 +24,7 @@ const OrderHistoryPage = () => {
       const parsed = JSON.parse(rawUser);
       return parsed?._id || parsed?.id || null;
     } catch {
+     
       return rawUser;
     }
   };
@@ -37,22 +43,21 @@ const OrderHistoryPage = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`http://localhost:3000/booking/user/${userId}`);
+     const res = await fetch(`http://localhost:3000/booking/user/${userId}`);
+const json = await res.json();
+const raw = json?.bookings ?? json ?? [];
 
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
 
-        const data = await res.json();
-        const raw = data?.bookings ?? data ?? [];
-
+        
         const normalized = raw.map((b) => {
+        
           const seatsArr = (b.seatList ?? [])
             .map((s) => {
               if (!s) return "";
               if (typeof s.seatId === "object") {
                 return s.seatId?.seatCode || s.seatId?.name || "";
               }
+            
               return "";
             })
             .filter((seat) => seat);

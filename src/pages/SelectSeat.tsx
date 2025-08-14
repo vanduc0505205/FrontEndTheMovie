@@ -13,7 +13,7 @@ interface Seat {
   row: string;
   column: number;
   type: SeatType;
-  status: SeatStatus;
+  status: SeatStatus; 
 }
 export default function SeatSelection() {
   const navigate = useNavigate();
@@ -32,22 +32,22 @@ export default function SeatSelection() {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchSeats = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/seat/room/${actualRoomId}`
-        );
-        setSeats(res.data);
-      } catch (err) {
-        console.error("Lỗi khi lấy danh sách ghế:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchSeats = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/seat/room/${actualRoomId}?showtimeId=${showtimeId}`
+      );
+      setSeats(res.data);
+    } catch (err) {
+      console.error("Lỗi khi lấy danh sách ghế:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchSeats();
+}, [actualRoomId, showtimeId]);
 
-    fetchSeats();
-  }, [actualRoomId]);
 
   const toggleSeat = (seatCode: string, status: SeatStatus) => {
     if (status !== "available") return;
@@ -191,58 +191,55 @@ export default function SeatSelection() {
 
                             {/* Seats in this row */}
                             <div className="flex gap-2">
-                              {rowSeats.map(
-                                ({ _id, seatCode, type, status }) => {
-                                  const isSelected =
-                                    selectedSeats.includes(seatCode);
-                                  let seatClasses =
-                                    "relative w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs transition-all duration-200 transform";
+                             {rowSeats.map(({ _id, seatCode, type, status }) => {
+                              const seatStatus = status.toLowerCase() as SeatStatus;
+                              const isSelected = selectedSeats.includes(seatCode);
+                              let seatClasses =
+                                "relative w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs transition-all duration-200 transform";
 
-                                  if (status === "booked") {
-                                    seatClasses +=
-                                      " bg-red-500/80 text-white cursor-not-allowed border border-red-400";
-                                  } else if (status === "maintenance") {
-                                    seatClasses +=
-                                      " bg-gray-600/80 text-gray-300 cursor-not-allowed border border-gray-500";
-                                  } else if (isSelected) {
-                                    seatClasses +=
-                                      " bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30 scale-110 border border-green-400";
-                                  } else if (type === "VIP") {
-                                    seatClasses +=
-                                      " bg-gradient-to-r from-amber-400 to-amber-500 text-black hover:from-amber-300 hover:to-amber-400 hover:scale-105 cursor-pointer border border-amber-300 shadow-md";
-                                  } else {
-                                    seatClasses +=
-                                      " bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 hover:from-gray-200 hover:to-gray-300 hover:scale-105 cursor-pointer border border-gray-300 shadow-md";
-                                  }
+                              if (seatStatus === "booked") {
+                                seatClasses +=
+                                  " bg-red-500/80 text-white cursor-not-allowed border border-red-400";
+                              } else if (seatStatus === "maintenance") {
+                                seatClasses +=
+                                  " bg-gray-600/80 text-gray-300 cursor-not-allowed border border-gray-500";
+                              } else if (isSelected) {
+                                seatClasses +=
+                                  " bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30 scale-110 border border-green-400";
+                              } else if (type === "VIP") {
+                                seatClasses +=
+                                  " bg-gradient-to-r from-amber-400 to-amber-500 text-black hover:from-amber-300 hover:to-amber-400 hover:scale-105 cursor-pointer border border-amber-300 shadow-md";
+                              } else {
+                                seatClasses +=
+                                  " bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 hover:from-gray-200 hover:to-gray-300 hover:scale-105 cursor-pointer border border-gray-300 shadow-md";
+                              }
 
-                                  return (
-                                    <div key={_id} className="relative">
-                                      <button
-                                        className={seatClasses}
-                                        disabled={status !== "available"}
-                                        onClick={() =>
-                                          toggleSeat(seatCode, status)
-                                        }
-                                        title={`${seatCode} - ${type} - ${
-                                          status === "available"
-                                            ? "Có thể đặt"
-                                            : status === "booked"
-                                            ? "Đã đặt"
-                                            : "Bảo trì"
-                                        }`}
-                                      >
-                                        {seatCode}
-                                        {type === "VIP" && (
-                                          <Crown
-                                            size={8}
-                                            className="absolute -top-1 -right-1 text-yellow-600"
-                                          />
-                                        )}
-                                      </button>
-                                    </div>
-                                  );
-                                }
-                              )}
+                              return (
+                                <div key={_id} className="relative">
+                                  <button
+                                    className={seatClasses}
+                                    disabled={seatStatus !== "available"}
+                                    onClick={() => toggleSeat(seatCode, seatStatus)}
+                                    title={`${seatCode} - ${type} - ${
+                                      seatStatus === "available"
+                                        ? "Có thể đặt"
+                                        : seatStatus === "booked"
+                                        ? "Đã đặt"
+                                        : "Bảo trì"
+                                    }`}
+                                  >
+                                    {seatCode}
+                                    {type === "VIP" && (
+                                      <Crown
+                                        size={8}
+                                        className="absolute -top-1 -right-1 text-yellow-600"
+                                      />
+                                    )}
+                                  </button>
+                                </div>
+                              );
+                            })}
+
                             </div>
 
                             {/* Row Label (Right side) */}
