@@ -17,7 +17,6 @@ import CinemaDetail from './management/admin/cinemaAdmin/CinemaDetail'
 import UserList from './management/admin/userAdmin/AccountList'
 import SelectSeat from './pages/SelectSeat'
 import CartPage from './pages/CartPage'
-import CheckoutPage from './pages/CheckoutPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './management/admin/movieAdmin/movieList'
 import MovieDetailPage from '@/pages/MovieDetail'
@@ -40,6 +39,12 @@ import PaymentsPage from './management/staff/paymentStaff/PaymentsPage'
 import MovieStaff from './management/staff/movieStaff/movieList'
 import ShowtimeStaff from './management/staff/showtimeStaff/ShowtimeList'
 import RoomStaff from './management/staff/roomStaff/RoomAdmin'
+import OrderHistoryPage from './pages/OrderHistoryPage'
+import BookingAdmin from './admin/bookingAdmin/booking.admin'
+import DiscountList from './admin/pageAdmin/discountAdmin/discountList'
+
+
+
 
 function App() {
   return (
@@ -54,11 +59,18 @@ function App() {
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
         <Route path="/dang-ky" element={<Register />} />
+        <Route path="/phim/:id/selectSeat" element={<SelectSeat />} />
+        <Route path="/gio-hang" element={<CartPage />} />
+        {/* <Route path="/phim/:id/thanh-toan" element={<CheckoutPage />} /> */}
+        <Route path="/payment-result" element={<CheckPayment />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/tin-tuc" element={<NewsPage />} />
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
+        <Route path="/phim/:id/checkout" element={<Checkout />} />
+        <Route path="/lichsudatve" element={<OrderHistoryPage />} />
+        
       </Route>
 
       {/* CUSTOMER ROUTES */}
@@ -111,6 +123,8 @@ function App() {
         <Route path="cinemas/add" element={<AddCinema />} />
         <Route path="cinemas/edit/:id" element={<EditCinema />} />
         <Route path="cinemas/:id" element={<CinemaDetail />} />
+        <Route path="dashboard" element={<DashboardAdmin />} />
+        <Route path="bookings" element={<BookingAdmin />} />
       </Route>
 
       {/* STAFF ROUTES */}

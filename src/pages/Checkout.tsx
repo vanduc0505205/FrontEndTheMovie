@@ -65,7 +65,6 @@ export default function Checkout() {
       // Tính lại tổng tiền từ seatList (giá đã đồng bộ)
       const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
 
-      // Chuẩn bị dữ liệu gửi đi
       const bookingPayload = {
         userId,
         showtimeId,
@@ -93,10 +92,9 @@ export default function Checkout() {
       // Xử lý thanh toán VNPay
       if (method === "vnpay" && res.data.booking?._id) {
         try {
-          // Gọi API tạo URL thanh toán VNPay, truyền đúng bookingId
+          // Gọi API tạo URL thanh toán VNPay
           const vnpayRes = await axios.get(
-            `http://localhost:3000/create_payment?amount=${total}&bookingId=${res.data.booking._id}`,
-            {
+            `http://localhost:3000/create_payment?amount=${total}`, {
               headers: {
                 Accept: "application/json",
               },
@@ -142,7 +140,7 @@ export default function Checkout() {
 
         // Chuyển hướng về trang lịch sử đặt vé sau 3 giây
         setTimeout(() => {
-          navigate("/tickets");
+          navigate("/lichsudatve");
         }, 3000);
       }
     } catch (error: any) {
