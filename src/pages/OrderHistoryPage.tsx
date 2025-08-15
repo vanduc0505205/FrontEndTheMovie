@@ -39,8 +39,8 @@ const fetchOrders = async () => {
     setLoading(true);
     setError(null);
 
-    const json = await getUserBookings(userId); // { bookings: [...] }
-    const raw = json?.bookings ?? [];
+    const json = await getUserBookings(userId);
+    const raw = json?.data?.bookings ?? [];
 
     const normalized = raw.map((b) => {
       const seatsArr = (b.seatList ?? [])
