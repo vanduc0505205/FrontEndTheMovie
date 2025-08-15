@@ -188,7 +188,7 @@ const Header = () => {
               {user ? (
                 <>
                   <div className="flex items-center gap-2">
-                    <span className="text-white leading-[36px]">👋 {user.username}</span>
+                    <span className="text-white leading-[36px]">👋 {user.email}</span>
                     <Link to="/dang-xuat">
                       <Button
                         variant="outline"

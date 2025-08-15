@@ -1,26 +1,26 @@
 // services/category.service.ts
-import axios from 'axios';
-import { ICategory } from '@/types/category';
+import axiosInstance from "@/lib/authService";
+import { ICategory } from "@/types/category";
 
 export const getCategories = async (): Promise<ICategory[]> => {
-  const res = await axios.get('http://localhost:3000/category');
+  const res = await axiosInstance.get("/category");
   return res.data.list;
 };
 
-export const createCategory = async (payload: {
+export const createCategory = (payload: {
   categoryName: string;
   description?: string;
 }) => {
-  return axios.post('http://localhost:3000/category', payload);
+  return axiosInstance.post("/category", payload);
 };
 
-export const updateCategory = async (
+export const updateCategory = (
   id: string,
   payload: { categoryName: string; description?: string }
 ) => {
-  return axios.put(`http://localhost:3000/category/${id}`, payload);
+  return axiosInstance.put(`/category/${id}`, payload);
 };
 
-export const deleteCategory = async (id: string) => {
-  return axios.delete(`http://localhost:3000/category/${id}`);
+export const deleteCategory = (id: string) => {
+  return axiosInstance.delete(`/category/${id}`);
 };

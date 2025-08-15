@@ -5,11 +5,13 @@ import {
   PictureOutlined,
   HomeOutlined,
   TeamOutlined,
+  DollarOutlined,
+  InsertRowAboveOutlined,
   ShoppingCartOutlined,
 } from '@ant-design/icons';
 import clsx from 'clsx';
 
-const navItems = [
+const navItemsAdmin = [
   { label: 'Dashboard', path: 'dashboard', icon: <VideoCameraOutlined /> },
   { label: 'Phim', path: 'movies', icon: <VideoCameraOutlined /> },
   { label: 'Danh mục', path: 'categories', icon: <AppstoreOutlined /> },
@@ -23,12 +25,23 @@ const navItems = [
 
 ];
 
-export default function Sidebar() {
+const navItemsStaff = [
+  { label: 'Đặt vé', path: 'bookings', icon: <DollarOutlined /> },
+  { label: 'Thanh toán', path: 'payments', icon: <DollarOutlined /> },
+  { label: 'Lịch chiếu', path: 'showtimes', icon: <VideoCameraOutlined /> },
+  { label: 'Phim', path: 'movies', icon: <VideoCameraOutlined /> },
+  { label: 'Phòng chiếu', path: 'rooms', icon: <InsertRowAboveOutlined /> },
+];
+
+export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {
   const location = useLocation();
+  const navItems = role === 'admin' ? navItemsAdmin : navItemsStaff;
 
   return (
     <aside className="w-64 bg-white shadow-md h-screen sticky top-0">
-      <div className="text-xl font-bold p-4 border-b">🎬 Admin Panel</div>
+      <div className="text-xl font-bold p-4 border-b">
+        🎬 {role === 'admin' ? 'Admin Panel' : 'Staff Panel'}
+      </div>
       <nav className="flex flex-col gap-1 p-4">
         {navItems.map((item) => {
           const isActive = location.pathname.endsWith(item.path);

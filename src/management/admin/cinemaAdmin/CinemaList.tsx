@@ -3,7 +3,7 @@ import { Table, Button, Popconfirm, notification } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { deleteCinema, getCinemas } from "@/api/cinema.api";
-import { Cinema } from "@/interface/cinema";
+import { ICinema } from "@/types/cinema";
 
 const CinemaList = () => {
   const [page, setPage] = useState(1);
@@ -43,7 +43,7 @@ const CinemaList = () => {
     {
       title: "Hành động",
       width: "34%",
-      render: (_: any, record: Cinema) => (
+      render: (_: any, record: ICinema) => (
         <div className="flex gap-2">
           <Button type="primary" onClick={() => navigate(`/admin/cinemas/edit/${record._id}`)}>Sửa</Button>
           <Popconfirm
