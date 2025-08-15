@@ -124,6 +124,7 @@ function App() {
         <Route path="cinemas/:id" element={<CinemaDetail />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
         <Route path="bookings" element={<BookingAdmin />} />
+        <Route path="discounts" element={<DiscountList />} />
       </Route>
 
       {/* STAFF ROUTES */}
