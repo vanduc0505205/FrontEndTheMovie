@@ -1,4 +1,4 @@
-import { ICinema } from '@/types/cinema';
+import { ICinema } from '@/interface/cinema';
 import axiosInstance from '@/lib/authService'; 
 
 export const getCinemas = async (

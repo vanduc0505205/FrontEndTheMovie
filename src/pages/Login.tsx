@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import axiosInstance from "@/lib/authService";
-import type { IUser } from "@/types/user"; // Giả sử bạn đã định nghĩa Login type trong types/login.ts
+import { IUser } from "@/interface/user";
 
 const { Title, Text } = Typography;
 

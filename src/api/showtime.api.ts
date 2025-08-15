@@ -1,5 +1,5 @@
+import { IShowtime } from '@/interface/showtime';
 import axiosInstance from '@/lib/authService';
-import { IShowtime } from '@/types/showtime';
 
 // Lấy tất cả suất chiếu
 export const getShowtimes = async (): Promise<IShowtime[]> => {

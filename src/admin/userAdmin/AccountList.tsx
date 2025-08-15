@@ -3,7 +3,7 @@ import { Table, Input, Button, Space, Popconfirm, message, Card, Tag, Segmented 
 import dayjs from 'dayjs';
 import UserFormModal from './AccountFormModal';
 import { getAllUsers, deleteUser, createUser, updateUser, toggleUserStatus } from '@/api/user.api';
-import { IUser } from '@/types/user';
+import { IUser } from '@/interface/user';
 
 const UserAdmin: React.FC = () => {
     const [users, setUsers] = useState<IUser[]>([]);
