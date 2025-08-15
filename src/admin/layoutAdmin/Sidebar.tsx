@@ -17,6 +17,7 @@ const navItems = [
   { label: 'Ghế', path: 'seats', icon: <AppstoreOutlined /> },
   { label: 'Phòng', path: 'rooms', icon: <PictureOutlined /> },
   { label: 'Giảm giá', path: 'discounts', icon: <VideoCameraOutlined /> },
+  { label: 'Combo', path: 'combos', icon: <AppstoreOutlined /> },
   { label: 'Tài khoản', path: 'users', icon: <TeamOutlined /> },
 ];
 

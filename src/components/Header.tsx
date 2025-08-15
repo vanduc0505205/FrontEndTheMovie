@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/images/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
-import { ShoppingCart } from "lucide-react";
+import { Dropdown, Menu, MenuProps, Typography } from "antd";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 
 const Header = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
+  const [hover, setHover] = useState(false);
 
   useEffect(() => {
     const loadUser = () => {
@@ -19,32 +22,49 @@ const Header = () => {
 
     loadUser();
     window.addEventListener("login-success", loadUser);
-
     return () => {
       window.removeEventListener("login-success", loadUser);
     };
   }, []);
 
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const items: MenuProps["items"] = [
+    {
+      key: "profile",
+      label: "Thông tin cá nhân",
+      icon: <UserOutlined />,
+      onClick: () => navigate("/thong-tin-ca-nhan"),
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <LogoutOutlined style={{ color: "red" }} />,
+      onClick: () => navigate("/dang-xuat"),
+    },
+  ];
+
+  // function setHover(arg0: boolean): void {
+  //   throw new Error("Function not implemented.");
+  // }
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${isScrolled
-        ? "bg-black/80 backdrop-blur-sm shadow-lg"
-        : "bg-custom-gradient-header"
+          ? "bg-black/80 backdrop-blur-sm shadow-lg"
+          : "bg-custom-gradient-header"
         }`}
     >
       <nav className="container flex items-center justify-between">
+        {/* Logo */}
         <div className="flex items-center space-x-2">
           <Link
             to="/"
@@ -56,6 +76,7 @@ const Header = () => {
           </Link>
         </div>
 
+        {/* Mobile */}
         {isMobile ? (
           <div className="relative">
             <Button
@@ -78,46 +99,30 @@ const Header = () => {
                 >
                   ✕
                 </button>
-                <Link
-                  to="/"
-                  className="block text-base text-main-color-50 mb-4"
-                  onClick={toggleMenu}
-                >
+
+                {/* Menu Items */}
+                <Link to="/" className="block text-base text-main-color-50 mb-4">
                   Trang chủ
                 </Link>
-                <Link
-                  to="/ve-chung-toi"
-                  className="block text-base text-main-color-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/ve-chung-toi" className="block text-base text-main-color-50 mb-4">
                   Lịch Chiếu
                 </Link>
-                <Link
-                  to="/mo-hinh-van-hanh"
-                  className="block text-base text-main-color-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/tin-tuc" className="block text-base text-main-color-50 mb-4">
                   Tin Tức
                 </Link>
-                <Link
-                  to="/cong-nghe"
-                  className="block text-base text-main-color-50 mb-4"
-                  onClick={toggleMenu}
-                >
-                  Khuyến Mãi
+                <Link to="/quy-dinh-va-chinh-sach" className="block text-base text-main-color-50 mb-4">
+                  Quy định và Chính sách
                 </Link>
-                <Link
-                  to="/lien-he"
-                  className="block text-base text-main-color-50 mb-4"
-                  onClick={toggleMenu}
-                >
+                <Link to="/lien-he" className="block text-base text-main-color-50 mb-4">
                   Liên hệ
                 </Link>
 
                 <div className="flex flex-col w-full gap-3 mt-4">
                   {user ? (
                     <>
-                      <span className="text-white">👋 {user.username}</span>
+                      <Link to="/thong-tin-ca-nhan" className="text-white">
+                        👋 {user.username}
+                      </Link>
                       <Link to="/dang-xuat">
                         <Button variant="outline" size="lg" className="text-red-500 w-full">
                           Đăng xuất
@@ -151,65 +156,49 @@ const Header = () => {
             )}
           </div>
         ) : (
+          // Desktop Menu
           <div className="hidden md:flex items-center gap-1 text-white">
             <Link to="/" className="relative group text-white px-4">
               Trang chủ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/ve-chung-toi"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/ve-chung-toi" className="relative group text-white px-4">
               Lịch Chiếu
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/tin-tuc"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/tin-tuc" className="relative group text-white px-4">
               Tin Tức
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/quy-dinh-va-chinh-sach"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/quy-dinh-va-chinh-sach" className="relative group text-white px-4">
               Quy định và Chính sách
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
-            <Link
-              to="/lien-he"
-              className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
-            >
+            <Link to="/lien-he" className="relative group text-white px-4">
               Liên hệ
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
+
+            {/* User Section */}
             <div className="space-x-2 mx-4">
               {user ? (
-                <>
-                  <div className="flex items-center gap-2">
-                    <span className="text-white leading-[36px]">👋 {user.username}</span>
-                    <Link to="/dang-xuat">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border border-red-500 text-red-500 hover:bg-red-500/10 h-9"
-                      >
-                        Đăng xuất
-                      </Button>
-                    </Link>
-                    {/* <Link to="/gio-hang">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border border-main-color-100 text-main-color-100 hover:bg-main-color-100/10 h-9"
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-1" /> Giỏ hàng
-                      </Button>
-                    </Link> */}
-                  </div>
-
-                </>
+                <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight">
+                  <Typography.Text
+                    style={{
+                      color: "white",
+                      cursor: "pointer",
+                      borderBottom: hover ? "2px solid #ff4d4f" : "2px solid transparent",
+                      transition: "border-color 0.3s ease",
+                      paddingBottom: 2,
+                      fontSize: 16,
+                      fontWeight: 500,
+                    }}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                  >
+                    👋 {user.username}
+                  </Typography.Text>
+                </Dropdown>
               ) : (
                 <>
                   <Link to="/dang-nhap">

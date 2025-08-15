@@ -43,6 +43,7 @@ import Checkout from './pages/Checkout'
 import NewsPage from './pages/NewsPage'
 import DiscountList from './admin/pageAdmin/discountAdmin/discountList'
 import OrderHistoryPage from './pages/OrderHistoryPage'
+import UserProfile from './pages/userProfile'
 
 
 
@@ -73,7 +74,8 @@ function App() {
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
         <Route path="/phim/:id/checkout" element={<Checkout />} />
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
-        
+        <Route path="/thong-tin-ca-nhan" element={<UserProfile />} />
+
       </Route>
 
       {/* Giao diện admin */}
