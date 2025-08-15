@@ -7,7 +7,7 @@ export const getAllUsers = async (): Promise<{ users: IUser[] }> => {
 };
 
 export const createUser = async (user: Partial<IUser>) => {
-  return axiosInstance.post('/user', user);
+  return axiosInstance.post('/user/register', user);
 };
 
 export const updateUser = async (id: string, user: Partial<IUser>) => {

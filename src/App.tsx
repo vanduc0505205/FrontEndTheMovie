@@ -53,6 +53,7 @@ function App() {
         {/* <Route path="/dang-ky" element={<Register />} /> */}
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-xuat" element={<Logout />} />
+        <Route path="/dang-ky" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
