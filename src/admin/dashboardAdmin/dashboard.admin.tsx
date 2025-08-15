@@ -33,6 +33,7 @@ import {
 } from "recharts";
 import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { getUserBookings } from "@/api/user.api";
 
 const { RangePicker } = DatePicker;
 

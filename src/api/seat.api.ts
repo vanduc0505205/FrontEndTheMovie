@@ -1,5 +1,6 @@
+import { ISeat } from '@/interface/seat';
 import axiosInstance from '@/lib/authService';
-import { ISeat } from "@/types/seat";
+
 
 export const getSeatsByRoom = async (roomId: string): Promise<ISeat[]> => {
   const { data } = await axiosInstance.get(`/seat/room/${roomId}`);

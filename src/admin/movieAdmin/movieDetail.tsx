@@ -10,9 +10,9 @@ import {
   Button,
   Modal,
 } from "antd";
-import axios from "axios";
-import { IMovie } from "@/types/movie";
 import { ArrowLeftOutlined, CloseCircleTwoTone } from "@ant-design/icons";
+import { IMovie } from "@/interface/movie";
+import { getMovieById } from "@/api/movie.api";
 
 const { Title, Paragraph } = Typography;
 
@@ -47,8 +47,7 @@ export default function MovieDetail() {
 
   const fetchDetail = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data; 
+      const data = await getMovieById(id);
       setMovie(data);
     } catch (err) {
       message.error("Không thể tải thông tin phim");
@@ -90,13 +89,13 @@ export default function MovieDetail() {
         type="link"
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate(-1)}
-         style={{
+        style={{
           marginBottom: 16,
-          padding: '8px 16px',      
-          fontSize: '16px',         
-          height: 'auto',           
-  }}
-        
+          padding: '8px 16px',
+          fontSize: '16px',
+          height: 'auto',
+        }}
+
       >
         Quay lại danh sách phim
       </Button>
@@ -246,7 +245,7 @@ export default function MovieDetail() {
         </div>
       </Modal>
 
-      
+
     </Card>
   );
 }

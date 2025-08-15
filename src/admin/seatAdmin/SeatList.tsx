@@ -18,7 +18,7 @@ import {
   getSeatsByRoom,
   updateSeat,
 } from "@/api/seat.api";
-import { ISeat } from "@/types/seat";
+import { ISeat } from "@/interface/seat";
 
 const SeatList = () => {
   const [hasSeats, setHasSeats] = useState(false);

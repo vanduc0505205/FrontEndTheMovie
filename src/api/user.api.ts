@@ -1,5 +1,5 @@
+import { IUser } from '@/interface/user';
 import axiosInstance from '@/lib/authService';
-import { IUser } from '@/types/user';
 
 export const getAllUsers = async (): Promise<{ users: IUser[] }> => {
   const res = await axiosInstance.get('/user/getAllUsers');
@@ -20,4 +20,12 @@ export const deleteUser = async (id: string) => {
 
 export const toggleUserStatus = async (id: string, status: 'active' | 'blocked') => {
   return axiosInstance.patch(`/user/${id}/status`, { status });
+};
+
+export const getUserBookings = async (userId: string) => {
+  return axiosInstance.get(`/booking/user/${userId}`);
+};
+
+export const updateBookingStatus = async (bookingId: string, status: string) => {
+  return axiosInstance.patch(`/booking/${bookingId}/status`, { status });
 };

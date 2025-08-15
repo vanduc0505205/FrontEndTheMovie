@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Select } from 'antd';
-import { IUser } from '@/types/user';
+import { IUser } from '@/interface/user';
 
 const { Option } = Select;
 

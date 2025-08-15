@@ -7,8 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllMoviesSimple } from '@/api/movie.api';
 import { getRooms } from '@/api/room.api';
 import axios from "axios";
-import { ICinema } from "@/types/cinema";
-import { IMovie } from "@/types/movie";
+import { IMovie } from "@/interface/movie";
+import { ICinema } from "@/interface/cinema";
 
 interface Props {
     open: boolean;

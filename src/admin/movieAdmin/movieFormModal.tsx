@@ -13,11 +13,13 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { movieSchema } from "@/validations/movie.schema";
-import { IMovie } from "@/types/movie";
+
 import { getCategories } from "@/api/category.api";
-import { getAllMovies } from "@/api/movie.api";
+import { getAllMoviesSimple } from "@/api/movie.api";
 import { RcFile, UploadFile } from "antd/es/upload";
 import ImgCrop from "antd-img-crop";
+import { IMovie } from "@/interface/movie";
+import { uploadImage } from "@/api/upload.api";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -120,44 +122,36 @@ export default function MovieModal({
     formData.append("image", file);
 
     try {
-      const res = await fetch("http://localhost:3000/upload/image", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        if (type === "poster") {
-          setPosterUrl(data.url);
-          setPosterFileList([
-            {
-              uid: file.uid,
-              name: file.name,
-              status: "done",
-              url: data.url,
-            },
-          ]);
-          form.setFieldsValue({ poster: data.url });
-        } else {
-          setBannerUrl(data.url);
-          setBannerFileList([
-            {
-              uid: file.uid,
-              name: file.name,
-              status: "done",
-              url: data.url,
-            },
-          ]);
-          form.setFieldsValue({ banner: data.url });
-        }
-        message.success("Tải ảnh lên thành công!");
+      const url = await uploadImage(file); // ✅ gọi API gián tiếp
+      if (type === "poster") {
+        setPosterUrl(url);
+        setPosterFileList([
+          {
+            uid: file.uid,
+            name: file.name,
+            status: "done",
+            url,
+          },
+        ]);
+        form.setFieldsValue({ poster: url });
       } else {
-        throw new Error(data.error || "Upload failed");
+        setBannerUrl(url);
+        setBannerFileList([
+          {
+            uid: file.uid,
+            name: file.name,
+            status: "done",
+            url,
+          },
+        ]);
+        form.setFieldsValue({ banner: url });
       }
+      message.success("Tải ảnh lên thành công!");
     } catch {
       message.error("Lỗi khi tải ảnh lên.");
     }
-
     return false;
+
   };
 
   // Preview ảnh khi click
@@ -201,7 +195,7 @@ export default function MovieModal({
           });
         }
 
-        const exists = await getAllMovies();
+        const exists = await getAllMoviesSimple();
         if (exists.some((movie) => movie.title === formatted.title)) {
           return Modal.error({
             title: "Tên phim bị trùng",
