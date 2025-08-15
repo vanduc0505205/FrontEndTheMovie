@@ -8,41 +8,41 @@ const newsList = [
       "TẶNG POSTER PHIM CONAN TỪ NGÀY 1/8/2025. CƠ HỘI CUỐI CÙNG NHẬN QUÀ TỪ SIÊU PHẨM ĐÂY CẢ NHÀ ƠI!",
     date: "30/07/2025",
     image:
-      "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=800&q=80",
+      "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018973.jpg&w=384&q=75",
   },
   {
     title: "ƯU ĐÃI GIÁ VÉ 55.000Đ/VÉ 2D CHO THÀNH VIÊN U22",
     date: "29/07/2025",
     image:
-      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80",
+       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018966.png&w=384&q=75",
   },
   {
     title:
       "SUẤT CHIẾU ĐẶC BIỆT: BỘ TỨ SIÊU ĐẲNG – BƯỚC ĐI ĐẦU TIÊN",
     date: "25/07/2025",
     image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80",
+       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018943.jpg&w=384&q=75",
   },
   {
     title:
       "HÉ LỘ PHẦN QUÀ SIÊU HOT CHO TUẦN KHỞI CHIẾU CONAN MOVIE 28",
     date: "25/07/2025",
     image:
-      "https://images.unsplash.com/photo-1549921296-3a6b5a424c86?w=800&q=80",
+       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018939.jpg&w=384&q=75",
   },
   {
     title:
       "SUẤT CHIẾU ĐẶC BIỆT – XÌ TRUM P (LỒNG TIẾNG) – XEM PHIM SỚM, NHẬN QUÀ XINH!",
     date: "17/07/2025",
     image:
-      "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800&q=80",
+       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018918.jpg&w=384&q=75",
   },
   {
     title:
       "TRẢI NGHIỆM ĐIỆN ẢNH ĐÁNG NHỚ CỦA CÁC MAYER NHÍ TẠI TRUNG TÂM CHIẾU PHIM QUỐC GIA",
     date: "17/07/2025",
     image:
-      "https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=800&q=80",
+       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018915.jpg&w=384&q=75",
   },
 ];
 
