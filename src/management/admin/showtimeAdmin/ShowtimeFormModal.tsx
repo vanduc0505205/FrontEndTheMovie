@@ -4,7 +4,7 @@ import { createShowtime, updateShowtime } from "@/api/showtime.api";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
-import { getAllMovies } from '@/api/movie.api';
+import { getAllMoviesSimple } from '@/api/movie.api';
 import { getRooms } from '@/api/room.api';
 import axios from "axios";
 import { ICinema } from "@/types/cinema";
@@ -127,7 +127,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
     const { data: movies = [], isLoading: loadingMovies } = useQuery<any>({
         queryKey: ['movie'],
-        queryFn: getAllMovies,
+        queryFn: getAllMoviesSimple,
     });
 
     // hàm api lấy dữ liệu cinema không truyền limit&page
@@ -230,17 +230,17 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
                 {/* Giá vé */}
                 <Form.Item
-  name="defaultPrice"
-  label="Giá vé mặc định"
-  rules={[{ required: true, message: "Vui lòng chọn giá vé" }]}
->
-  <Select placeholder="Chọn giá vé">
-    <Select.Option value={80000}>80.000 VNĐ</Select.Option>
-    <Select.Option value={100000}>100.000 VNĐ</Select.Option>
-    <Select.Option value={120000}>120.000 VNĐ</Select.Option>
-    <Select.Option value={150000}>150.000 VNĐ</Select.Option>
-  </Select>
-</Form.Item>
+                    name="defaultPrice"
+                    label="Giá vé mặc định"
+                    rules={[{ required: true, message: "Vui lòng chọn giá vé" }]}
+                >
+                    <Select placeholder="Chọn giá vé">
+                        <Select.Option value={80000}>80.000 VNĐ</Select.Option>
+                        <Select.Option value={100000}>100.000 VNĐ</Select.Option>
+                        <Select.Option value={120000}>120.000 VNĐ</Select.Option>
+                        <Select.Option value={150000}>150.000 VNĐ</Select.Option>
+                    </Select>
+                </Form.Item>
 
             </Form>
         </Modal>

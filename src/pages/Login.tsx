@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import type { Login } from "@/interface/user";
+import axiosInstance from "@/lib/authService";
+import type { IUser } from "@/types/user"; // Giả sử bạn đã định nghĩa Login type trong types/login.ts
 
 const { Title, Text } = Typography;
 
@@ -10,21 +11,23 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const onFinish = async (values: Login) => {
+  const onFinish = async (values: IUser) => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(values),
+      const res = await axiosInstance.post("/user/login", values, {
+        withCredentials: true,
       });
 
-      const data = await res.json();
+      const data = res.data;
 
-      if (res.ok && data.accessToken) {
+      if (data.accessToken) {
+        if (data.user?.status === "blocked") {
+          message.error("Tài khoản của bạn đã bị khóa.");
+          return;
+        }
+
         message.success("Đăng nhập thành công!");
-        localStorage.setItem("access_token", data.accessToken);
+        localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));
         window.dispatchEvent(new Event("login-success"));
 
@@ -39,9 +42,9 @@ const Login: React.FC = () => {
       } else {
         message.error(data.message || "Đăng nhập thất bại.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Lỗi đăng nhập:", error);
-      message.error("Lỗi server. Vui lòng thử lại.");
+      message.error(error.response?.data?.message || "Lỗi server. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }

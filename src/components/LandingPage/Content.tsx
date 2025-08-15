@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllMovies } from "@/api/movie.api";
+import { getAllMoviesSimple } from "@/api/movie.api";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
@@ -17,7 +17,7 @@ export default function HomePageContent() {
     isError,
   } = useQuery({
     queryKey: ["movies"],
-    queryFn: getAllMovies,
+    queryFn: getAllMoviesSimple,
   });
 
   const nowShowing = movieList.filter((movie) => movie.status === "dang_chieu");

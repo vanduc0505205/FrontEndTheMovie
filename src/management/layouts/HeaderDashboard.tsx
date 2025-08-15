@@ -1,5 +1,3 @@
-// HeaderStaff.tsx
-import React from "react";
 import { Layout, Avatar, Dropdown, Menu, Typography } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const { Header } = Layout;
 const { Text } = Typography;
 
-const HeaderStaff = () => {
+export default function HeaderDashboard({ role }: { role: 'admin' | 'staff' }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -26,15 +24,15 @@ const HeaderStaff = () => {
 
   return (
     <Header className="bg-white shadow-md px-6 flex justify-between items-center">
-      <Text className="text-xl font-semibold">Trang Quản Trị </Text>
+      <Text className="text-xl font-semibold">
+        {role === 'admin' ? 'Trang Quản Trị' : 'Trang Nhân Viên'}
+      </Text>
       <Dropdown overlay={menu} placement="bottomRight">
         <div className="flex items-center gap-2 cursor-pointer">
           <Avatar icon={<UserOutlined />} />
-          <Text className="hidden md:block">admin</Text>
+          <Text className="hidden md:block">{role}</Text>
         </div>
       </Dropdown>
     </Header>
   );
-};
-
-export default HeaderStaff;
+}
