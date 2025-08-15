@@ -1,4 +1,4 @@
-import { IRoom } from '@/types/room';
+import { IRoom } from '@/interface/room';
 import axiosInstance from '@/lib/authService';
 
 export const getRooms = async (): Promise<IRoom[]> => {

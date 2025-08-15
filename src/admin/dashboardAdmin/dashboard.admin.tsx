@@ -11,7 +11,6 @@ import {
   Spin,
   Button,
 } from "antd";
-import axios from "axios";
 import {
   LineChart,
   Line,
@@ -25,6 +24,7 @@ import {
 } from "recharts";
 import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { getUserBookings } from "@/api/user.api";
 
 const { RangePicker } = DatePicker;
 
@@ -58,7 +58,7 @@ const DashboardAdmin = () => {
     if (!userId) return;
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/booking/user/${userId}`);
+      const res = await getUserBookings(userId);
       const raw = res.data?.bookings ?? res.data ?? [];
       // Chuẩn hóa dữ liệu giống trang quản lý đơn hàng
       const normalized = raw.map((b) => {
@@ -274,29 +274,29 @@ const DashboardAdmin = () => {
       </Row>
 
       {/* Biểu đồ doanh thu theo phim */}
-    
-<Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-  <Col span={24}>
-    <Card title="📊 Doanh thu theo phim (VNĐ)">
-      {revenueByMovie.length === 0 ? (
-        <p>Không có dữ liệu</p>
-      ) : (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            data={revenueByMovie}
-            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="title" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="revenue" fill="#82ca9d" barSize={50} />
-          </BarChart>
-        </ResponsiveContainer>
-      )}
-    </Card>
-  </Col>
-</Row>
+
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+        <Col span={24}>
+          <Card title="📊 Doanh thu theo phim (VNĐ)">
+            {revenueByMovie.length === 0 ? (
+              <p>Không có dữ liệu</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={revenueByMovie}
+                  margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="title" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="revenue" fill="#82ca9d" barSize={50} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+        </Col>
+      </Row>
 
 
       {/* Bảng chi tiết doanh thu từng phim */}

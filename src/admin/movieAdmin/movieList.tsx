@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import { useEffect, useState, useCallback } from "react";
 import {
   Card,
   Button,
@@ -14,12 +13,12 @@ import {
   Select,
 } from "antd";
 import MovieModal from "./movieFormModal";
-import { IMovie } from "@/types/movie";
-import { ICategory } from "@/types/category";
 import { useNavigate } from "react-router-dom";
-import { Import } from "lucide-react";
 import dayjs from "dayjs";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { ICategory } from "@/interface/category";
+import { IMovie } from "@/interface/movie";
+import { createMovie, deleteMovie, getAllMovies, updateMovie } from "@/api/movie.api";
+import { getCategories } from "@/api/category.api";
 
 const getUserRole = () => {
   try {
@@ -74,12 +73,11 @@ export default function MovieList() {
       if (title) params.title = title;
       if (category) params.category = category;
       if (status) params.status = status;
+
       try {
-        const res = await axios.get("http://localhost:3000/movie", {
-          params,
-        });
-        setMovies(res.data.list);
-        setTotal(res.data.total);
+        const res = await getAllMovies(params);
+        setMovies(res.list);   // getAllMovies trả về res.data, trong đó có list
+        setTotal(res.total);
       } catch (err) {
         message.error("Không thể tải danh sách phim");
       }
@@ -99,8 +97,12 @@ export default function MovieList() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await axios.get("http://localhost:3000/category");
-      setCategories(res.data.list);
+      try {
+        const res = await getCategories();
+        setCategories(res); // API category trả về { list, total } giống movie
+      } catch (err) {
+        message.error("Không thể tải danh mục phim");
+      }
     };
     fetchCategories();
   }, []);
@@ -119,7 +121,7 @@ export default function MovieList() {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3000/movie/${id}`);
+      await deleteMovie(id);
       message.success("Xoá thành công");
       fetchMovies(
         currentPage,
@@ -154,8 +156,8 @@ export default function MovieList() {
         categories: Array.isArray(data.categories)
           ? data.categories.map((c: any) => c?.trim?.() || c).filter(Boolean)
           : data.categories
-          ? [data.categories].filter(Boolean)
-          : [],
+            ? [data.categories].filter(Boolean)
+            : [],
         actors: (() => {
           if (Array.isArray(data.actors)) {
             return data.actors
@@ -191,16 +193,10 @@ export default function MovieList() {
       }
 
       if (isEditing && selectedMovie) {
-        await axios.put(
-          `http://localhost:3000/movie/${selectedMovie._id}`,
-          formattedData
-        );
+        await updateMovie(selectedMovie._id, formattedData);
         message.success("Cập nhật thành công");
       } else {
-        const response = await axios.post(
-          "http://localhost:3000/movie",
-          formattedData
-        );
+        await createMovie(formattedData);
         message.success("Thêm phim thành công");
       }
 
@@ -210,7 +206,7 @@ export default function MovieList() {
       console.error("Error details:", error.response?.data || error.message);
       message.error(
         error.response?.data?.message ||
-          `Không thể ${isEditing ? "cập nhật" : "thêm"} phim. Vui lòng thử lại.`
+        `Không thể ${isEditing ? "cập nhật" : "thêm"} phim. Vui lòng thử lại.`
       );
     } finally {
       setLoading(false);

@@ -1,6 +1,6 @@
-import { IMovie } from '@/types/movie';
 import axiosInstance from '@/lib/authService'; 
 import MovieQueryParams from '@/interface/MovieQueryParams';
+import { IMovie } from '@/interface/movie';
 
 export const getAllMovies = async (params: MovieQueryParams) => {
   const res = await axiosInstance.get("http://localhost:3000/movie", { params });

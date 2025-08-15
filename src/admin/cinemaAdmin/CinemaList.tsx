@@ -3,7 +3,7 @@ import { Table, Button, Popconfirm, notification } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { deleteCinema, getCinemas } from "@/api/cinema.api";
-import { ICinema } from "@/types/cinema";
+import { ICinema } from "@/interface/cinema";
 
 const CinemaList = () => {
   const [page, setPage] = useState(1);

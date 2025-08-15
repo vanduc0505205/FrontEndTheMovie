@@ -3,7 +3,7 @@ import { Form, Input, Button, message, notification } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getCinemaById, updateCinema } from "@/api/cinema.api";
-import { Cinema } from "@/interface/cinema";
+import { ICinema } from "@/interface/cinema";
 
 const EditCinema = () => {
   const [form] = Form.useForm();
@@ -17,7 +17,7 @@ const EditCinema = () => {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: Partial<Cinema>) => updateCinema(id!, values),
+    mutationFn: (values: Partial<ICinema>) => updateCinema(id!, values),
     onSuccess: () => {
       message.success("Cập nhật thành công!");
       navigate("/admin/cinemas");

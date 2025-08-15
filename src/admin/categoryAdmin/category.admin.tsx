@@ -6,7 +6,6 @@ import {
   updateCategory,
   deleteCategory,
 } from '@/api/category.api';
-import { ICategory } from '@/types/category';
 import {
   Card,
   Input,
@@ -18,6 +17,7 @@ import {
   message,
   Popconfirm,
 } from 'antd';
+import { ICategory } from '@/interface/category';
 
 const { TextArea } = Input;
 const { Title } = Typography;

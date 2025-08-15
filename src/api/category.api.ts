@@ -1,6 +1,6 @@
 // services/category.service.ts
+import { ICategory } from "@/interface/category";
 import axiosInstance from "@/lib/authService";
-import { ICategory } from "@/types/category";
 
 export const getCategories = async (): Promise<ICategory[]> => {
   const res = await axiosInstance.get("/category");
