@@ -1,13 +1,13 @@
 import logo from "@/assets/images/logo.png";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
     <footer className="relative bg-primary-background text-white pb-10">
-
       <div className="container pt-10 pb-20">
         <div className="mb-10 mt-10">
           <div className="relative flex items-center mb-10">
-            <img src={logo} alt="nen"  className="w-12 h-12 object-contain"/>
+            <img src={logo} alt="nen" className="w-12 h-12 object-contain" />
             <h2 className="text-xl md:text-2xl font-medium text-main-color-200 ml-3">
               ALPHACINEMA
             </h2>
@@ -25,10 +25,38 @@ const Footer = () => {
               Truy cập nhanh
             </h3>
             <ul className="text-main-color-10/80 space-y-6 text-xl">
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Trang chủ</li>
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Tin tức</li>
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Liên hệ</li>
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Blog</li>
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-main-color-200 transition-colors cursor-pointer"
+                >
+                  Trang chủ
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/tin-tuc"
+                  className="hover:text-main-color-200 transition-colors cursor-pointer"
+                >
+                  Tin tức
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/lien-he"
+                  className="hover:text-main-color-200 transition-colors cursor-pointer"
+                >
+                  Liên hệ
+                </Link>
+              </li>
+              <li>
+                {/* <Link
+                  to="/blog"
+                  className="hover:text-main-color-200 transition-colors cursor-pointer"
+                >
+                  Blog
+                </Link> */}
+              </li>
             </ul>
           </div>
 
@@ -37,9 +65,18 @@ const Footer = () => {
               Chính sách & Điều khoản
             </h3>
             <ul className="text-main-color-10/80 space-y-6 text-xl">
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Chính sách bảo mật</li>
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Điều khoản sử dụng dịch vụ</li>
-              <li className="hover:text-main-color-200 transition-colors cursor-pointer">Câu hỏi thường gặp</li>
+              <Link
+                to="/quy-dinh-va-chinh-sach"
+                className="hover:text-main-color-200 transition-colors cursor-pointer"
+              >
+                Chính sách bao mật
+              </Link>
+              <li className="hover:text-main-color-200 transition-colors cursor-pointer">
+                Điều khoản sử dụng dịch vụ
+              </li>
+              <li className="hover:text-main-color-200 transition-colors cursor-pointer">
+                Câu hỏi thường gặp
+              </li>
             </ul>
           </div>
 
@@ -49,13 +86,20 @@ const Footer = () => {
             </h3>
             <div className="text-xl space-y-6">
               <p className="text-main-color-10/80">
-                <span className="text-main-color-200 font-medium">Địa chỉ:</span> số 13, phố Trịnh Văn Bô, Quận Nam Từ Liêm, Hà Nội, Việt Nam
+                <span className="text-main-color-200 font-medium">
+                  Địa chỉ:
+                </span>{" "}
+                số 13, phố Trịnh Văn Bô, Quận Nam Từ Liêm, Hà Nội, Việt Nam
               </p>
               <p className="text-main-color-10/80">
-                <span className="text-main-color-200 font-medium">Số điện thoại:</span> +841-900-247-05
+                <span className="text-main-color-200 font-medium">
+                  Số điện thoại:
+                </span>{" "}
+                +841-900-247-05
               </p>
               <p className="text-main-color-10/80">
-                <span className="text-main-color-200 font-medium">E-Mail:</span> Gmail@ALPHACINEMA.com
+                <span className="text-main-color-200 font-medium">E-Mail:</span>{" "}
+                Gmail@ALPHACINEMA.com
               </p>
             </div>
           </div>
