@@ -43,6 +43,7 @@ import OrderHistoryPage from './pages/OrderHistoryPage'
 import DiscountList from './admin/discountAdmin/discountList'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
 import { useEffect } from 'react';
+import ProfilePage from './pages/ProfilePage'
 
 
 
@@ -90,6 +91,7 @@ function App() {
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
         <Route path="/phim/:id/checkout" element={<Checkout />} />
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
+        <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
         
       </Route>
 

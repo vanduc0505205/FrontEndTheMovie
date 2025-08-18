@@ -96,7 +96,7 @@ const CheckPayment = () => {
             status !== 'info' && (
               <Button
                 key="history"
-                onClick={() => navigate('/history')}
+                onClick={() => navigate('/lichsudatve')}
                 className="ml-4"
               >
                 Xem lịch sử giao dịch
