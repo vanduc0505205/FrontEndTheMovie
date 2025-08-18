@@ -7,8 +7,23 @@ import Autoplay from "embla-carousel-autoplay";
 import { slideData } from "@/config";
 import { phimMai } from "@/assets/path";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function HomePageContent() {
+   useEffect(() => {
+  if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+    const script = document.createElement("script");
+    script.src = "https://app.preny.ai/embed-global.js";
+    script.async = true;
+    script.defer = true;
+    script.setAttribute("data-name-bot", "bot-demo");
+    script.setAttribute("data-button-style", "width:300px;height:300px;");
+    script.setAttribute("data-language", "vi");
+    script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
+    document.body.appendChild(script);
+  }
+}, []);
+
   const autoplay = Autoplay({ delay: 2000, stopOnInteraction: false });
 
   const {
