@@ -5,10 +5,9 @@ import { ArrowLeft, Clock, Calendar, User, Film, Star } from "lucide-react";
 import dayjs from "dayjs";
 import { getShowtimes } from "@/api/showtime.api";
 import { getMovieById } from "@/api/movie.api";
-import { IShowtime } from "@/types/showtime";
-import { IMovie } from "@/types/movie";
 import { useQuery } from "@tanstack/react-query";
-import MovieTrailer from "@/components/trailer/MovieTrailer";
+import MovieTrailer from "@/components/pageComponets/trailer/MovieTrailer";
+import { IShowtime } from "@/interface/showtime";
 
 export default function SelectShowtime() {
   // Tự động scroll lên đầu trang khi vào chi tiết phim

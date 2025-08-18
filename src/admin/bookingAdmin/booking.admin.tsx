@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Table, Spin, message, Button, Select } from "antd";
-import axios from "axios";
+import { getUserBookings, updateBookingStatus } from "@/api/user.api";
 
 const BookingAdmin = () => {
   const [orders, setOrders] = useState([]);
@@ -28,9 +28,7 @@ const BookingAdmin = () => {
     if (!userId) return;
     try {
       setLoading(true);
-
-      const res = await axios.get(`http://localhost:3000/booking/user/${userId}`);
-
+      const res = await getUserBookings(userId);
       const raw = res.data?.bookings ?? res.data ?? [];
 
       const normalized = raw.map((b) => {
@@ -86,9 +84,8 @@ const BookingAdmin = () => {
   // Hàm cập nhật trạng thái
   const handleUpdateStatus = async (bookingId, newStatus) => {
     try {
-      await axios.patch(`http://localhost:3000/booking/${bookingId}/status`, {
-        status: newStatus,
-      });
+      await updateBookingStatus(bookingId, newStatus);
+
       message.success("Cập nhật trạng thái thành công");
       fetchOrders();
     } catch (error) {
@@ -114,59 +111,59 @@ const BookingAdmin = () => {
     );
   }
 
- const columns = [
-  {
-    title: "Mã đặt vé",
-    dataIndex: "_id",
-    key: "_id",
-  },
-  {
-    title: "Phim",
-    dataIndex: "movieTitle",
-    key: "movieTitle",
-    render: (text) => text || "—",
-  },
-  {
-    title: "Ghế",
-    dataIndex: "seats",
-    key: "seats",
-    render: (seats) => seats.join(", "),
-  },
-  {
-    title: "Tổng tiền",
-    dataIndex: "totalPrice",
-    key: "totalPrice",
-    render: (price) =>
-      price?.toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      }),
-  },
-  {
-    title: "Ngày đặt",
-    dataIndex: "bookingDate",
-    key: "bookingDate",
-    render: (date) => new Date(date).toLocaleString(),
-  },
-  {
-    title: "Trạng thái",
-    dataIndex: "status",
-    key: "status",
-   render: (status, record) => (
-  <Select
-    value={status}
-    style={{ width: 140 }}
-    onChange={(value) => handleUpdateStatus(record._id, value)}
-    disabled={status === "paid" || status === "cancelled"}
-  >
-        <Select.Option value="paid">Đã thanh toán</Select.Option>
-        <Select.Option value="unpaid">Chưa thanh toán</Select.Option>
-        <Select.Option value="cancelled">Đã hủy</Select.Option>
-      
-      </Select>
-    ),
-  },
-];
+  const columns = [
+    {
+      title: "Mã đặt vé",
+      dataIndex: "_id",
+      key: "_id",
+    },
+    {
+      title: "Phim",
+      dataIndex: "movieTitle",
+      key: "movieTitle",
+      render: (text) => text || "—",
+    },
+    {
+      title: "Ghế",
+      dataIndex: "seats",
+      key: "seats",
+      render: (seats) => seats.join(", "),
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "totalPrice",
+      key: "totalPrice",
+      render: (price) =>
+        price?.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }),
+    },
+    {
+      title: "Ngày đặt",
+      dataIndex: "bookingDate",
+      key: "bookingDate",
+      render: (date) => new Date(date).toLocaleString(),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status, record) => (
+        <Select
+          value={status}
+          style={{ width: 140 }}
+          onChange={(value) => handleUpdateStatus(record._id, value)}
+          disabled={status === "paid" || status === "cancelled"}
+        >
+          <Select.Option value="paid">Đã thanh toán</Select.Option>
+          <Select.Option value="unpaid">Chưa thanh toán</Select.Option>
+          <Select.Option value="cancelled">Đã hủy</Select.Option>
+
+        </Select>
+      ),
+    },
+  ];
 
 
   return (

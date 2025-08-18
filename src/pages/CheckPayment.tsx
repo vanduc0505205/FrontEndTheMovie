@@ -1,3 +1,4 @@
+import { verifyVnPayPayment } from '@/api/payment.api';
 import { Result, Button, message } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -24,12 +25,9 @@ const CheckPayment = () => {
 
         // Convert URLSearchParams to object
         const params = Object.fromEntries(searchParams.entries());
-        
+
         // Make the API call
-        const { data } = await axios.get(
-          `http://localhost:3000/check_payment/verify`,
-          { params }
-        );
+        const { data } = await verifyVnPayPayment(params);
 
         if (data.success) {
           setStatus('success');
@@ -37,10 +35,10 @@ const CheckPayment = () => {
             title: 'Thanh toán thành công!',
             message: `Mã giao dịch: ${data.data.vnp_TransactionNo || 'N/A'}`,
           });
-          
+
           // Show success message
           message.success('Thanh toán của bạn đã được xử lý thành công');
-          
+
           // Redirect to home after 5 seconds
           setTimeout(() => {
             navigate('/');
@@ -51,31 +49,31 @@ const CheckPayment = () => {
             title: 'Thanh toán không thành công',
             message: data.message || 'Đã xảy ra lỗi khi xử lý thanh toán',
           });
-          
+
           // Show error message
           message.error(data.message || 'Có lỗi xảy ra khi xử lý thanh toán');
         }
       } catch (error: any) {
         console.error('Payment verification error:', error);
         setStatus('error');
-        
+
         let errorMessage = 'Đã xảy ra lỗi khi xác thực thanh toán';
-        
+
         if (error.response) {
           errorMessage = error.response.data?.message || errorMessage;
         } else if (error.request) {
           errorMessage = 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.';
         }
-        
+
         setPaymentStatus({
           title: 'Lỗi xác thực',
           message: errorMessage,
         });
-        
+
         message.error(errorMessage);
       }
     };
-    
+
     checkPayment();
   }, [searchParams, navigate]);
 
@@ -87,8 +85,8 @@ const CheckPayment = () => {
           title={paymentStatus.title}
           subTitle={paymentStatus.message}
           extra={[
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               key="home"
               onClick={() => navigate('/')}
               className="bg-blue-600 hover:bg-blue-700"
@@ -96,9 +94,9 @@ const CheckPayment = () => {
               Quay lại trang chủ
             </Button>,
             status !== 'info' && (
-              <Button 
+              <Button
                 key="history"
-                onClick={() => navigate('/history')}
+                onClick={() => navigate('/lichsudatve')}
                 className="ml-4"
               >
                 Xem lịch sử giao dịch

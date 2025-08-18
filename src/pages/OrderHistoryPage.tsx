@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Table, Spin, message } from "antd";
-import axios from "axios";
-
-
-
 import { Link } from "react-router-dom";
+import { getUserBookings } from "@/api/user.api";
 
 const OrderHistoryPage = () => {
   const [orders, setOrders] = useState([]);
@@ -24,7 +20,7 @@ const OrderHistoryPage = () => {
       const parsed = JSON.parse(rawUser);
       return parsed?._id || parsed?.id || null;
     } catch {
-     
+
       return rawUser;
     }
   };
@@ -38,59 +34,54 @@ const OrderHistoryPage = () => {
       return;
     }
 
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+const fetchOrders = async () => {
+  try {
+    setLoading(true);
+    setError(null);
 
-     const res = await fetch(`http://localhost:3000/booking/user/${userId}`);
-const json = await res.json();
-const raw = json?.bookings ?? json ?? [];
+    const json = await getUserBookings(userId);
+    const raw = json?.data?.bookings ?? [];
 
+    const normalized = raw.map((b) => {
+      const seatsArr = (b.seatList ?? [])
+        .map((s) => {
+          if (!s) return "";
+          if (typeof s.seatId === "object") {
+            return s.seatId?.seatCode || s.seatId?.name || "";
+          }
+          return "";
+        })
+        .filter((seat) => seat);
 
-        
-        const normalized = raw.map((b) => {
-        
-          const seatsArr = (b.seatList ?? [])
-            .map((s) => {
-              if (!s) return "";
-              if (typeof s.seatId === "object") {
-                return s.seatId?.seatCode || s.seatId?.name || "";
-              }
-            
-              return "";
-            })
-            .filter((seat) => seat);
+      const movieTitle =
+        (b.showtimeId &&
+          typeof b.showtimeId === "object" &&
+          b.showtimeId.movieId &&
+          b.showtimeId.movieId.title) ||
+        b.movieTitle ||
+        (b.showtimeId &&
+          typeof b.showtimeId === "object" &&
+          b.showtimeId.title) ||
+        "—";
 
-          const movieTitle =
-            (b.showtimeId &&
-              typeof b.showtimeId === "object" &&
-              b.showtimeId.movieId &&
-              b.showtimeId.movieId.title) ||
-            b.movieTitle ||
-            (b.showtimeId &&
-              typeof b.showtimeId === "object" &&
-              b.showtimeId.title) ||
-            "—";
+      return {
+        ...b,
+        key: b._id,
+        movieTitle,
+        seats: seatsArr.length > 0 ? seatsArr : ["(Không rõ)"],
+        totalPrice: b.totalPrice ?? b.totalAmount ?? 0,
+        bookingDate: b.createdAt,
+      };
+    });
 
-          return {
-            ...b,
-            key: b._id,
-            movieTitle,
-            seats: seatsArr.length > 0 ? seatsArr : ["(Không rõ)"],
-            totalPrice: b.totalPrice ?? b.totalAmount ?? 0,
-            bookingDate: b.createdAt,
-          };
-        });
-
-        setOrders(normalized);
-      } catch (err) {
-        console.error("Lỗi lấy lịch sử đặt vé:", err);
-        setError("Không thể tải lịch sử đặt vé");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setOrders(normalized);
+  } catch (err) {
+    console.error("Lỗi lấy lịch sử đặt vé:", err);
+    setError("Không thể tải lịch sử đặt vé");
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchOrders();
   }, [userId]);
@@ -247,11 +238,10 @@ const raw = json?.bookings ?? json ?? [];
               {currentOrders.map((order, index) => (
                 <div
                   key={order._id}
-                  className={`grid grid-cols-12 gap-4 p-4 hover:bg-gray-750 transition-colors duration-200 ${
-                    index !== currentOrders.length - 1
-                      ? "border-b border-gray-700"
-                      : ""
-                  }`}
+                  className={`grid grid-cols-12 gap-4 p-4 hover:bg-gray-750 transition-colors duration-200 ${index !== currentOrders.length - 1
+                    ? "border-b border-gray-700"
+                    : ""
+                    }`}
                 >
                   {/* Order ID */}
                   <div className="col-span-3 flex items-center">
@@ -395,11 +385,10 @@ const raw = json?.bookings ?? json ?? [];
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className={`px-2 py-1 rounded text-xs font-medium transition-colors duration-200 ${
-                        currentPage === 1
-                          ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-                          : "bg-gray-700 text-white hover:bg-gray-600"
-                      }`}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-colors duration-200 ${currentPage === 1
+                        ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                        : "bg-gray-700 text-white hover:bg-gray-600"
+                        }`}
                     >
                       ←
                     </button>
@@ -444,11 +433,10 @@ const raw = json?.bookings ?? json ?? [];
                           <button
                             key={page}
                             onClick={() => handlePageChange(page)}
-                            className={`px-2 py-1 rounded text-xs font-medium transition-colors duration-200 min-w-[24px] ${
-                              currentPage === page
-                                ? "bg-red-600 text-white"
-                                : "bg-gray-700 text-white hover:bg-gray-600"
-                            }`}
+                            className={`px-2 py-1 rounded text-xs font-medium transition-colors duration-200 min-w-[24px] ${currentPage === page
+                              ? "bg-red-600 text-white"
+                              : "bg-gray-700 text-white hover:bg-gray-600"
+                              }`}
                           >
                             {page}
                           </button>
@@ -460,11 +448,10 @@ const raw = json?.bookings ?? json ?? [];
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className={`px-2 py-1 rounded text-xs font-medium transition-colors duration-200 ${
-                        currentPage === totalPages
-                          ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-                          : "bg-gray-700 text-white hover:bg-gray-600"
-                      }`}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-colors duration-200 ${currentPage === totalPages
+                        ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                        : "bg-gray-700 text-white hover:bg-gray-600"
+                        }`}
                     >
                       →
                     </button>
@@ -480,3 +467,7 @@ const raw = json?.bookings ?? json ?? [];
 };
 
 export default OrderHistoryPage;
+function getBookingsByUser(userId: any) {
+  throw new Error("Function not implemented.");
+}
+
