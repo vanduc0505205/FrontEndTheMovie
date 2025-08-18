@@ -42,12 +42,33 @@ import RoomStaff from './staff/roomStaff/RoomAdmin'
 import OrderHistoryPage from './pages/OrderHistoryPage'
 import DiscountList from './admin/discountAdmin/discountList'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
+import { useEffect } from 'react';
 import ProfilePage from './pages/ProfilePage'
 
 
 
 
 function App() {
+    useEffect(() => {
+  if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+    const script = document.createElement("script");
+    script.src = "https://app.preny.ai/embed-global.js";
+    script.async = true;
+    script.defer = true;
+
+    script.onload = () => {
+      console.log("Preny script loaded ");
+    };
+
+    script.setAttribute("data-name-bot", "bot-demo");
+    script.setAttribute("data-button-style", "width:300px;height:300px;");
+    script.setAttribute("data-language", "vi");
+    script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
+
+    document.body.appendChild(script);
+  }
+}, []);
+
   return (
 <Routes>
       {/* PUBLIC ROUTES */}
