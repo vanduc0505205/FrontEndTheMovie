@@ -26,7 +26,7 @@ export default function SeatSelection() {
   const userId = searchParams.get("userId");
 
   const { movie, showtime } = location.state || {};
-  const actualRoomId = roomId || "688b9c84554800b4468c61ef";
+  const actualRoomId = roomId || showtime?.roomId._id;
 
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -36,7 +36,7 @@ export default function SeatSelection() {
     const fetchSeats = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/seat/room/${actualRoomId}`
+          `http://localhost:3000/seat/room/${actualRoomId}?showtimeId=${showtimeId}`
         );
         setSeats(res.data);
       } catch (err) {
@@ -45,9 +45,8 @@ export default function SeatSelection() {
         setLoading(false);
       }
     };
-
     fetchSeats();
-  }, [actualRoomId]);
+  }, [actualRoomId, showtimeId]);
 
   const toggleSeat = (seatCode: string, status: SeatStatus) => {
     if (status !== "available") return;
@@ -60,7 +59,8 @@ export default function SeatSelection() {
 
   // Lấy giá từ showtime.defaultPrice
   const defaultPrice = showtime?.defaultPrice || 100000;
-  const getSeatPrice = (type: string) => type === "VIP" ? defaultPrice * 1.5 : defaultPrice;
+  const getSeatPrice = (type: string) =>
+    type === "VIP" ? defaultPrice * 1.5 : defaultPrice;
   const totalPrice = selectedSeats.reduce((acc, code) => {
     const seat = seats.find((s) => s.seatCode === code);
     if (!seat) return acc;
@@ -91,9 +91,6 @@ export default function SeatSelection() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden">
-      {/* Background overlay */}
-      {/* <div className="absolute inset-0 bg-black/20"></div> */}
-
       <div className="relative z-10 px-4 py-8 min-h-screen">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -131,9 +128,7 @@ export default function SeatSelection() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Monitor size={14} className="text-red-400" />
-                          <span>
-                            Phòng {showtime.roomId?.roomName || "N/A"}
-                          </span>
+                          <span>Phòng {showtime.roomId?.name || "N/A"}</span>
                         </div>
                       </div>
                     </div>
@@ -195,15 +190,17 @@ export default function SeatSelection() {
                             <div className="flex gap-2">
                               {rowSeats.map(
                                 ({ _id, seatCode, type, status }) => {
+                                  const seatStatus =
+                                    status.toLowerCase() as SeatStatus;
                                   const isSelected =
                                     selectedSeats.includes(seatCode);
                                   let seatClasses =
                                     "relative w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs transition-all duration-200 transform";
 
-                                  if (status === "booked") {
+                                  if (seatStatus === "booked") {
                                     seatClasses +=
                                       " bg-red-500/80 text-white cursor-not-allowed border border-red-400";
-                                  } else if (status === "maintenance") {
+                                  } else if (seatStatus === "maintenance") {
                                     seatClasses +=
                                       " bg-gray-600/80 text-gray-300 cursor-not-allowed border border-gray-500";
                                   } else if (isSelected) {
@@ -221,14 +218,14 @@ export default function SeatSelection() {
                                     <div key={_id} className="relative">
                                       <button
                                         className={seatClasses}
-                                        disabled={status !== "available"}
+                                        disabled={seatStatus !== "available"}
                                         onClick={() =>
-                                          toggleSeat(seatCode, status)
+                                          toggleSeat(seatCode, seatStatus)
                                         }
                                         title={`${seatCode} - ${type} - ${
-                                          status === "available"
+                                          seatStatus === "available"
                                             ? "Có thể đặt"
-                                            : status === "booked"
+                                            : seatStatus === "booked"
                                             ? "Đã đặt"
                                             : "Bảo trì"
                                         }`}
@@ -276,6 +273,11 @@ export default function SeatSelection() {
                   color="bg-red-500/80"
                   textColor="text-white"
                   label="Đã đặt"
+                />
+                <LegendBox
+                  color="bg-gradient-to-r from-orange-900 to-orange-600"
+                  textColor="text-white"
+                  label="Đang giữ"
                 />
                 <LegendBox
                   color="bg-gray-600/80"
@@ -330,12 +332,12 @@ export default function SeatSelection() {
                             seatId: seat?._id || "",
                             seatCode: seat?.seatCode || "",
                             seatType,
-                            price
+                            price,
                           };
                         }),
                         totalPrice,
                         movie,
-                        showtime
+                        showtime,
                       };
 
                       navigate(`/phim/${movieId}/checkout`, {

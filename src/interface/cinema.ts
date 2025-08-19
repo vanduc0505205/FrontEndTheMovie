@@ -1,7 +1,7 @@
-export interface Cinema {
-  _id?: string;
+export interface ICinema {
+  _id: string;
   name: string;
   address: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,27 +1,12 @@
-export type UserRole = "customer" | "staff" | "admin";
-
-export interface User {
-  _id: string;
+export interface IUser {
+  _id?: string;
   username: string;
   email: string;
-  role: UserRole;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Login {
-  email: string;
-  password: string;
-}
-
-export interface Register {
-  username: string;
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  user: User;
-  accessToken: string;
-  refreshToken?: string;
+  password?: string;
+  role?: 'staff' | 'customer' | 'admin';
+  status?: 'active' | 'blocked'; 
+  resetToken?: string | null;
+  resetTokenExpires?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
