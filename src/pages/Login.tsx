@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import axiosInstance from "@/lib/authService";
 import { IUser } from "@/interface/user";
+import { login } from "@/api/auth.api";
 
 const { Title, Text } = Typography;
 
@@ -14,11 +14,8 @@ const Login: React.FC = () => {
   const onFinish = async (values: IUser) => {
     try {
       setLoading(true);
-      const res = await axiosInstance.post("/user/login", values, {
-        withCredentials: true,
-      });
-
-      const data = res.data;
+      const { email, password } = values;
+      const data = await login(email, password);
 
       if (data.accessToken) {
         if (data.user?.status === "blocked") {
@@ -49,7 +46,6 @@ const Login: React.FC = () => {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-5xl bg-white rounded-xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">

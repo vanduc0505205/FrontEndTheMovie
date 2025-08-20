@@ -18,8 +18,8 @@ import {
   deleteRoom,
 } from "@/api/room.api";
 import { getSeatsByRoom } from "@/api/seat.api";
-import { IRoom } from "@/types/room";
 import { getUserRole } from "@/lib/auth";
+import { IRoom } from "@/interface/room";
 
 const userRole = getUserRole();
 

@@ -11,8 +11,8 @@ import {
   Modal,
 } from "antd";
 import axios from "axios";
-import { IMovie } from "@/types/movie";
 import { ArrowLeftOutlined, CloseCircleTwoTone } from "@ant-design/icons";
+import { IMovie } from "@/interface/movie";
 
 const { Title, Paragraph } = Typography;
 

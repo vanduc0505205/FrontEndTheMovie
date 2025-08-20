@@ -13,13 +13,13 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { movieSchema } from "@/validations/movie.schema";
-import { IMovie } from "@/types/movie";
 import { getCategories } from "@/api/category.api";
 import { getAllMovies, getAllMoviesSimple } from "@/api/movie.api";
 import { RcFile, UploadFile } from "antd/es/upload";
 import ImgCrop from "antd-img-crop";
 import axiosInstance from "@/lib/authService";
 import { uploadImage } from "@/api/upload.api";
+import { IMovie } from "@/interface/movie";
 
 const { TextArea } = Input;
 const { Option } = Select;

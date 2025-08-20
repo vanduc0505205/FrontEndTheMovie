@@ -16,11 +16,11 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
 import MovieModal from "./movieFormModal";
-import { IMovie } from "@/types/movie";
-import { ICategory } from "@/types/category";
 
 import { getAllMovies, createMovie, updateMovie, deleteMovie } from "@/api/movie.api";
 import { getCategories } from "@/api/category.api";
+import { IMovie } from "@/interface/movie";
+import { ICategory } from "@/interface/category";
 
 const { Title } = Typography;
 

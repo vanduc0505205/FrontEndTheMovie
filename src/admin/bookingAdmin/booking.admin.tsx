@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Table, Spin, message, Button, Select } from "antd";
-import { getUserBookings, updateBookingStatus } from "@/api/user.api";
+import { getUserBookings, updateBookingStatus } from "@/api/booking.api";
 
 const BookingAdmin = () => {
   const [orders, setOrders] = useState([]);

@@ -10,9 +10,9 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { getShowtimes, deleteShowtime } from "@/api/showtime.api";
-import { IShowtime } from "@/types/showtime";
 import ShowtimeFormModal from "./ShowtimeFormModal";
 import { getUserRole } from "@/lib/auth";
+import { IShowtime } from "@/interface/showtime";
 
 const userRole = getUserRole();
 
