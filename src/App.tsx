@@ -153,7 +153,6 @@ function App() {
         <Route path="bookings" element={<BookingAdmin />} />
         <Route path="discounts" element={<DiscountList />} />
         <Route path="lienhe" element={<ContactAdmin />} />
-
       </Route>
 
       {/* STAFF ROUTES */}
