@@ -20,6 +20,7 @@ import CartPage from './pages/CartPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './admin/movieAdmin/movieList'
 import MovieDetailPage from '@/pages/MovieDetail'
+import Notification from './pages/Notification'
 
 import TicketPrice from './pages/TicketPrice'
 import RoomList from './admin/roomAdmin/RoomAdmin'
@@ -44,11 +45,37 @@ import DiscountList from './admin/discountAdmin/discountList'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
 import UserProfile from './pages/UserProfile'
 import ChangePasswordPage from './pages/ChangePasswordPage'
-import CategoryStaff from './staff/categoryStaff/categoryStaff'
+import ProfilePage from './pages/ProfilePage'
+import { useEffect } from 'react';
+import ContactAdmin from './admin/contactAdmin/contact.admin'
+import CategoryStaff from './staff/categoryStaff/CategoryStaff'
+
+
+
 
 
 
 function App() {
+    useEffect(() => {
+  if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+    const script = document.createElement("script");
+    script.src = "https://app.preny.ai/embed-global.js";
+    script.async = true;
+    script.defer = true;
+
+    script.onload = () => {
+      console.log("Preny script loaded ");
+    };
+
+    script.setAttribute("data-name-bot", "bot-demo");
+    script.setAttribute("data-button-style", "width:300px;height:300px;");
+    script.setAttribute("data-language", "vi");
+    script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
+
+    document.body.appendChild(script);
+  }
+}, []);
+
   return (
     <Routes>
       {/* PUBLIC ROUTES */}
@@ -56,6 +83,7 @@ function App() {
         <Route index element={<Index />} />
         <Route path="/phim/:id" element={<MovieDetailPage />} />
         <Route path="/lien-he" element={<Contact />} />
+        <Route path="/thongbao" element={<Notification />} />
         <Route path="/ticket-price" element={<TicketPrice />} />
         {/* <Route path="/dang-ky" element={<Register />} /> */}
         <Route path="/dang-nhap" element={<Login />} />
@@ -73,6 +101,8 @@ function App() {
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
+        <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
+        
       </Route>
 
       {/* CUSTOMER ROUTES */}
@@ -127,6 +157,9 @@ function App() {
         <Route path="cinemas/:id" element={<CinemaDetail />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
         <Route path="bookings" element={<BookingAdmin />} />
+        <Route path="discounts" element={<DiscountList />} />
+        <Route path="lienhe" element={<ContactAdmin />} />
+ 
       </Route>
 
       {/* STAFF ROUTES */}
