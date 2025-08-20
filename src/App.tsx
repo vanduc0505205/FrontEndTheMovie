@@ -50,6 +50,7 @@ import { useEffect } from 'react';
 import ContactAdmin from './admin/contactAdmin/contact.admin'
 import CategoryStaff from './staff/categoryStaff/CategoryStaff'
 import Showtime from './pages/Showtimes'
+import MovieDetailStaff from './staff/movieStaff/movieDetail'
 
 function App() {
   useEffect(() => {
@@ -171,6 +172,7 @@ function App() {
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="showtimes" element={<ShowtimeStaff />} />
         <Route path="movies" element={<MovieStaff />} />
+        <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="rooms" element={<RoomStaff />} />
         <Route path="categories" element={<CategoryStaff />} />
       </Route>

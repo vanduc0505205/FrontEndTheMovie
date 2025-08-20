@@ -11,7 +11,7 @@ export interface IMovie {
   language: string;
   trailer?: string;
   poster?: string;
-  banner?: string[];
+  banner?: string[] | string;
   ageRating: 'C13' | 'C16' | 'C18';
   status: 'sap_chieu' | 'dang_chieu' | 'ngung_chieu';
   taoLuc: string;

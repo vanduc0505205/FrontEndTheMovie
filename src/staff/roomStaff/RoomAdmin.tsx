@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Button,
@@ -21,14 +21,22 @@ import { getSeatsByRoom } from "@/api/seat.api";
 import { getUserRole } from "@/lib/auth";
 import { IRoom } from "@/interface/room";
 
-const userRole = getUserRole();
-
 const RoomList = () => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<IRoom | null>(null);
   const [roomHasSeats, setRoomHasSeats] = useState(false);
+
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = getUserRole();
+    setUserRole(role);
+  }, []);
+
+  // Nếu chưa xác định role, có thể return loading hoặc để rỗng
+
 
   const { data: rooms = [], isLoading } = useQuery({
     queryKey: ["rooms"],
@@ -133,12 +141,16 @@ const RoomList = () => {
     handleCreateOrUpdate(values);
   };
 
+  if (userRole === null) {
+    return <div>Đang tải...</div>;
+  }
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Quản lý phòng chiếu</h2>
 
-        {(userRole === "admin" || userRole === "staff") && ( 
+        {(userRole === "admin" || userRole === "staff") && (
           <Button
             type="primary"
             onClick={() => {

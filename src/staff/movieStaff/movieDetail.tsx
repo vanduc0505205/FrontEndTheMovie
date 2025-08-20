@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import { ArrowLeftOutlined, CloseCircleTwoTone } from "@ant-design/icons";
 import { IMovie } from "@/interface/movie";
+import { getMovieById } from "@/api/movie.api";
 
 const { Title, Paragraph } = Typography;
 
@@ -35,27 +36,26 @@ function getYoutubeEmbedUrl(url: string): string {
   }
 }
 
-export default function MovieDetail() {
+export default function MovieDetailStaff() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState<IMovie | null>(null);
   const [loading, setLoading] = useState(true);
   const [trailerVisible, setTrailerVisible] = useState(false);
 
-  const fetchDetail = async () => {
-    try {
-      const res = await axios.get(`http://localhost:3000/movie/${id}`);
-      const data = res.data?.newMovie || res.data; 
-      setMovie(data);
-    } catch (err) {
-      message.error("Không thể tải thông tin phim");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchDetail();
+    (async () => {
+      try {
+        const res = await getMovieById(id);
+        console.log("Movie data:", res);
+        setMovie(res);
+      } catch (err) {
+        message.error("Không thể tải thông tin phim");
+      } finally {
+        setLoading(false);
+      }
+    }
+    )()
   }, [id]);
 
   if (loading) {
@@ -87,13 +87,13 @@ export default function MovieDetail() {
         type="link"
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate(-1)}
-         style={{
+        style={{
           marginBottom: 16,
-          padding: '8px 16px',      
-          fontSize: '16px',         
-          height: 'auto',           
-  }}
-        
+          padding: '8px 16px',
+          fontSize: '16px',
+          height: 'auto',
+        }}
+
       >
         Quay lại danh sách phim
       </Button>
@@ -197,29 +197,21 @@ export default function MovieDetail() {
               />
             </div>
           </Modal>
-                <Button
-        type="primary"
-        size="large"
-        style={{ marginTop: 20 }}
-        onClick={() => navigate("/selectSeat", { state: { movieId: movie._id ,movie} })}
-      >
-        🎟️ Đặt vé ngay
-      </Button>
-          {movie.banner?.length > 0 && (
-            <>
-              <Paragraph strong style={{ marginTop: 24 }}>Banner:</Paragraph>
-              <div className="flex flex-wrap gap-2">
-                {movie.banner.map((url, index) => (
-                  <Image
-                    key={index}
-                    src={url}
-                    width={300}
-                    height={160}
-                    style={{ objectFit: "cover", borderRadius: 4 }}
-                  />
-                ))}
-              </div>
-            </>
+          <Title level={3} style={{ marginBottom: 8 }}>
+            Banner
+          </Title>
+          {movie.banner && (
+            <div className="flex flex-wrap gap-2">
+              {(Array.isArray(movie.banner) ? movie.banner : [movie.banner]).map((url, index) => (
+                <Image
+                  key={index}
+                  src={url}
+                  width={300}
+                  height={160}
+                  style={{ objectFit: "cover", borderRadius: 4 }}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>
@@ -251,7 +243,7 @@ export default function MovieDetail() {
         </div>
       </Modal>
 
-      
+
     </Card>
   );
 }

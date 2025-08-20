@@ -21,6 +21,7 @@ import { getAllMovies, createMovie, updateMovie, deleteMovie } from "@/api/movie
 import { getCategories } from "@/api/category.api";
 import { IMovie } from "@/interface/movie";
 import { ICategory } from "@/interface/category";
+import { getUserRole } from "@/lib/auth";
 
 const { Title } = Typography;
 
@@ -29,19 +30,6 @@ const statusMap: Record<IMovie["status"], { label: string; color: string }> = {
   dang_chieu: { label: "Đang chiếu", color: "green" },
   ngung_chieu: { label: "Ngừng chiếu", color: "red" },
 };
-
-const getUserRole = () => {
-  try {
-    const userStr = localStorage.getItem("user");
-    if (!userStr) return null;
-    const user = JSON.parse(userStr);
-    return user?.role || null;
-  } catch {
-    return null;
-  }
-};
-
-const userRole = getUserRole();
 
 export default function MovieList() {
   const [movies, setMovies] = useState<IMovie[]>([]);
@@ -60,6 +48,12 @@ export default function MovieList() {
   const [searchTitle, setSearchTitle] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = getUserRole();
+    setUserRole(role);
+  }, []);
 
   const loadMovies = useCallback(
     async (
@@ -178,8 +172,11 @@ export default function MovieList() {
       setLoading(false);
     }
   };
-  console.log(movies);
 
+  // Nếu chưa xác định role, có thể return loading hoặc để rỗng
+  if (userRole === null) {
+    return <div>Đang tải...</div>;
+  }
 
   return (
     <Card
@@ -414,7 +411,7 @@ export default function MovieList() {
                 {(userRole === "admin" || userRole === "staff") && (
                   <div>
                     <Space direction="vertical">
-                      <Button size="small" onClick={() => navigate(`/movie/${movie._id}`)}>
+                      <Button size="small" onClick={() => navigate(`${movie._id}`)}>
                         Chi tiết
                       </Button>
                       <Button size="small" onClick={() => handleEdit(movie)}>
