@@ -8,6 +8,7 @@ import {
   DollarOutlined,
   InsertRowAboveOutlined,
   ShoppingCartOutlined,
+  ContactsOutlined,
 } from '@ant-design/icons';
 import clsx from 'clsx';
 
@@ -23,6 +24,7 @@ const navItemsAdmin = [
   { label: 'Combo', path: 'combos', icon: <AppstoreOutlined /> },
   { label: 'Tài khoản', path: 'users', icon: <TeamOutlined /> },
   { label: 'Quản lý đơn hàng', path: 'bookings', icon: <ShoppingCartOutlined /> },
+  { label: "Quản lý Liên hệ", path: "lienhe", icon: <ContactsOutlined /> },
 
 ];
 

@@ -20,6 +20,7 @@ import CartPage from './pages/CartPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './admin/movieAdmin/movieList'
 import MovieDetailPage from '@/pages/MovieDetail'
+import Notification from './pages/Notification'
 
 import TicketPrice from './pages/TicketPrice'
 import RoomList from './admin/roomAdmin/RoomAdmin'
@@ -45,38 +46,41 @@ import DiscountList from './admin/discountAdmin/discountList'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
 import { useEffect } from 'react';
 import ProfilePage from './pages/ProfilePage'
+import ContactAdmin from './admin/contactAdmin/contact.admin'
+import Showtime from './pages/Showtimes'
 
 
 
 
 function App() {
-    useEffect(() => {
-  if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
-    const script = document.createElement("script");
-    script.src = "https://app.preny.ai/embed-global.js";
-    script.async = true;
-    script.defer = true;
+  useEffect(() => {
+    if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://app.preny.ai/embed-global.js";
+      script.async = true;
+      script.defer = true;
 
-    script.onload = () => {
-      console.log("Preny script loaded ");
-    };
+      script.onload = () => {
+        console.log("Preny script loaded ");
+      };
 
-    script.setAttribute("data-name-bot", "bot-demo");
-    script.setAttribute("data-button-style", "width:300px;height:300px;");
-    script.setAttribute("data-language", "vi");
-    script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
+      script.setAttribute("data-name-bot", "bot-demo");
+      script.setAttribute("data-button-style", "width:300px;height:300px;");
+      script.setAttribute("data-language", "vi");
+      script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
 
-    document.body.appendChild(script);
-  }
-}, []);
+      document.body.appendChild(script);
+    }
+  }, []);
 
   return (
-<Routes>
+    <Routes>
       {/* PUBLIC ROUTES */}
       <Route element={<DefaultLayout />}>
         <Route index element={<Index />} />
         <Route path="/phim/:id" element={<MovieDetailPage />} />
         <Route path="/lien-he" element={<Contact />} />
+        <Route path="/thongbao" element={<Notification />} />
         <Route path="/ticket-price" element={<TicketPrice />} />
         {/* <Route path="/dang-ky" element={<Register />} /> */}
         <Route path="/dang-nhap" element={<Login />} />
@@ -93,7 +97,7 @@ function App() {
         <Route path="/phim/:id/checkout" element={<Checkout />} />
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
         <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
-        
+        <Route path="/lich-chieu" element={<Showtime />} />
       </Route>
 
       {/* CUSTOMER ROUTES */}
@@ -150,6 +154,7 @@ function App() {
         <Route path="bookings" element={<BookingAdmin />} />
         <Route path="discounts" element={<DiscountList />} />
         <Route path="combos" element={<ComboList />} />
+        <Route path="lienhe" element={<ContactAdmin />} />
       </Route>
 
       {/* STAFF ROUTES */}
