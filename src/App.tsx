@@ -20,6 +20,7 @@ import CartPage from './pages/CartPage'
 import CheckPayment from './pages/CheckPayment'
 import MovieList from './admin/movieAdmin/movieList'
 import MovieDetailPage from '@/pages/MovieDetail'
+import Notification from './pages/Notification'
 
 import TicketPrice from './pages/TicketPrice'
 import RoomList from './admin/roomAdmin/RoomAdmin'
@@ -44,6 +45,9 @@ import DiscountList from './admin/discountAdmin/discountList'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
 import { useEffect } from 'react';
 import ProfilePage from './pages/ProfilePage'
+import ContactAdmin from './admin/contactAdmin/contact.admin'
+
+
 
 
 
@@ -76,6 +80,7 @@ function App() {
         <Route index element={<Index />} />
         <Route path="/phim/:id" element={<MovieDetailPage />} />
         <Route path="/lien-he" element={<Contact />} />
+        <Route path="/thongbao" element={<Notification />} />
         <Route path="/ticket-price" element={<TicketPrice />} />
         {/* <Route path="/dang-ky" element={<Register />} /> */}
         <Route path="/dang-nhap" element={<Login />} />
@@ -148,6 +153,8 @@ function App() {
         <Route path="dashboard" element={<DashboardAdmin />} />
         <Route path="bookings" element={<BookingAdmin />} />
         <Route path="discounts" element={<DiscountList />} />
+        <Route path="lienhe" element={<ContactAdmin />} />
+ 
       </Route>
 
       {/* STAFF ROUTES */}
