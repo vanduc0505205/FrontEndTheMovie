@@ -100,7 +100,7 @@ const Header = () => {
                   Trang chủ
                 </Link>
                 <Link
-                  to="/ve-chung-toi"
+                  to="/lich-chieu "
                   className="block text-base text-main-color-50 mb-4"
                   onClick={toggleMenu}
                 >
@@ -171,7 +171,7 @@ const Header = () => {
             </Link>
             <div className="w-[1px] h-4 bg-white/30" />
             <Link
-              to="/ve-chung-toi"
+              to="/lich-chieu "
               className="relative group text-white after:content-[''] after:absolute after:w-0 after:h-[2px] after:bottom-[-4px] after:left-0 after:bg-green-400 after:transition-all after:duration-300 hover:after:w-full px-4"
             >
               Lịch Chiếu
