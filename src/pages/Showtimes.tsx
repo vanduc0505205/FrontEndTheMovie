@@ -148,11 +148,11 @@ const Showtime = () => {
                         return (
                           <Tag
                             key={(t as any)._id}
-                            color={isPast ? "default" : "cyan"} // suất đã qua thì xám
+                            color={isPast ? "default" : "cyan"}
                             className={`px-3 py-1 text-sm rounded-lg ${isPast ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:opacity-80"
                               }`}
                             onClick={() => {
-                              if (!isPast) handleSelectShowtime(t); // chỉ cho click khi chưa qua
+                              if (!isPast) handleSelectShowtime(t);
                             }}
                           >
                             {dayjs(t.startTime).format("HH:mm")}
