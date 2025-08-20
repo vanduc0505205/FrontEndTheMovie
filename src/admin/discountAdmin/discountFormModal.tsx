@@ -134,7 +134,7 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
               <InputNumber
                 style={{ width: "100%" }}
                 min={0}
-                step={10000}
+                step={1000}
                 formatter={numberFormatter}
                 parser={numberParser}
               />

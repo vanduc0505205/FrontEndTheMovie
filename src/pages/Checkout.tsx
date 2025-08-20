@@ -1,9 +1,11 @@
+// src/components/Checkout.jsx
 import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
-import { Spin, message, Modal } from "antd"; 
-import ComboSelectionModal from "./comboSelectionModal"; 
+import { Spin, message, Modal, Input, Button } from "antd";
+import { checkDiscountCode } from "@/api/discount.api";
+import ComboSelectionModal from "./comboSelectionModal";
 import { bookTicket, createVnPayPayment } from "@/api/booking.api";
 
 export default function Checkout() {
@@ -15,6 +17,13 @@ export default function Checkout() {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState(null);
+
+  const [promoCode, setPromoCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
+  const [appliedPromoCode, setAppliedPromoCode] = useState(null);
+  const [finalPrice, setFinalPrice] = useState(0);
 
   const {
     data: movies,
@@ -56,24 +65,74 @@ export default function Checkout() {
     );
   }
 
-  const { userId, showtimeId, seatList, totalPrice, movie } = bookingData;
+  const { userId, showtimeId, seatList, movie } = bookingData;
 
   const handleSelectCombo = (combo) => {
     setSelectedCombo(combo);
     setIsModalVisible(false);
   };
-  
-  // HÀM MỚI: Hủy combo đã chọn
+
   const handleRemoveCombo = () => {
-      setSelectedCombo(null);
+    setSelectedCombo(null);
   };
 
-  const calculateTotalPrice = () => {
+  const handleApplyPromoCode = async () => {
+    // 1. Kiểm tra mã giảm giá
+    if (!promoCode) {
+      message.warning("Vui lòng nhập mã giảm giá.");
+      return;
+    }
+
+    // Đặt trạng thái loading
+    setIsApplyingPromo(true);
+
+    try {
+      // 2. Tính tổng tiền trước khi giảm giá (ở frontend)
+      let totalBeforeDiscount = seatList.reduce((sum, seat) => sum + seat.price, 0);
+      if (selectedCombo) {
+        totalBeforeDiscount += selectedCombo.price;
+      }
+
+      // 3. Gọi API để backend tính toán
+      const response = await checkDiscountCode(promoCode, totalBeforeDiscount);
+
+      // 4. Cập nhật state với dữ liệu từ backend
+      const { success, discountAmount, finalPrice, message: apiMessage } = response;
+      if (success) {
+        // Lưu mã giảm giá đã áp dụng vào state để không thể áp dụng lại
+        setAppliedPromoCode(promoCode);
+
+        // Lưu số tiền giảm giá và tổng tiền cuối cùng
+        setDiscountAmount(discountAmount);
+        setFinalPrice(finalPrice);
+
+        message.success(apiMessage || "Áp dụng mã giảm giá thành công!");
+      } else {
+        // Xử lý trường hợp backend trả về success: false
+        setDiscountAmount(0);
+        setAppliedPromoCode(null);
+        message.error(apiMessage || "Mã giảm giá không hợp lệ.");
+      }
+    } catch (error) {
+      // console.error("Lỗi khi áp dụng mã giảm giá:", error);
+
+      // Reset state khi có lỗi
+      setDiscountAmount(0);
+      setAppliedPromoCode(null);
+
+      // Hiển thị lỗi từ backend
+      message.error(error.response?.data?.message || "Mã giảm giá không hợp lệ.");
+    } finally {
+      setIsApplyingPromo(false);
+    }
+  };
+
+  const calculateFinalPrice = () => {
     let total = seatList.reduce((sum, seat) => sum + seat.price, 0);
     if (selectedCombo) {
       total += selectedCombo.price;
     }
-    return total;
+    return Math.max(0, total - discountAmount);
   };
 
   const handlePayment = async (method) => {
@@ -83,8 +142,6 @@ export default function Checkout() {
         throw new Error("Thiếu thông tin đặt vé. Vui lòng thử lại.");
       }
 
-      const total = calculateTotalPrice();
-
       const bookingPayload = {
         userId,
         showtimeId,
@@ -93,25 +150,27 @@ export default function Checkout() {
           seatType: seat.seatType,
           price: seat.price,
         })),
-        totalPrice: total,
+        comboId: selectedCombo ? selectedCombo._id : null,
+        promoCode: promoCode || null,
         paymentMethod: method === "vnpay" ? "VNPAY" : "COD",
-        combo: selectedCombo ? {
-          comboId: selectedCombo._id,
-          name: selectedCombo.name,
-          price: selectedCombo.price,
-          popcorns: selectedCombo.popcorns,
-          drinks: selectedCombo.drinks,
-        } : null
       };
 
-      // Gọi API đặt vé mới
+      // Bước 1: Gọi API backend để tạo booking và nhận total từ server
       const res = await bookTicket(bookingPayload);
+      const createdBooking = res.data.booking;
 
-      if (method === "vnpay" && res.data.booking?._id) {
+      // Kiểm tra nếu booking không tồn tại
+      if (!createdBooking?._id || createdBooking?.totalPrice === undefined) {
+        throw new Error("Không thể tạo đơn hàng. Vui lòng thử lại.");
+      }
+
+      // Bước 2: Sử dụng tổng tiền được tính toán bởi backend để thanh toán
+      const finalTotalPrice = createdBooking.totalPrice;
+
+      if (method === "vnpay") {
         try {
-          // Gọi API tạo URL thanh toán VNPay
-          const vnpayRes = await createVnPayPayment(total);
-
+          // Sử dụng finalTotalPrice từ backend để tạo URL VNPay
+          const vnpayRes = await createVnPayPayment(finalTotalPrice);
           if (vnpayRes.data?.paymentUrl) {
             window.location.href = vnpayRes.data.paymentUrl;
             return;
@@ -128,20 +187,9 @@ export default function Checkout() {
             <div>
               <div className="font-bold text-lg mb-2">Đặt vé thành công!</div>
               <div className="text-gray-700">
-                <p>
-                  Mã đơn hàng:{" "}
-                  <span className="font-medium">{res.data.booking?._id}</span>
-                </p>
-                <p>
-                  Tổng tiền:{" "}
-                  <span className="font-medium">
-                    {res.data.booking?.totalPrice?.toLocaleString()} VNĐ
-                  </span>
-                </p>
-                <p className="mt-2">
-                  Vui lòng đến quầy vé thanh toán trước 15 phút khi đến xem
-                  phim.
-                </p>
+                <p>Mã đơn hàng: <span className="font-medium">{createdBooking?._id}</span></p>
+                <p>Tổng tiền: <span className="font-medium">{finalTotalPrice?.toLocaleString()} VNĐ</span></p>
+                <p className="mt-2">Vui lòng đến quầy vé thanh toán trước 15 phút khi đến xem phim.</p>
               </div>
             </div>
           ),
@@ -156,32 +204,17 @@ export default function Checkout() {
       let errorMessage = "Có lỗi xảy ra khi xử lý thanh toán";
       let errorDetails = "";
       if (error.response) {
-        console.error("Chi tiết lỗi từ server:", {
-          status: error.response.status,
-          data: error.response.data,
-          headers: error.response.headers,
-        });
-        errorMessage =
-          error.response.data?.message ||
-          `Lỗi từ server (${error.response.status})`;
+        console.error("Chi tiết lỗi từ server:", { status: error.response.status, data: error.response.data, headers: error.response.headers });
+        errorMessage = error.response.data?.message || `Lỗi từ server (${error.response.status})`;
         if (error.response.data?.error) {
-          errorDetails = `Chi tiết: ${JSON.stringify(
-            error.response.data.error,
-            null,
-            2
-          )}`;
+          errorDetails = `Chi tiết: ${JSON.stringify(error.response.data.error, null, 2)}`;
         } else if (error.response.data) {
-          errorDetails = `Phản hồi: ${JSON.stringify(
-            error.response.data,
-            null,
-            2
-          )}`;
+          errorDetails = `Phản hồi: ${JSON.stringify(error.response.data, null, 2)}`;
         }
       } else if (error.request) {
         console.error("Không nhận được phản hồi từ server:", error.request);
         errorMessage = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra:";
-        errorDetails =
-          "1. Đảm bảo backend đang chạy\n2. Kiểm tra kết nối mạng\n3. Thử lại sau ít phút";
+        errorDetails = "1. Đảm bảo backend đang chạy\n2. Kiểm tra kết nối mạng\n3. Thử lại sau ít phút";
       } else {
         console.error("Lỗi khi thiết lập yêu cầu:", error.message);
         errorMessage = `Lỗi: ${error.message}`;
@@ -190,11 +223,7 @@ export default function Checkout() {
         content: (
           <div>
             <div className="font-bold">{errorMessage}</div>
-            {errorDetails && (
-              <pre className="mt-2 text-xs text-gray-600 whitespace-pre-wrap">
-                {errorDetails}
-              </pre>
-            )}
+            {errorDetails && <pre className="mt-2 text-xs text-gray-600 whitespace-pre-wrap">{errorDetails}</pre>}
           </div>
         ),
         duration: 5,
@@ -220,8 +249,7 @@ export default function Checkout() {
     );
   }
 
-  // Cập nhật totalPrice để hiển thị
-  const displayedTotalPrice = calculateTotalPrice();
+  const displayedTotalPrice = calculateFinalPrice();
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden pt-20">
@@ -355,43 +383,6 @@ export default function Checkout() {
                     )}
                   </div>
                 </div>
-
-                {/* Total Price & Combo */}
-                <div className="space-y-4">
-                  {selectedCombo && (
-                    <div className="flex justify-between items-center text-white/80">
-                      <span className="font-medium">
-                        Combo ({selectedCombo.name}):
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span>
-                          {selectedCombo.price.toLocaleString()} VNĐ
-                        </span>
-                        {/* NÚT HỦY COMBO */}
-                        <button
-                          onClick={handleRemoveCombo}
-                          className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-600 transition-colors"
-                        >
-                          Hủy
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-center pt-4 border-t border-white/20">
-                    <span className="text-xl font-semibold text-white">
-                      Tổng tiền:
-                    </span>
-                    <div className="text-right">
-                      <span className="text-3xl font-bold text-amber-400">
-                        {displayedTotalPrice?.toLocaleString()} VNĐ
-                      </span>
-                      <p className="text-sm text-gray-400 mt-1">
-                        {seatList.length} ghế đã chọn
-                      </p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -410,6 +401,82 @@ export default function Checkout() {
                 </svg>
                 Thêm Combo
               </button>
+            </div>
+
+            {/* Khu vực nhập mã giảm giá */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,15H13V13H15V11H13V9H11V11H9V13H11V15Z" />
+                </svg>
+                Mã Giảm Giá
+              </h2>
+              <div className="bg-black/20 rounded-xl border border-white/10 p-6 flex flex-col sm:flex-row gap-4">
+                <input
+                  placeholder="Nhập mã giảm giá"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                  className="flex-1 bg-white/10 text-white placeholder-gray-400
+                            border border-white/20 hover:border-white/40 focus:border-red-500
+                            rounded-md px-3 py-2 transition-colors duration-200"
+                />
+
+                <Button
+                  type="primary"
+                  onClick={handleApplyPromoCode}
+                  loading={isApplyingPromo}
+                  className="bg-red-600 hover:!bg-red-700 font-bold text-white"
+                >
+                  Áp Dụng
+                </Button>
+              </div>
+            </div>
+
+            {/* Hiển thị chi tiết tổng tiền */}
+            <div className="space-y-4">
+              {selectedCombo && (
+                <div className="flex justify-between items-center text-white/80">
+                  <span className="font-medium">
+                    Combo ({selectedCombo.name}):
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {selectedCombo.price.toLocaleString()} VNĐ
+                    </span>
+                    <button
+                      onClick={handleRemoveCombo}
+                      className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-600 transition-colors"
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {discountAmount > 0 && (
+                <div className="flex justify-between items-center text-white/80">
+                  <span className="font-medium text-red-400">
+                    Mã giảm giá đã áp dụng:
+                  </span>
+                  <span className="text-red-400">
+                    - {discountAmount.toLocaleString()} VNĐ
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center pt-4 border-t border-white/20">
+                <span className="text-xl font-semibold text-white">
+                  Tổng tiền:
+                </span>
+                <div className="text-right">
+                  <span className="text-3xl font-bold text-amber-400">
+                    {displayedTotalPrice?.toLocaleString()} VNĐ
+                  </span>
+                  <p className="text-sm text-gray-400 mt-1">
+                    {seatList.length} ghế đã chọn
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Payment Buttons */}
@@ -548,7 +615,6 @@ export default function Checkout() {
           </div>
         </div>
       </div>
-      {/* Thêm Modal ở cuối component */}
       <ComboSelectionModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}

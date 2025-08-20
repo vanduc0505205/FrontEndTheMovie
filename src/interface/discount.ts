@@ -2,6 +2,7 @@ export interface IDiscount {
   _id: string;
   code: string;
   description?: string;
+  type: "fixed"; // loại giảm giá: phần trăm hoặc cố định
   value: number;               // số tiền giảm trực tiếp (VNĐ)
   quantity?: number;           // tổng số lượt được sử dụng (null/undefined = không giới hạn)
   usedCount?: number;          // số lượt đã sử dụng
