@@ -1,4 +1,3 @@
-// src/api/booking.ts
 import axiosInstance from "@/lib/authService";
 
 export const bookTicket = async (bookingPayload: any) => {

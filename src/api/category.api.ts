@@ -1,4 +1,3 @@
-// services/category.service.ts
 import { ICategory } from "@/interface/category";
 import axiosInstance from "@/lib/authService";
 
