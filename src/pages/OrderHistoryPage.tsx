@@ -1,6 +1,6 @@
+import { getUserBookings } from "@/api/booking.api";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getUserBookings } from "@/api/user.api";
 
 const OrderHistoryPage = () => {
   const [orders, setOrders] = useState([]);
@@ -39,7 +39,7 @@ const fetchOrders = async () => {
     setLoading(true);
     setError(null);
 
-    const json = await getUserBookings(userId);
+    const json = await getUserBookings(userId); 
     const raw = json?.data?.bookings ?? [];
 
     const normalized = raw.map((b) => {

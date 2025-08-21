@@ -1,4 +1,4 @@
-import { IUser } from '@/interface/user';
+import { IUpdateProfile, IUser } from '@/interface/user';
 import axiosInstance from '@/lib/authService';
 
 export const getAllUsers = async (): Promise<{ users: IUser[] }> => {
@@ -22,10 +22,11 @@ export const toggleUserStatus = async (id: string, status: 'active' | 'blocked')
   return axiosInstance.patch(`/user/${id}/status`, { status });
 };
 
-export const getUserBookings = async (userId: string) => {
-  return axiosInstance.get(`/booking/user/${userId}`);
+export const updateProfile = async (id: string, data: IUpdateProfile) => {
+  return axiosInstance.put(`/user/${id}`, data);
 };
 
-export const updateBookingStatus = async (bookingId: string, status: string) => {
-  return axiosInstance.patch(`/booking/${bookingId}/status`, { status });
+export const getUserById = async (id: string) => {
+  const res = await axiosInstance.get(`/user/${id}`);
+  return res.data;
 };

@@ -3,7 +3,8 @@ import logo from "@/assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
-import { ShoppingCart } from "lucide-react";
+import { Dropdown, Modal } from "antd";
+import { DownOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 
 const Header = () => {
   const isMobile = useIsMobile();
@@ -25,7 +26,6 @@ const Header = () => {
     };
   }, []);
 
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -37,6 +37,20 @@ const Header = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const handleLogout = () => {
+    Modal.confirm({
+      title: "Xác nhận đăng xuất",
+      icon: <ExclamationCircleOutlined />,
+      content: "Bạn có chắc chắn muốn đăng xuất không?",
+      okText: "Đăng xuất",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        localStorage.removeItem("user");
+        window.location.href = "/dang-xuat";
+      },
+    });
+  };
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${isScrolled
@@ -191,30 +205,40 @@ const Header = () => {
             <div className="w-[1px] h-4 bg-white/30" />
             <div className="space-x-2 mx-4">
               {user ? (
-                <>
-                  <div className="flex items-center gap-2">
-                    <span className="text-white leading-[36px]">👋 {user.email}</span>
-                    <Link to="/dang-xuat">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border border-red-500 text-red-500 hover:bg-red-500/10 h-9"
-                      >
-                        Đăng xuất
-                      </Button>
-                    </Link>
-                    {/* <Link to="/gio-hang">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border border-main-color-100 text-main-color-100 hover:bg-main-color-100/10 h-9"
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-1" /> Giỏ hàng
-                      </Button>
-                    </Link> */}
-                  </div>
-
-                </>
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: "profile",
+                        label: <Link className="block w-full" to="/profile">Thông tin người dùng</Link>,
+                      },
+                      {
+                        key: "historyOrder",
+                        label: <Link className="block w-full" to="/lichsudatve">Lịch sử đặt vé</Link>,
+                      },
+                      {
+                        key: "logout",
+                        label: (
+                          <span onClick={handleLogout} className="text-red-500 block w-full">
+                            Đăng xuất
+                          </span>
+                        ),
+                      },
+                    ],
+                  }}
+                  placement="bottomRight"
+                  trigger={["click"]}
+                >
+                  <button className="flex items-center gap-2 cursor-pointer text-white bg-white/10 px-3 py-1 rounded-full hover:bg-white/20 transition-all duration-200">
+                    <img
+                      src={user.avatar ? user.avatar : 'http://localhost:3000/uploads/avatar-default.svg'}
+                      alt="avatar"
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                    <span className="truncate max-w-[120px]">{user.username}</span>
+                    <DownOutlined />
+                  </button>
+                </Dropdown>
               ) : (
                 <>
                   <Link to="/dang-nhap">

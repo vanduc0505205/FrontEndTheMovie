@@ -33,6 +33,7 @@ const navItemsStaff = [
   { label: 'Lịch chiếu', path: 'showtimes', icon: <VideoCameraOutlined /> },
   { label: 'Phim', path: 'movies', icon: <VideoCameraOutlined /> },
   { label: 'Phòng chiếu', path: 'rooms', icon: <InsertRowAboveOutlined /> },
+  { label: 'Danh mục', path: 'categories', icon: <AppstoreOutlined /> },
 ];
 
 export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {

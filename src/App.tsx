@@ -43,13 +43,14 @@ import RoomStaff from './staff/roomStaff/RoomAdmin'
 import OrderHistoryPage from './pages/OrderHistoryPage'
 import DiscountList from './admin/discountAdmin/discountList'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
-import { useEffect } from 'react';
+import UserProfile from './pages/UserProfile'
+import ChangePasswordPage from './pages/ChangePasswordPage'
 import ProfilePage from './pages/ProfilePage'
+import { useEffect } from 'react';
 import ContactAdmin from './admin/contactAdmin/contact.admin'
+import CategoryStaff from './staff/categoryStaff/CategoryStaff'
 import Showtime from './pages/Showtimes'
-
-
-
+import MovieDetailStaff from './staff/movieStaff/movieDetail'
 
 function App() {
   useEffect(() => {
@@ -95,6 +96,8 @@ function App() {
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
         <Route path="/phim/:id/checkout" element={<Checkout />} />
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
         <Route path="/lich-chieu" element={<Showtime />} />
       </Route>
@@ -169,7 +172,9 @@ function App() {
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="showtimes" element={<ShowtimeStaff />} />
         <Route path="movies" element={<MovieStaff />} />
+        <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="rooms" element={<RoomStaff />} />
+        <Route path="categories" element={<CategoryStaff />} />
       </Route>
 
       {/* ERROR PAGES */}
