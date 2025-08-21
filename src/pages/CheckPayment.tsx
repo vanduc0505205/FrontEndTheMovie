@@ -16,43 +16,29 @@ const CheckPayment = () => {
   useEffect(() => {
     const checkPayment = async () => {
       try {
-        // Show loading state
         setStatus('info');
         setPaymentStatus({
           title: 'Đang xác thực thanh toán...',
           message: 'Vui lòng chờ trong giây lát',
         });
 
-        // Convert URLSearchParams to object
         const params = Object.fromEntries(searchParams.entries());
 
-        // Make the API call
         const { data } = await verifyVnPayPayment(params);
 
-        if (data.success) {
-          setStatus('success');
-          setPaymentStatus({
-            title: 'Thanh toán thành công!',
-            message: `Mã giao dịch: ${data.data.vnp_TransactionNo || 'N/A'}`,
-          });
-
-          // Show success message
-          message.success('Thanh toán của bạn đã được xử lý thành công');
-
-          // Redirect to home after 5 seconds
-          setTimeout(() => {
-            navigate('/');
-          }, 5000);
-        } else {
-          setStatus('error');
-          setPaymentStatus({
-            title: 'Thanh toán không thành công',
-            message: data.message || 'Đã xảy ra lỗi khi xử lý thanh toán',
-          });
-
-          // Show error message
-          message.error(data.message || 'Có lỗi xảy ra khi xử lý thanh toán');
+        if (data?.success === false) {
+          throw new Error(data?.message || 'Thanh toán không thành công hoặc đã hủy');
         }
+
+        setStatus('success');
+        setPaymentStatus({
+          title: 'Thanh toán thành công!',
+          message: `${data?.message || 'Giao dịch thành công'}${data?.bookingId ? ` | Booking ID: ${data.bookingId}` : ''}`,
+        });
+        message.success('Thanh toán của bạn đã được xử lý thành công');
+
+        // Optional redirect nếu muốn
+        // setTimeout(() => navigate('/'), 5000);
       } catch (error: any) {
         console.error('Payment verification error:', error);
         setStatus('error');

@@ -10,7 +10,6 @@ export const resetPassword = async (token: string, newPassword: string) => {
   return res.data;
 };
 
-// API lấy thông tin user sau khi login OAuth
 export const getOAuthUser = async () => {
   const res = await axiosInstance.get("/auth/me");
   return res.data;

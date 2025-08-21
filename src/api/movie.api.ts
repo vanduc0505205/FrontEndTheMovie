@@ -9,7 +9,7 @@ export const getAllMovies = async (params: MovieQueryParams) => {
 
 export const getAllMoviesSimple = async () => {
   const res = await axiosInstance.get('/movie');
-  return res.data.list; // hoặc tùy response backend
+  return res.data.list; 
 };
 
 export const getMovieById = async (id: string): Promise<IMovie> => {

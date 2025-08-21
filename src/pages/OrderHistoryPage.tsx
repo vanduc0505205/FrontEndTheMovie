@@ -92,6 +92,20 @@ const fetchOrders = async () => {
   const endIndex = startIndex + itemsPerPage;
   const currentOrders = orders.slice(startIndex, endIndex);
 
+  const getStatusBadge = (status?: string) => {
+    const s = (status || '').toLowerCase();
+    if (s === 'paid' || s === 'đã đặt') {
+      return { label: 'Đã xác nhận', cls: 'bg-green-600 text-white' };
+    }
+    if (s === 'pending' || s === 'đang chờ') {
+      return { label: 'Đang chờ', cls: 'bg-yellow-500 text-black' };
+    }
+    if (s === 'cancelled' || s === 'đã hủy' || s === 'da huy') {
+      return { label: 'Đã hủy', cls: 'bg-gray-500 text-white' };
+    }
+    return { label: 'Chưa thanh toán', cls: 'bg-red-600 text-white' };
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -265,9 +279,14 @@ const fetchOrders = async () => {
                         <p className="text-white font-medium text-sm">
                           {order._id}
                         </p>
-                        <span className="inline-block px-2 py-1 bg-green-600 text-white text-xs rounded-full mt-1">
-                          Đã xác nhận
-                        </span>
+                        {(() => {
+                          const { label, cls } = getStatusBadge(order.status);
+                          return (
+                            <span className={`inline-block px-2 py-1 ${cls} text-xs rounded-full mt-1`}>
+                              {label}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -395,7 +414,7 @@ const fetchOrders = async () => {
 
                     {/* Smart Pagination Logic */}
                     {(() => {
-                      const delta = 2; // Number of pages to show around current page
+                      const delta = 2;
                       const range = [];
                       const rangeWithDots = [];
 
