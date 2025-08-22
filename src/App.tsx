@@ -51,6 +51,8 @@ import ContactAdmin from './admin/contactAdmin/contact.admin'
 import CategoryStaff from './staff/categoryStaff/CategoryStaff'
 import Showtime from './pages/Showtimes'
 import MovieDetailStaff from './staff/movieStaff/movieDetail'
+import NewsList from './admin/newsAdmin/NewsList'
+import NewsListStaff from './staff/newsStaff/NewsList'
 
 function App() {
   useEffect(() => {
@@ -156,6 +158,7 @@ function App() {
         <Route path="bookings" element={<BookingAdmin />} />
         <Route path="discounts" element={<DiscountList />} />
         <Route path="lienhe" element={<ContactAdmin />} />
+        <Route path="news" element={<NewsList />} />
       </Route>
 
       {/* STAFF ROUTES */}
@@ -175,6 +178,7 @@ function App() {
         <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="rooms" element={<RoomStaff />} />
         <Route path="categories" element={<CategoryStaff />} />
+        <Route path="news" element={<NewsListStaff />} />
       </Route>
 
       {/* ERROR PAGES */}
