@@ -53,6 +53,7 @@ import Showtime from './pages/Showtimes'
 import MovieDetailStaff from './staff/movieStaff/movieDetail'
 import NewsList from './admin/newsAdmin/NewsList'
 import NewsListStaff from './staff/newsStaff/NewsList'
+import NewsDetail from './pages/NewsDetail'
 
 function App() {
   useEffect(() => {
@@ -102,6 +103,7 @@ function App() {
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
         <Route path="/lich-chieu" element={<Showtime />} />
+        <Route path="/news/:id" element={<NewsDetail />} />
       </Route>
 
       {/* CUSTOMER ROUTES */}

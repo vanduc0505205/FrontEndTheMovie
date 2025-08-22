@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Card, Spin, message } from "antd";
 import type { CSSProperties } from "react";
-import { getAllNews } from "@/api/news.api"; // API lấy tin tức
+import { getAllNews } from "@/api/news.api";
 import { INews } from "@/interface/news";
+import { useNavigate } from "react-router-dom";
 
 const NewsPage = () => {
   const [newsList, setNewsList] = useState<INews[]>([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchNews = async () => {
     try {
       setLoading(true);
       const data = await getAllNews();
-      setNewsList(data.list || data); // tuỳ backend trả về
+      setNewsList(data.list || data);
     } catch (err) {
       message.error("Lỗi khi tải tin tức!");
     } finally {
@@ -61,6 +63,7 @@ const NewsPage = () => {
               style={cardStyle}
               cover={<img src={news.image} alt="news" style={imgStyle} />}
               bodyStyle={{ backgroundColor: "#1a1a1a", color: "#fff" }}
+              onClick={() => navigate(`/news/${news._id}`)} // 🔥 click toàn bộ card
             >
               <p style={{ color: "#ccc", fontSize: 13 }}>
                 {new Date(news.createdAt).toLocaleDateString("vi-VN")}
@@ -79,6 +82,7 @@ const cardStyle: CSSProperties = {
   overflow: "hidden",
   backgroundColor: "#1a1a1a",
   border: "none",
+  cursor: "pointer", // làm như nút bấm
 };
 
 const imgStyle: CSSProperties = {

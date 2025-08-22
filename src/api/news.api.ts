@@ -16,7 +16,7 @@ export const getAllNewsSimple = async (): Promise<INews[]> => {
 // Lấy chi tiết tin tức theo id
 export const getNewsById = async (id: string): Promise<INews> => {
   const res = await axiosInstance.get(`/news/${id}`);
-  return res.data.news;
+  return res.data;
 };
 
 // Tạo mới tin tức

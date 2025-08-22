@@ -113,8 +113,6 @@ export default function NewsList() {
                                     try {
                                         const newStatus = checked ? "published" : "draft";
                                         await updateNews(record._id, { status: newStatus });
-
-                                        // ✅ Cập nhật local state để Table render lại
                                         setNewsList((prev) =>
                                             prev.map((item) =>
                                                 item._id === record._id ? { ...item, status: newStatus } : item

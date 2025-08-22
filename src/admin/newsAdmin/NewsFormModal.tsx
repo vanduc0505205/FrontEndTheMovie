@@ -1,6 +1,5 @@
 import { Modal, Form, Input, Upload, Button, message, Select } from "antd";
 import { UploadFile, RcFile } from "antd/es/upload";
-import { UploadOutlined } from "@ant-design/icons";
 import { createNews, updateNews } from "@/api/news.api";
 import { INews } from "@/interface/news";
 import { useEffect, useState } from "react";
