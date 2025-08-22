@@ -98,7 +98,7 @@ function App() {
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
-        <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
+        {/* <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} /> */}
         <Route path="/lich-chieu" element={<Showtime />} />
       </Route>
 
