@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { KeyOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { getUserFromLocalStorage } from "@/lib/auth";
+import { getUserFromLocalStorage, clearUserData } from "@/lib/auth";
 import { changePassword } from "@/api/auth.api";
 
 export default function ChangePasswordPage() {
@@ -10,13 +10,13 @@ export default function ChangePasswordPage() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const user = getUserFromLocalStorage(); 
-    const userId = user?.id;
+    const user = getUserFromLocalStorage();
+    const userId = user?.id || user?._id;
 
     const onFinish = async (values: any) => {
         if (!userId) {
             message.error("Bạn cần đăng nhập để đổi mật khẩu");
-            navigate("/login");
+            navigate("/dang-nhap");
             return;
         }
 
@@ -31,8 +31,10 @@ export default function ChangePasswordPage() {
         try {
             const data = await changePassword(userId, currentPassword, newPassword);
             message.success(data.message || "Đổi mật khẩu thành công!");
+            clearUserData();
             form.resetFields();
-            navigate("/profile");
+            message.info("Vui lòng đăng nhập lại với mật khẩu mới");
+            navigate("/dang-nhap");
         } catch (error: any) {
             const errMsg =
                 error?.response?.data?.message ||

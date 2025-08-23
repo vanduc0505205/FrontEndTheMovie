@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card } from "antd";
 import type { CSSProperties } from "react";
 
@@ -47,6 +47,9 @@ const newsList = [
 ];
 
 const NewsPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div
       style={{

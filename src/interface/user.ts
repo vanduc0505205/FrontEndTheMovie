@@ -18,4 +18,5 @@ export interface IUser {
 export interface IUpdateProfile {
   username?: string;
   password?: string; // Nếu cho đổi
+  avatar?: string;
 }

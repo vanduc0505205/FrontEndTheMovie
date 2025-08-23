@@ -14,6 +14,9 @@ interface Contact {
 }
 
 const Notification: React.FC = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const [repliedContacts, setRepliedContacts] = useState<Contact[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(false);

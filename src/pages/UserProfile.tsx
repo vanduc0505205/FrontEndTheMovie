@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { User, Mail, Lock, Save, Film, Star, Calendar, Ticket } from "lucide-react";
 import { message } from "antd";
 import { getUserById, updateProfile } from "@/api/user.api";
+import { uploadImage } from "@/api/upload.api";
 import { getUserFromLocalStorage } from "@/lib/auth";
 import { getUserBookings } from "@/api/booking.api";
+import { Link, useNavigate } from "react-router-dom";
 
 type UIUser = {
   _id?: string;
@@ -18,14 +20,20 @@ type UIUser = {
 };
 
 export default function UserProfile() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [user, setUser] = useState<UIUser | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
-    email: ""
+    email: "",
   });
   const [loading, setLoading] = useState(true);
   const [ticketsThisMonth, setTicketsThisMonth] = useState<number>(0);
+  const [isOAuthAccount, setIsOAuthAccount] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -49,6 +57,9 @@ export default function UserProfile() {
           favoriteGenre: "—",
           points: 0,
         };
+
+        setIsOAuthAccount(!!data.googleId);
+
         try {
           const res = await getUserBookings(uiUser.id!);
           const bookings = res.data?.bookings || [];
@@ -101,6 +112,18 @@ export default function UserProfile() {
       const id = (user.id || user._id) as string;
       await updateProfile(id, { username: formData.username });
       setUser({ ...(user as UIUser), ...formData });
+      // Đồng bộ localStorage và thông báo Header cập nhật ngay
+      try {
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ ...parsed, username: formData.username })
+          );
+          window.dispatchEvent(new Event("login-success"));
+        }
+      } catch {}
       setIsEditing(false);
       message.success("Cập nhật thành công!");
     } catch (err: any) {
@@ -108,9 +131,37 @@ export default function UserProfile() {
     }
   };
 
-  const handleChangePassword = () => {
-    alert("Chuyển đến trang đổi mật khẩu");
+  // Upload và cập nhật avatar (đặt ở cấp component)
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (!user?.id && !user?._id) return;
+      const id = (user.id || user._id) as string;
+
+      message.loading({ content: "Đang tải ảnh...", key: "avatar" });
+      const url = await uploadImage(file as any);
+      await updateProfile(id, { avatar: url });
+      setUser({ ...(user as UIUser), avatar: url });
+      // Đồng bộ localStorage và phát sự kiện để Header cập nhật ngay
+      try {
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          localStorage.setItem("user", JSON.stringify({ ...parsed, avatar: url }));
+          window.dispatchEvent(new Event("login-success"));
+        }
+      } catch {}
+      message.success({ content: "Cập nhật avatar thành công", key: "avatar" });
+    } catch (err: any) {
+      message.error(err?.message || "Cập nhật avatar thất bại");
+    } finally {
+      if (e.target) e.target.value = "";
+    }
   };
+
+  // Điều hướng sang trang đổi mật khẩu
+  const handleGoChangePassword = () => navigate("/change-password");
 
   if (loading) {
     return (
@@ -134,7 +185,7 @@ export default function UserProfile() {
         <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full opacity-10 animate-pulse"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-pink-400 rounded-full opacity-15 animate-bounce"></div>
         <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-blue-400 rounded-full opacity-10 animate-pulse"></div>
-        <Film className="absolute top-20 right-1/3 w-16 h-16 text-white opacity-5 animate-spin" style={{animationDuration: '20s'}} />
+        <Film className="absolute top-20 right-1/3 w-16 h-16 text-white opacity-5 animate-spin" style={{ animationDuration: "20s" }} />
         <Ticket className="absolute bottom-40 right-10 w-12 h-12 text-white opacity-10 animate-bounce" />
       </div>
 
@@ -150,12 +201,21 @@ export default function UserProfile() {
           <div className="md:col-span-2 bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
               <div className="relative group">
-                <img 
-                  src={user.avatar} 
-                  alt="Avatar" 
+                <img
+                  src={user.avatar}
+                  alt="Avatar"
                   className="w-24 h-24 rounded-full border-4 border-yellow-400 shadow-xl group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-yellow-400/20 to-pink-400/20 group-hover:opacity-100 opacity-0 transition-opacity duration-300"></div>
+                <label className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white/80 text-black text-xs font-semibold px-3 py-1 rounded-full cursor-pointer shadow hover:bg-white">
+                  Đổi ảnh
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
+                </label>
               </div>
               <div className="text-center sm:text-left">
                 <h2 className="text-2xl font-bold text-white mb-2">{user.username}</h2>
@@ -176,13 +236,13 @@ export default function UserProfile() {
                 <input
                   type="text"
                   value={formData.username}
-                  onChange={(e) => setFormData({...formData, username: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   disabled={!isEditing}
                   className={`w-full p-4 rounded-xl bg-white/10 border-2 text-white placeholder-gray-400 transition-all duration-300 ${
-                    isEditing 
-                      ? 'border-yellow-400 focus:border-pink-400 focus:ring-4 focus:ring-pink-400/20' 
-                      : 'border-white/20'
-                  } ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    isEditing
+                      ? "border-yellow-400 focus:border-pink-400 focus:ring-4 focus:ring-pink-400/20"
+                      : "border-white/20"
+                  } ${!isEditing && "cursor-not-allowed opacity-70"}`}
                   placeholder="Nhập tên hiển thị"
                 />
               </div>
@@ -195,13 +255,13 @@ export default function UserProfile() {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={true}
                   className={`w-full p-4 rounded-xl bg-white/10 border-2 text-white placeholder-gray-400 transition-all duration-300 ${
-                    isEditing 
-                      ? 'border-yellow-400 focus:border-pink-400 focus:ring-4 focus:ring-pink-400/20' 
-                      : 'border-white/20'
-                  } ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    isEditing
+                      ? "border-yellow-400 focus:border-pink-400 focus:ring-4 focus:ring-pink-400/20"
+                      : "border-white/20"
+                  } ${!isEditing && "cursor-not-allowed opacity-70"}`}
                   placeholder="Email của bạn"
                 />
               </div>
@@ -216,7 +276,7 @@ export default function UserProfile() {
                       Chỉnh sửa thông tin
                     </button>
                     <button
-                      onClick={handleChangePassword}
+                      onClick={handleGoChangePassword}
                       className="flex-1 bg-white/10 border-2 border-white/30 text-white font-bold py-4 px-6 rounded-xl hover:bg-white/20 hover:border-white/50 transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                     >
                       <Lock className="w-5 h-5" />
@@ -257,7 +317,7 @@ export default function UserProfile() {
 
             <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-2xl">
               <h3 className="font-bold text-lg text-white mb-6">Thống kê</h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
                   <div className="flex items-center gap-3">
@@ -265,18 +325,16 @@ export default function UserProfile() {
                     <span className="text-gray-300">Vé đã mua</span>
                   </div>
                   <span className="text-white font-bold">{user.totalTickets ?? 0}</span>
-
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
                   <div className="flex items-center gap-3">
                     <Film className="w-5 h-5 text-blue-400" />
                     <span className="text-gray-300">Thể loại yêu thích</span>
                   </div>
                   <span className="text-white font-bold">{user.favoriteGenre || "—"}</span>
-
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-green-400" />
@@ -290,13 +348,19 @@ export default function UserProfile() {
             <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-2xl">
               <h3 className="font-bold text-lg text-white mb-4">Thao tác nhanh</h3>
               <div className="space-y-3">
+                <Link to="/lichsudatve">
                 <button className="w-full p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-semibold hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300">
                   Lịch sử đặt vé
                 </button>
-                <button className="w-full p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transform hover:scale-105 transition-all duration-300">
+                </Link>
+                <button
+                  className="w-full p-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl text-black font-semibold hover:from-yellow-500 hover:to-orange-600 transform hover:scale-105 transition-all duration-300"
+                >
                   Ưu đãi của tôi
                 </button>
-                <button className="w-full p-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl text-white font-semibold hover:from-green-600 hover:to-teal-600 transform hover:scale-105 transition-all duration-300">
+                <button
+                  className="w-full p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl text-white font-semibold hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300"
+                >
                   Đổi điểm thưởng
                 </button>
               </div>
