@@ -24,20 +24,31 @@ const ContactAdmin: React.FC = () => {
     fetchContacts();
   }, []);
 
-  const fetchContacts = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get("http://localhost:3000/contact");
-      const sortedContacts = res.data.data.sort(
-        (a: Contact, b: Contact) => Number(a.isReplied) - Number(b.isReplied)
-      );
-      setContacts(sortedContacts);
-    } catch (error) {
-      message.error("Không thể tải danh sách liên hệ");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchContacts = async () => {
+  setLoading(true);
+  try {
+    const res = await axios.get("http://localhost:3000/contact", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
+    });
+
+    // Kiểm tra data
+    const contactsData = Array.isArray(res.data.data) ? res.data.data : res.data;
+
+    const sortedContacts = contactsData.sort(
+      (a: Contact, b: Contact) => Number(a.isReplied) - Number(b.isReplied)
+    );
+
+    setContacts(sortedContacts);
+  } catch (error) {
+    console.error(error);
+    message.error("Không thể tải danh sách liên hệ");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleReply = (contact: Contact) => {
     setSelectedContact(contact);

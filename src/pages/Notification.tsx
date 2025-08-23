@@ -14,22 +14,31 @@ interface Contact {
 }
 
 const Notification: React.FC = () => {
-    useEffect(() => {
-        window.scrollTo(0, 0);
-      }, []);
   const [repliedContacts, setRepliedContacts] = useState<Contact[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchEmail, setSearchEmail] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchRepliedContacts();
+    window.scrollTo(0, 0);
+    const uidString = localStorage.getItem("user");
+    if (uidString) {
+      const uidObj = JSON.parse(uidString);
+      setUserId(uidObj._id);
+      fetchRepliedContacts(uidObj._id);
+    }
   }, []);
 
-  const fetchRepliedContacts = async () => {
+  const fetchRepliedContacts = async (uid: string) => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/contact");
+      const res = await axios.get(`http://localhost:3000/contact/user/${uid}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      });
+      // chỉ lấy liên hệ đã phản hồi
       const replied = res.data.data.filter((c: Contact) => c.isReplied);
       setRepliedContacts(replied);
       setFilteredContacts(replied);

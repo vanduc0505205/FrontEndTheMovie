@@ -25,9 +25,13 @@ const ContentContact = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
-  useEffect(() => {
-    const uid = localStorage.getItem("userId");
-    setUserId(uid);
+ useEffect(() => {
+   
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const userObj = JSON.parse(userString);
+      setUserId(userObj._id); 
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
