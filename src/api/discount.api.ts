@@ -1,39 +1,51 @@
-import axios from "axios";
+// src/api/discount.api.ts
+import axiosClient from "./axiosClient";
 import { IDiscount } from "@/interface/discount.ts";
+
 export const getAllDiscounts = async (): Promise<IDiscount[]> => {
-  const res = await axios.get("http://localhost:3000/discount");
+  const res = await axiosClient.get("/discount");
   return res.data.list || res.data;
 };
+
+// API to get discount details by id
 export const getDiscountById = async (id: string): Promise<IDiscount> => {
-  const res = await axios.get(`http://localhost:3000/discount/${id}`);
+  const res = await axiosClient.get(`/discount/${id}`);
   return res.data;
 };
+
+// Create a new discount
 export const createDiscount = async (data: Partial<IDiscount>): Promise<IDiscount> => {
-  const res = await axios.post("http://localhost:3000/discount", data);
+  const res = await axiosClient.post("/discount", data);
   return res.data;
 };
+
+// Update a discount by id
 export const updateDiscount = async (id: string, data: Partial<IDiscount>): Promise<IDiscount> => {
-  const res = await axios.put(`http://localhost:3000/discount/${id}`, data);
+  const res = await axiosClient.put(`/discount/${id}`, data);
   return res.data;
 };
 
+// Delete a discount by id
 export const deleteDiscount = async (id: string): Promise<void> => {
-  await axios.delete(`http://localhost:3000/discount/${id}`);
+  await axiosClient.delete(`/discount/${id}`);
 };
 
-export interface IApplyDiscountRequest {
+export interface ICheckDiscountResponse {
+  success: boolean;
+  message: string;
+  discountId: string;
   code: string;
-  total: number;
-}
-export interface IApplyDiscountResponse {
-  discountedTotal: number;
+  // type: "fixed";
+  value: number;
   discountAmount: number;
+  finalPrice: number;
 }
 
-export const applyDiscount = async (
-  data: IApplyDiscountRequest
-): Promise<IApplyDiscountResponse> => {
-  const res = await axios.post("http://localhost:3000/discount/apply", data);
+export const checkDiscountCode = async (
+  code: string,
+  total: number
+): Promise<ICheckDiscountResponse> => {
+  const res = await axiosClient.post("/discount/apply", { code, total });
   return res.data;
 };
 

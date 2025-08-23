@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
-import { Spin, message } from "antd";
+import { Button, Spin, message } from "antd";
 import { bookTicket } from "@/api/booking.api";
 import { createPayment } from "@/api/payment.api";
+import ComboSelectionModal from "./comboSelectionModal";
+import { ICombo } from "@/interface/combo";
+import { checkDiscountCode } from "@/api/discount.api";
 
 export default function Checkout() {
   const location = useLocation();
@@ -12,6 +15,46 @@ export default function Checkout() {
   const [isLoading, setIsLoading] = useState(false);
   const bookingData = location.state;
   const { id: movieId } = useParams();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedCombo, setSelectedCombo] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedPromoCode, setAppliedPromoCode] = useState(null);
+  const [finalPrice, setFinalPrice] = useState(0);
+
+
+  const handleSelectCombo = (combo: ICombo) => {
+    setSelectedCombo(combo);
+    setIsModalVisible(false);
+  };
+
+  const handleRemoveCombo = () => {
+    setSelectedCombo(null);
+  };
+  // Hàm tính giá tiền cuối cùng
+  const calculateFinalPrice = () => {
+    // Tổng tiền ghế
+    const seatTotal = seatList.reduce(
+      (sum: number, seat: any) => sum + seat.price,
+      0
+    );
+
+    // Giá combo (nếu có)
+    const comboTotal = selectedCombo ? selectedCombo.price : 0;
+
+    // Tổng trước giảm giá
+    const subtotal = seatTotal + comboTotal;
+
+    // Trừ mã giảm giá (nếu có)
+    const finalTotal = subtotal - discountAmount;
+
+    // Đảm bảo không âm
+    return finalTotal > 0 ? finalTotal : 0;
+  };
+
+  const { userId, showtimeId, seatList, totalPrice, movie } = bookingData;
+  const displayedTotalPrice = calculateFinalPrice();
 
   const {
     data: movies,
@@ -52,8 +95,56 @@ export default function Checkout() {
       </div>
     );
   }
+  const handleApplyPromoCode = async () => {
+    // 1. Kiểm tra mã giảm giá
+    if (!promoCode) {
+      message.warning("Vui lòng nhập mã giảm giá.");
+      return;
+    }
 
-  const { userId, showtimeId, seatList, totalPrice, movie } = bookingData;
+    // Đặt trạng thái loading
+    setIsApplyingPromo(true);
+
+    try {
+      // 2. Tính tổng tiền trước khi giảm giá (ở frontend)
+      let totalBeforeDiscount = seatList.reduce((sum, seat) => sum + seat.price, 0);
+      if (selectedCombo) {
+        totalBeforeDiscount += selectedCombo.price;
+      }
+
+      // 3. Gọi API để backend tính toán
+      const response = await checkDiscountCode(promoCode, totalBeforeDiscount);
+
+      // 4. Cập nhật state với dữ liệu từ backend
+      const { success, discountAmount, finalPrice, message: apiMessage } = response;
+      if (success) {
+        // Lưu mã giảm giá đã áp dụng vào state để không thể áp dụng lại
+        setAppliedPromoCode(promoCode);
+
+        // Lưu số tiền giảm giá và tổng tiền cuối cùng
+        setDiscountAmount(discountAmount);
+        setFinalPrice(finalPrice);
+
+        message.success(apiMessage || "Áp dụng mã giảm giá thành công!");
+      } else {
+        // Xử lý trường hợp backend trả về success: false
+        setDiscountAmount(0);
+        setAppliedPromoCode(null);
+        message.error(apiMessage || "Mã giảm giá không hợp lệ.");
+      }
+    } catch (error) {
+      // console.error("Lỗi khi áp dụng mã giảm giá:", error);
+
+      // Reset state khi có lỗi
+      setDiscountAmount(0);
+      setAppliedPromoCode(null);
+
+      // Hiển thị lỗi từ backend
+      message.error(error.response?.data?.message || "Mã giảm giá không hợp lệ.");
+    } finally {
+      setIsApplyingPromo(false);
+    }
+  };
 
   const handlePayment = async (method: "vnpay" | "cash") => {
     setIsLoading(true);
@@ -72,10 +163,12 @@ export default function Checkout() {
         seatList: seatList.map((seat: any) => ({
           seatId: seat.seatId,
           seatType: seat.seatType,
-          price: seat.price
+          price: seat.price,
         })),
+        comboId: selectedCombo ? selectedCombo._id : null,
+        promoCode: promoCode || null,
         totalPrice: total,
-        paymentMethod: method === "vnpay" ? "VNPAY" : "COD"
+        paymentMethod: method === "vnpay" ? "VNPAY" : "COD",
       };
 
       const res = await bookTicket(bookingPayload);
@@ -200,7 +293,6 @@ export default function Checkout() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden pt-20">
-
       <div className="relative z-10 flex items-center justify-center py-8 px-4 min-h-screen">
         <div className="max-w-4xl w-full bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
 
@@ -286,6 +378,53 @@ export default function Checkout() {
               </div>
             )}
 
+            {/* Thêm Combo Button */}
+            <div className="flex justify-center items-center py-6">
+              <button
+                onClick={() => setIsModalVisible(true)}
+                className="px-6 py-3 text-white font-bold rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
+              >
+                <svg
+                  className="w-5 h-5 inline-block mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,15H13V13H15V11H13V9H11V11H9V13H11V15Z" />
+                </svg>
+                Thêm Combo
+              </button>
+            </div>
+
+            {/* Khu vực nhập mã giảm giá */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,15H13V13H15V11H13V9H11V11H9V13H11V15Z" />
+                </svg>
+                Mã Giảm Giá
+              </h2>
+              <div className="bg-black/20 rounded-xl border border-white/10 p-6 flex flex-col sm:flex-row gap-4">
+                <input
+                  placeholder="Nhập mã giảm giá"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                  className="flex-1 bg-white/10 text-white placeholder-gray-400
+                            border border-white/20 hover:border-white/40 focus:border-red-500
+                            rounded-md px-3 py-2 transition-colors duration-200"
+                />
+
+                <Button
+                  type="primary"
+                  onClick={handleApplyPromoCode}
+                  loading={isApplyingPromo}
+                  className="bg-red-600 hover:!bg-red-700 font-bold text-white"
+                >
+                  Áp Dụng
+                </Button>
+              </div>
+            </div>
+
+
             {/* Booking Information */}
             <div className="mb-8">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -331,18 +470,49 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Total Price */}
-                <div className="flex justify-between items-center pt-4 border-t border-white/20">
-                  <span className="text-xl font-semibold text-white">
-                    Tổng tiền:
-                  </span>
-                  <div className="text-right">
-                    <span className="text-3xl font-bold text-amber-400">
-                      {totalPrice?.toLocaleString()} VNĐ
+                {/* Hiển thị chi tiết tổng tiền */}
+                <div className="space-y-4 pt-4 border-t border-white/20">
+                  {selectedCombo && (
+                    <div className="flex justify-between items-center text-white/80">
+                      <span className="font-medium">
+                        Combo ({selectedCombo.name}):
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span>{selectedCombo.price.toLocaleString()} VNĐ</span>
+                        <button
+                          onClick={handleRemoveCombo}
+                          className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-600 transition-colors"
+                        >
+                          Hủy
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between items-center text-white/80">
+                      <span className="font-medium text-red-400">
+                        Mã giảm giá đã áp dụng:
+                      </span>
+                      <span className="text-red-400">
+                        - {discountAmount.toLocaleString()} VNĐ
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Tổng tiền */}
+                  <div className="flex justify-between items-center pt-4">
+                    <span className="text-xl font-semibold text-white">
+                      Tổng tiền:
                     </span>
-                    <p className="text-sm text-gray-400 mt-1">
-                      {seatList.length} ghế đã chọn
-                    </p>
+                    <div className="text-right">
+                      <span className="text-3xl font-bold text-amber-400">
+                        {displayedTotalPrice?.toLocaleString()} VNĐ
+                      </span>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {seatList.length} ghế đã chọn
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -480,6 +650,11 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+      <ComboSelectionModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onSelectCombo={handleSelectCombo}
+      />
     </div>
   );
 }
