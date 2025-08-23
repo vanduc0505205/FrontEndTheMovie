@@ -56,25 +56,25 @@ import NewsListStaff from './staff/newsStaff/NewsList'
 import NewsDetail from './pages/NewsDetail'
 
 function App() {
-  useEffect(() => {
-    if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
-      const script = document.createElement("script");
-      script.src = "https://app.preny.ai/embed-global.js";
-      script.async = true;
-      script.defer = true;
+  // useEffect(() => {
+  //   if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+  //     const script = document.createElement("script");
+  //     script.src = "https://app.preny.ai/embed-global.js";
+  //     script.async = true;
+  //     script.defer = true;
 
-      script.onload = () => {
-        console.log("Preny script loaded ");
-      };
+  //     script.onload = () => {
+  //       console.log("Preny script loaded ");
+  //     };
 
-      script.setAttribute("data-name-bot", "bot-demo");
-      script.setAttribute("data-button-style", "width:300px;height:300px;");
-      script.setAttribute("data-language", "vi");
-      script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
+  //     script.setAttribute("data-name-bot", "bot-demo");
+  //     script.setAttribute("data-button-style", "width:300px;height:300px;");
+  //     script.setAttribute("data-language", "vi");
+  //     script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
 
-      document.body.appendChild(script);
-    }
-  }, []);
+  //     document.body.appendChild(script);
+  //   }
+  // }, []);
 
   return (
     <Routes>
@@ -101,7 +101,7 @@ function App() {
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
-        <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
+        {/* <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} /> */}
         <Route path="/lich-chieu" element={<Showtime />} />
         <Route path="/news/:id" element={<NewsDetail />} />
       </Route>

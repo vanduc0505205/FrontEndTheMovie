@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const { TabPane } = Tabs;
 import { Button, Input, Form, Tabs, Row, Col, Card } from "antd";
 const ProfilePage = () =>  {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const [form] = Form.useForm();
 
   const handleSave = () => {

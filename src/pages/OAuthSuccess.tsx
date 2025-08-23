@@ -4,15 +4,22 @@ import { message } from "antd";
 import { getOAuthUser } from "@/api/auth.api";
 
 const OAuthSuccess = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
   const token = params.get("token");
+  const refreshToken = params.get("refreshToken");
 
   useEffect(() => {
   const fetchUser = async () => {
     try {
       // Lưu token ngay lập tức
       localStorage.setItem("accessToken", token!);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
 
       const user = await getOAuthUser();
       console.log(user);

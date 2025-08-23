@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Card, Spin, message } from "antd";
+import { useEffect, useState } from "react";
+import { Card, message, Spin } from "antd";
 import type { CSSProperties } from "react";
 import { getAllNews } from "@/api/news.api";
 import { INews } from "@/interface/news";
@@ -26,6 +26,9 @@ const NewsPage = () => {
     fetchNews();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div
       style={{

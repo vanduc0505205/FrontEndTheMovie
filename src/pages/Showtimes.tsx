@@ -15,6 +15,9 @@ const extractMovieId = (s: IShowtime): string | undefined => {
 };
 
 const Showtime = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const [showtimes, setShowtimes] = useState<IShowtime[]>([]);
   const [movies, setMovies] = useState<Record<string, IMovie>>({});
   const [loading, setLoading] = useState(true);

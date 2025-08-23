@@ -16,6 +16,9 @@ interface Seat {
   status: SeatStatus;
 }
 export default function SeatSelection() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const navigate = useNavigate();
   const location = useLocation();
   const { id: movieId } = useParams();

@@ -5,6 +5,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 const CheckPayment = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'error' | 'success' | 'info'>('info');
   const [paymentStatus, setPaymentStatus] = useState({
@@ -64,7 +67,7 @@ const CheckPayment = () => {
   }, [searchParams, navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="py-20 min-h-screen bg-gray-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Movie theater background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full" 
