@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +24,15 @@ const ContentContact = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
+ useEffect(() => {
+   
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const userObj = JSON.parse(userString);
+      setUserId(userObj._id); 
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,8 +43,12 @@ const ContentContact = () => {
     try {
       const res = await fetch("http://localhost:3000/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token") || ""}`
+     },
+     body: JSON.stringify({ ...form, userId }),
+     
       });
 
       const data = await res.json();
