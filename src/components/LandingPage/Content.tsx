@@ -17,7 +17,7 @@ export default function HomePageContent() {
     script.async = true;
     script.defer = true;
     script.setAttribute("data-name-bot", "bot-demo");
-    script.setAttribute("data-button-style", "width:300px;height:300px;");
+    script.setAttribute("data-button-style", "width:200px;height:200px;");
     script.setAttribute("data-language", "vi");
     script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
     document.body.appendChild(script);
