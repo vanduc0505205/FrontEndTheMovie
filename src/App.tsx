@@ -43,38 +43,38 @@ import RoomStaff from './staff/roomStaff/RoomAdmin'
 import OrderHistoryPage from './pages/OrderHistoryPage'
 import DiscountList from './admin/discountAdmin/discountList'
 import BookingAdmin from './admin/bookingAdmin/booking.admin'
-import { useEffect } from 'react';
+import UserProfile from './pages/UserProfile'
+import ChangePasswordPage from './pages/ChangePasswordPage'
 import ProfilePage from './pages/ProfilePage'
+import { useEffect } from 'react';
 import ContactAdmin from './admin/contactAdmin/contact.admin'
-
-
-
-
-
+import CategoryStaff from './staff/categoryStaff/CategoryStaff'
+import Showtime from './pages/Showtimes'
+import MovieDetailStaff from './staff/movieStaff/movieDetail'
 
 function App() {
-    useEffect(() => {
-  if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
-    const script = document.createElement("script");
-    script.src = "https://app.preny.ai/embed-global.js";
-    script.async = true;
-    script.defer = true;
+  // useEffect(() => {
+  //   if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+  //     const script = document.createElement("script");
+  //     script.src = "https://app.preny.ai/embed-global.js";
+  //     script.async = true;
+  //     script.defer = true;
 
-    script.onload = () => {
-      console.log("Preny script loaded ");
-    };
+  //     script.onload = () => {
+  //       console.log("Preny script loaded ");
+  //     };
 
-    script.setAttribute("data-name-bot", "bot-demo");
-    script.setAttribute("data-button-style", "width:300px;height:300px;");
-    script.setAttribute("data-language", "vi");
-    script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
+  //     script.setAttribute("data-name-bot", "bot-demo");
+  //     script.setAttribute("data-button-style", "width:300px;height:300px;");
+  //     script.setAttribute("data-language", "vi");
+  //     script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
 
-    document.body.appendChild(script);
-  }
-}, []);
+  //     document.body.appendChild(script);
+  //   }
+  // }, []);
 
   return (
-<Routes>
+    <Routes>
       {/* PUBLIC ROUTES */}
       <Route element={<DefaultLayout />}>
         <Route index element={<Index />} />
@@ -96,8 +96,10 @@ function App() {
         <Route path="/quy-dinh-va-chinh-sach" element={<PolicyPage />} />
         <Route path="/phim/:id/checkout" element={<Checkout />} />
         <Route path="/lichsudatve" element={<OrderHistoryPage />} />
-        <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} />
-        
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
+        {/* <Route path="/thong-tin-ca-nhan" element={<ProfilePage />} /> */}
+        <Route path="/lich-chieu" element={<Showtime />} />
       </Route>
 
       {/* CUSTOMER ROUTES */}
@@ -154,7 +156,6 @@ function App() {
         <Route path="bookings" element={<BookingAdmin />} />
         <Route path="discounts" element={<DiscountList />} />
         <Route path="lienhe" element={<ContactAdmin />} />
- 
       </Route>
 
       {/* STAFF ROUTES */}
@@ -171,7 +172,9 @@ function App() {
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="showtimes" element={<ShowtimeStaff />} />
         <Route path="movies" element={<MovieStaff />} />
+        <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="rooms" element={<RoomStaff />} />
+        <Route path="categories" element={<CategoryStaff />} />
       </Route>
 
       {/* ERROR PAGES */}

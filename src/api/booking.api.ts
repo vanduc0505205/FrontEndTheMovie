@@ -1,4 +1,3 @@
-// src/api/booking.ts
 import axiosInstance from "@/lib/authService";
 
 export const bookTicket = async (bookingPayload: any) => {
@@ -11,4 +10,12 @@ export const createVnPayPayment = async (amount: number) => {
       Accept: "application/json",
     },
   });
+};
+
+export const getUserBookings = async (userId: string) => {
+  return axiosInstance.get(`/booking/user/${userId}`);
+};
+
+export const updateBookingStatus = async (bookingId: string, status: string) => {
+  return axiosInstance.patch(`/booking/${bookingId}/status`, { status });
 };

@@ -8,15 +8,20 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getShowtimes, deleteShowtime } from "@/api/showtime.api";
-import { IShowtime } from "@/types/showtime";
 import ShowtimeFormModal from "./ShowtimeFormModal";
 import { getUserRole } from "@/lib/auth";
-
-const userRole = getUserRole();
+import { IShowtime } from "@/interface/showtime";
 
 const ShowtimeList = () => {
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = getUserRole();
+    setUserRole(role);
+  }, []);
+
   const queryClient = useQueryClient();
 
   const { data = [], isLoading } = useQuery<IShowtime[]>({
@@ -116,6 +121,11 @@ const ShowtimeList = () => {
       ),
     },
   ];
+
+  // Nếu chưa xác định role, có thể return loading hoặc để rỗng
+  if (userRole === null) {
+    return <div>Đang tải...</div>;
+  }
 
   return (
     <div className="p-4">

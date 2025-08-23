@@ -295,9 +295,12 @@ export default function MovieModal({
           <Col span={12}>
             <Form.Item name="language" label="Quốc gia" rules={[{ required: true }]}>
               <Select>
+                <Option value="Thái Lan">Thái Lan</Option>
+                <Option value="Nhật Bản">Nhật Bản</Option>
                 <Option value="Việt Nam">Việt Nam</Option>
                 <Option value="Mỹ">Mỹ</Option>
                 <Option value="Hàn Quốc">Hàn Quốc</Option>
+
               </Select>
             </Form.Item>
 

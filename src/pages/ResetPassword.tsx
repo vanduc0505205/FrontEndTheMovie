@@ -1,10 +1,14 @@
 import { Form, Input, Button, message, Typography } from "antd";
 import { resetPassword } from "@/api/auth.api";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const { Title, Link } = Typography;
 
 const ResetPassword = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(useLocation().search);

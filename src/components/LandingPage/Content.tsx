@@ -10,19 +10,19 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function HomePageContent() {
-   useEffect(() => {
-  if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
-    const script = document.createElement("script");
-    script.src = "https://app.preny.ai/embed-global.js";
-    script.async = true;
-    script.defer = true;
-    script.setAttribute("data-name-bot", "bot-demo");
-    script.setAttribute("data-button-style", "width:200px;height:200px;");
-    script.setAttribute("data-language", "vi");
-    script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
-    document.body.appendChild(script);
-  }
-}, []);
+  // useEffect(() => {
+  //   if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+  //     const script = document.createElement("script");
+  //     script.src = "https://app.preny.ai/embed-global.js";
+  //     script.async = true;
+  //     script.defer = true;
+  //     script.setAttribute("data-name-bot", "bot-demo");
+  //     script.setAttribute("data-button-style", "width:300px;height:300px;");
+  //     script.setAttribute("data-language", "vi");
+  //     script.setAttribute("data-preny-bot-id", "689f655146712d0465a3bc03");
+  //     document.body.appendChild(script);
+  //   }
+  // }, []);
 
   const autoplay = Autoplay({ delay: 2000, stopOnInteraction: false });
 
@@ -84,115 +84,115 @@ export default function HomePageContent() {
           </section>
 
           {/* Phim đang chiếu */}
-{/* Phim đang chiếu */}
-<section className="py-16">
-  <div className="container mx-auto px-4">
-    <div className="text-left mb-8">
-      <h2 className="text-2xl lg:text-3xl font-bold text-red-500 mb-4">
-        Phim đang chiếu
-      </h2>
-    </div>
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-      {nowShowing.map((movie) => (
-        <Link
-          to={`/phim/${movie._id}`}
-          key={movie._id}
-          className="bg-gray-900 rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:shadow-red-500/20 transition-all duration-300 border border-gray-800 hover:border-red-500/50 group relative"
-        >
-          {/* Poster */}
-          <div className="w-full aspect-[2/3] bg-black">
-            <img
-              src={movie.poster}
-              alt={movie.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Luôn hiển thị tên phim */}
-          <div className="p-3">
-            <h3 className="font-bold text-base text-white mb-1 line-clamp-2">
-              {movie.title}
-            </h3>
-          </div>
-
-          {/* Overlay chi tiết (hover mới hiện) */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <div className="flex flex-col text-xs text-gray-300 space-y-1">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-wrap gap-1">
-                  {movie.categories.map((cat) => (
-                    <span key={cat._id} className="text-amber-400">
-                      {cat.categoryName}
-                    </span>
-                  ))}
-                </div>
-                <span>{movie.duration} phút</span>
+          {/* Phim đang chiếu */}
+          <section className="py-16">
+            <div className="container mx-auto px-4">
+              <div className="text-left mb-8">
+                <h2 className="text-2xl lg:text-3xl font-bold text-red-500 mb-4">
+                  Phim đang chiếu
+                </h2>
               </div>
-              <span className="text-gray-400">
-                {new Date(movie.releaseDate).toLocaleDateString("vi-VN")}
-              </span>
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
-  </div>
-</section>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                {nowShowing.map((movie) => (
+                  <Link
+                    to={`/phim/${movie._id}`}
+                    key={movie._id}
+                    className="bg-gray-900 rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:shadow-red-500/20 transition-all duration-300 border border-gray-800 hover:border-red-500/50 group relative"
+                  >
+                    {/* Poster */}
+                    <div className="w-full aspect-[2/3] bg-black">
+                      <img
+                        src={movie.poster}
+                        alt={movie.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
 
-{/* Phim sắp chiếu */}
-<section className="py-16">
-  <div className="container mx-auto px-4">
-    <div className="text-left mb-8">
-      <h2 className="text-2xl lg:text-3xl font-bold text-blue-500 mb-4">
-        Phim sắp chiếu
-      </h2>
-    </div>
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-      {comingSoon.map((movie) => (
-        <Link
-          to={`/phim/${movie._id}`}
-          key={movie._id}
-          className="bg-gray-900 rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 border border-gray-800 hover:border-blue-500/50 group relative"
-        >
-          {/* Poster */}
-          <div className="w-full aspect-[2/3] bg-black">
-            <img
-              src={movie.poster}
-              alt={movie.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+                    {/* Luôn hiển thị tên phim */}
+                    <div className="p-3">
+                      <h3 className="font-bold text-base text-white mb-1 line-clamp-2">
+                        {movie.title}
+                      </h3>
+                    </div>
 
-          {/* Luôn hiển thị tên phim */}
-          <div className="p-3">
-            <h3 className="font-bold text-base text-white mb-1 line-clamp-2">
-              {movie.title}
-            </h3>
-          </div>
-
-          {/* Overlay chi tiết (hover mới hiện) */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <div className="flex flex-col text-xs text-gray-300 space-y-1">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-wrap gap-1">
-                  {movie.categories.map((cat) => (
-                    <span key={cat._id} className="text-amber-400">
-                      {cat.categoryName}
-                    </span>
-                  ))}
-                </div>
-                <span>{movie.duration} phút</span>
+                    {/* Overlay chi tiết (hover mới hiện) */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <div className="flex flex-col text-xs text-gray-300 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-wrap gap-1">
+                            {movie.categories.map((cat) => (
+                              <span key={cat._id} className="text-amber-400">
+                                {cat.categoryName}
+                              </span>
+                            ))}
+                          </div>
+                          <span>{movie.duration} phút</span>
+                        </div>
+                        <span className="text-gray-400">
+                          {new Date(movie.releaseDate).toLocaleDateString("vi-VN")}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
-              <span className="text-gray-400">
-                {new Date(movie.releaseDate).toLocaleDateString("vi-VN")}
-              </span>
             </div>
-          </div>
-        </Link>
-      ))}
-    </div>
-  </div>
-</section>
+          </section>
+
+          {/* Phim sắp chiếu */}
+          <section className="py-16">
+            <div className="container mx-auto px-4">
+              <div className="text-left mb-8">
+                <h2 className="text-2xl lg:text-3xl font-bold text-blue-500 mb-4">
+                  Phim sắp chiếu
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                {comingSoon.map((movie) => (
+                  <Link
+                    to={`/phim/${movie._id}`}
+                    key={movie._id}
+                    className="bg-gray-900 rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 border border-gray-800 hover:border-blue-500/50 group relative"
+                  >
+                    {/* Poster */}
+                    <div className="w-full aspect-[2/3] bg-black">
+                      <img
+                        src={movie.poster}
+                        alt={movie.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Luôn hiển thị tên phim */}
+                    <div className="p-3">
+                      <h3 className="font-bold text-base text-white mb-1 line-clamp-2">
+                        {movie.title}
+                      </h3>
+                    </div>
+
+                    {/* Overlay chi tiết (hover mới hiện) */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <div className="flex flex-col text-xs text-gray-300 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-wrap gap-1">
+                            {movie.categories.map((cat) => (
+                              <span key={cat._id} className="text-amber-400">
+                                {cat.categoryName}
+                              </span>
+                            ))}
+                          </div>
+                          <span>{movie.duration} phút</span>
+                        </div>
+                        <span className="text-gray-400">
+                          {new Date(movie.releaseDate).toLocaleDateString("vi-VN")}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
 
 
           {/* Carousel Section */}

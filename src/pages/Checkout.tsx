@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
 import { Spin, message } from "antd";
-import { bookTicket, createVnPayPayment } from "@/api/booking.api";
+import { bookTicket } from "@/api/booking.api";
+import { createPayment } from "@/api/payment.api";
 
 export default function Checkout() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -52,13 +56,13 @@ export default function Checkout() {
     );
   }
 
-  const { userId, showtimeId, seatList, totalPrice, movie } = bookingData;
+  const { showtimeId, seatList, totalPrice, movie } = bookingData;
 
   const handlePayment = async (method: "vnpay" | "cash") => {
     setIsLoading(true);
     try {
       // Validate dữ liệu
-      if (!userId || !showtimeId || !seatList?.length) {
+      if (!showtimeId || !seatList?.length) {
         throw new Error("Thiếu thông tin đặt vé. Vui lòng thử lại.");
       }
 
@@ -66,7 +70,6 @@ export default function Checkout() {
       const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
 
       const bookingPayload = {
-        userId,
         showtimeId,
         seatList: seatList.map((seat: any) => ({
           seatId: seat.seatId,
@@ -77,14 +80,11 @@ export default function Checkout() {
         paymentMethod: method === "vnpay" ? "VNPAY" : "COD"
       };
 
-      // Gọi API đặt vé mới
       const res = await bookTicket(bookingPayload);
 
-      // Xử lý thanh toán VNPay
       if (method === "vnpay" && res.data.booking?._id) {
         try {
-          // Gọi API tạo URL thanh toán VNPay
-          const vnpayRes = await createVnPayPayment(total);
+          const vnpayRes = await createPayment({ bookingId: res.data.booking._id });
 
           if (vnpayRes.data?.paymentUrl) {
             window.location.href = vnpayRes.data.paymentUrl;
@@ -97,7 +97,6 @@ export default function Checkout() {
           throw new Error("Lỗi khi kết nối với cổng thanh toán VNPay");
         }
       } else {
-        // Xử lý thanh toán tiền mặt
         message.success({
           content: (
             <div>
@@ -123,7 +122,6 @@ export default function Checkout() {
           duration: 8,
         });
 
-        // Chuyển hướng về trang lịch sử đặt vé sau 3 giây
         setTimeout(() => {
           navigate("/lichsudatve");
         }, 3000);
@@ -135,7 +133,6 @@ export default function Checkout() {
       let errorDetails = "";
 
       if (error.response) {
-        // Lỗi từ server
         console.error("Chi tiết lỗi từ server:", {
           status: error.response.status,
           data: error.response.data,
@@ -146,7 +143,6 @@ export default function Checkout() {
           error.response.data?.message ||
           `Lỗi từ server (${error.response.status})`;
 
-        // Thêm thông tin chi tiết lỗi nếu có
         if (error.response.data?.error) {
           errorDetails = `Chi tiết: ${JSON.stringify(
             error.response.data.error,
@@ -161,18 +157,15 @@ export default function Checkout() {
           )}`;
         }
       } else if (error.request) {
-        // Không nhận được phản hồi từ server
         console.error("Không nhận được phản hồi từ server:", error.request);
         errorMessage = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra:";
         errorDetails =
           "1. Đảm bảo backend đang chạy\n2. Kiểm tra kết nối mạng\n3. Thử lại sau ít phút";
       } else {
-        // Lỗi khi thiết lập request
         console.error("Lỗi khi thiết lập yêu cầu:", error.message);
         errorMessage = `Lỗi: ${error.message}`;
       }
 
-      // Hiển thị thông báo lỗi chi tiết
       message.error({
         content: (
           <div>

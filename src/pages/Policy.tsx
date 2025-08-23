@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Shield, Clock, Ticket, Users, Phone, Mail, AlertCircle, Star } from "lucide-react";
 
 const PolicyPage = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const policies = [
     {
       icon: <AlertCircle className="w-6 h-6" />,
