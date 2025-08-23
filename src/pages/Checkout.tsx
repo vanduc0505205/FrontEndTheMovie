@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
@@ -10,6 +10,9 @@ import { ICombo } from "@/interface/combo";
 import { checkDiscountCode } from "@/api/discount.api";
 
 export default function Checkout() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -150,7 +153,7 @@ export default function Checkout() {
     setIsLoading(true);
     try {
       // Validate dữ liệu
-      if (!userId || !showtimeId || !seatList?.length) {
+      if (!showtimeId || !seatList?.length) {
         throw new Error("Thiếu thông tin đặt vé. Vui lòng thử lại.");
       }
 
@@ -158,7 +161,6 @@ export default function Checkout() {
       const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
 
       const bookingPayload = {
-        userId,
         showtimeId,
         seatList: seatList.map((seat: any) => ({
           seatId: seat.seatId,

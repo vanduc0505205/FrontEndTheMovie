@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
 const Logout: React.FC = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   const navigate = useNavigate();
 
   useEffect(() => {
