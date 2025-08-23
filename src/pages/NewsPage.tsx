@@ -1,52 +1,31 @@
-import React, { useEffect } from "react";
-import { Card } from "antd";
+import { useEffect, useState } from "react";
+import { Card, message, Spin } from "antd";
 import type { CSSProperties } from "react";
-
-const newsList = [
-  {
-    title:
-      "TẶNG POSTER PHIM CONAN TỪ NGÀY 1/8/2025. CƠ HỘI CUỐI CÙNG NHẬN QUÀ TỪ SIÊU PHẨM ĐÂY CẢ NHÀ ƠI!",
-    date: "30/07/2025",
-    image:
-      "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018973.jpg&w=384&q=75",
-  },
-  {
-    title: "ƯU ĐÃI GIÁ VÉ 55.000Đ/VÉ 2D CHO THÀNH VIÊN U22",
-    date: "29/07/2025",
-    image:
-       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018966.png&w=384&q=75",
-  },
-  {
-    title:
-      "SUẤT CHIẾU ĐẶC BIỆT: BỘ TỨ SIÊU ĐẲNG – BƯỚC ĐI ĐẦU TIÊN",
-    date: "25/07/2025",
-    image:
-       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018943.jpg&w=384&q=75",
-  },
-  {
-    title:
-      "HÉ LỘ PHẦN QUÀ SIÊU HOT CHO TUẦN KHỞI CHIẾU CONAN MOVIE 28",
-    date: "25/07/2025",
-    image:
-       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018939.jpg&w=384&q=75",
-  },
-  {
-    title:
-      "SUẤT CHIẾU ĐẶC BIỆT – XÌ TRUM P (LỒNG TIẾNG) – XEM PHIM SỚM, NHẬN QUÀ XINH!",
-    date: "17/07/2025",
-    image:
-       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018918.jpg&w=384&q=75",
-  },
-  {
-    title:
-      "TRẢI NGHIỆM ĐIỆN ẢNH ĐÁNG NHỚ CỦA CÁC MAYER NHÍ TẠI TRUNG TÂM CHIẾU PHIM QUỐC GIA",
-    date: "17/07/2025",
-    image:
-       "https://chieuphimquocgia.com.vn/_next/image?url=http%3A%2F%2Fapiv2.chieuphimquocgia.com.vn%2FContent%2FImages%2FThumbs%2F0018915.jpg&w=384&q=75",
-  },
-];
+import { getAllNews } from "@/api/news.api";
+import { INews } from "@/interface/news";
+import { useNavigate } from "react-router-dom";
 
 const NewsPage = () => {
+  const [newsList, setNewsList] = useState<INews[]>([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const fetchNews = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllNews();
+      setNewsList(data.list || data);
+    } catch (err) {
+      message.error("Lỗi khi tải tin tức!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -69,26 +48,34 @@ const NewsPage = () => {
       >
         Tin tức
       </h1>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 24,
-        }}
-      >
-        {newsList.map((news, index) => (
-          <Card
-            key={index}
-            hoverable
-            style={cardStyle}
-            cover={<img src={news.image} alt="news" style={imgStyle} />}
-            bodyStyle={{ backgroundColor: "#1a1a1a", color: "#fff" }}
-          >
-            <p style={{ color: "#ccc", fontSize: 13 }}>{news.date}</p>
-            <h3 style={titleStyle}>{news.title}</h3>
-          </Card>
-        ))}
-      </div>
+
+      {loading ? (
+        <Spin size="large" style={{ display: "block", margin: "50px auto" }} />
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 24,
+          }}
+        >
+          {newsList.map((news) => (
+            <Card
+              key={news._id}
+              hoverable
+              style={cardStyle}
+              cover={<img src={news.image} alt="news" style={imgStyle} />}
+              bodyStyle={{ backgroundColor: "#1a1a1a", color: "#fff" }}
+              onClick={() => navigate(`/news/${news._id}`)} // 🔥 click toàn bộ card
+            >
+              <p style={{ color: "#ccc", fontSize: 13 }}>
+                {new Date(news.createdAt).toLocaleDateString("vi-VN")}
+              </p>
+              <h3 style={titleStyle}>{news.title}</h3>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -98,6 +85,7 @@ const cardStyle: CSSProperties = {
   overflow: "hidden",
   backgroundColor: "#1a1a1a",
   border: "none",
+  cursor: "pointer", // làm như nút bấm
 };
 
 const imgStyle: CSSProperties = {
