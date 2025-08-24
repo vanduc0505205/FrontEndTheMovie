@@ -1,4 +1,4 @@
-import { verifyVnPayPayment } from '@/api/payment.api';
+import { verifyVnPayPayment, checkPaymentStatus } from '@/api/payment.api';
 import { Result, Button, message } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -26,22 +26,52 @@ const CheckPayment = () => {
         });
 
         const params = Object.fromEntries(searchParams.entries());
+        const hasVnpParams = Object.keys(params).some((k) => k.startsWith('vnp_'));
+        const redirectCode = params.code as string | undefined;
+        const redirectMessage = params.message as string | undefined;
+        const bookingId = (params.bookingId as string) || (params.vnp_TxnRef as string);
 
-        const { data } = await verifyVnPayPayment(params);
+        let resultCode: string | undefined = undefined;
+        let resultMessage: string | undefined = undefined;
 
-        if (data?.success === false) {
-          throw new Error(data?.message || 'Thanh toán không thành công hoặc đã hủy');
+        if (hasVnpParams) {
+          const { data } = await verifyVnPayPayment(params);
+          resultCode = data?.code || (data?.success ? 'success' : 'payment_failed');
+          resultMessage = data?.message;
+        } else if (redirectCode) {
+          resultCode = redirectCode;
+          resultMessage = redirectMessage;
         }
 
-        setStatus('success');
-        setPaymentStatus({
-          title: 'Thanh toán thành công!',
-          message: `${data?.message || 'Giao dịch thành công'}${data?.bookingId ? ` | Booking ID: ${data.bookingId}` : ''}`,
-        });
-        message.success('Thanh toán của bạn đã được xử lý thành công');
+        if (bookingId) {
+          try {
+            const { data: check } = await checkPaymentStatus(bookingId);
+            if (check?.code === 'success' || check?.status === 'paid') {
+              resultCode = 'success';
+            } else if (check?.code === 'user_cancelled' || check?.status === 'cancelled') {
+              resultCode = 'user_cancelled';
+            } else {
+              if (!resultCode || resultCode === 'success') resultCode = 'payment_failed';
+            }
+          } catch (_) {
+          }
+        }
 
-        // Optional redirect nếu muốn
-        // setTimeout(() => navigate('/'), 5000);
+        if (resultCode === 'success') {
+          setStatus('success');
+          setPaymentStatus({
+            title: 'Thanh toán thành công!',
+            message: `${resultMessage || 'Giao dịch thành công'}${bookingId ? ` | Booking ID: ${bookingId}` : ''}`,
+          });
+          message.success('Thanh toán của bạn đã được xử lý thành công');
+          return;
+        }
+
+        if (resultCode === 'user_cancelled') {
+          throw new Error(resultMessage || 'Bạn đã hủy thanh toán');
+        }
+        throw new Error(resultMessage || 'Thanh toán không thành công');
+
       } catch (error: any) {
         console.error('Payment verification error:', error);
         setStatus('error');

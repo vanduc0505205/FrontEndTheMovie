@@ -112,7 +112,7 @@ const Showtime = () => {
       </div>
 
       {movieEntries.length === 0 ? (
-        <Empty description="Không có lịch chiếu cho ngày này" className="text-gray-400" />
+        <Empty description="Không có lịch chiếu cho ngày này" className="text-red-600" />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {movieEntries.map(([movieId, times]) => {

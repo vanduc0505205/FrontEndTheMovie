@@ -14,7 +14,7 @@ interface Props {
     open: boolean;
     onClose: () => void;
     onSuccess?: () => void;
-    initialData?: any; // hoặc dùng IShowtime nếu có kiểu
+    initialData?: any;
 }
 
 const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => {
@@ -22,22 +22,44 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
     const queryClient = useQueryClient();
     const isEdit = !!initialData;
 
+    const { data: movies = [], isLoading: loadingMovies } = useQuery<any>({
+        queryKey: ['movie'],
+        queryFn: getAllMoviesSimple,
+    });
+
+    const { data: allCinemas, isLoading: LoadingCinemas } = useQuery({
+        queryKey: ['cinemas-all'],
+        queryFn: async (): Promise<ICinema[]> => {
+            const { data } = await axios.get('http://localhost:3000/cinema');
+            return data.data;
+        },
+    });
+
+    const { data: rooms = [], isLoading: loadingRooms } = useQuery<any>({
+        queryKey: ['room'],
+        queryFn: getRooms,
+    });
+
     useEffect(() => {
-        if (open && initialData) {
+        const optionsLoaded = !loadingMovies && !LoadingCinemas && !loadingRooms;
+        if (open && initialData && optionsLoaded) {
             form.setFieldsValue({
-                movieId: initialData.movieId?._id,
-                cinemaId: initialData.cinemaId?._id,
-                roomId: initialData.roomId?._id,
+                movieId: initialData.movieId
+                    ? { value: initialData.movieId._id, label: initialData.movieId.title }
+                    : undefined,
+                cinemaId: initialData.cinemaId
+                    ? { value: initialData.cinemaId._id, label: initialData.cinemaId.name }
+                    : undefined,
+                roomId: initialData.roomId
+                    ? { value: initialData.roomId._id, label: initialData.roomId.name }
+                    : undefined,
                 defaultPrice: initialData.defaultPrice,
-                timeRange: [
-                    dayjs(initialData.startTime),
-                    dayjs(initialData.endTime)
-                ]
+                startTime: initialData.startTime ? dayjs(initialData.startTime) : undefined,
             });
-        } else {
+        } else if (!open) {
             form.resetFields();
         }
-    }, [open, initialData]);
+    }, [open, initialData, form, loadingMovies, LoadingCinemas, loadingRooms]);
 
     const mutationCreate = useMutation({
         mutationFn: createShowtime,
@@ -108,13 +130,16 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
 
     const handleFinish = (values: any) => {
         const start = dayjs(values.startTime);
-        const movie = movies.find((m: IMovie) => m._id === values.movieId);
+        const movieIdValue = values.movieId?.value ?? values.movieId;
+        const cinemaIdValue = values.cinemaId?.value ?? values.cinemaId;
+        const roomIdValue = values.roomId?.value ?? values.roomId;
+        const movie = movies.find((m: IMovie) => m._id === movieIdValue);
         const duration = movie?.duration || 0;
         const end = start.add(duration, 'minute');
         const payload = {
-            movieId: values.movieId,
-            cinemaId: values.cinemaId,
-            roomId: values.roomId,
+            movieId: movieIdValue,
+            cinemaId: cinemaIdValue,
+            roomId: roomIdValue,
             defaultPrice: values.defaultPrice,
             startTime: start.toISOString(),
         };
@@ -125,26 +150,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
         }
     };
 
-    const { data: movies = [], isLoading: loadingMovies } = useQuery<any>({
-        queryKey: ['movie'],
-        queryFn: getAllMoviesSimple,
-    });
 
-    // hàm api lấy dữ liệu cinema không truyền limit&page
-    const getAllCinemas = async (): Promise<ICinema[]> => {
-        const { data } = await axios.get("http://localhost:3000/cinema");
-        return data.data;
-    };
-
-    const { data: allCinemas, isLoading: LoadingCinemas } = useQuery({
-        queryKey: ["cinemas-all"],
-        queryFn: getAllCinemas,
-    });
-
-    const { data: rooms = [], isLoading: loadingRooms } = useQuery<any>({
-        queryKey: ['room'],
-        queryFn: getRooms,
-    });
 
     return (
         <Modal
@@ -162,7 +168,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     label="Phim"
                     rules={[{ required: true, message: "Vui lòng chọn phim" }]}
                 >
-                    <Select placeholder="Chọn phim" loading={loadingMovies}>
+                    <Select placeholder="Chọn phim" loading={loadingMovies} showSearch optionFilterProp="children" labelInValue>
                         {movies?.map((movie: IMovie) => (
                             <Select.Option key={movie._id} value={movie._id}>
                                 {movie.title}
@@ -177,7 +183,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     label="Rạp"
                     rules={[{ required: true, message: "Vui lòng chọn rạp" }]}
                 >
-                    <Select placeholder="Chọn rạp" loading={LoadingCinemas}>
+                    <Select placeholder="Chọn rạp" loading={LoadingCinemas} showSearch optionFilterProp="children" labelInValue>
                         {allCinemas?.map((cinema: ICinema) => (
                             <Select.Option key={cinema._id} value={cinema._id}>
                                 {cinema.name}
@@ -192,7 +198,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     label="Phòng"
                     rules={[{ required: true, message: "Vui lòng chọn phòng chiếu" }]}
                 >
-                    <Select placeholder="Chọn phòng" loading={loadingRooms}>
+                    <Select placeholder="Chọn phòng" loading={loadingRooms} showSearch optionFilterProp="children" labelInValue>
                         {rooms?.map((room) => (
                             <Select.Option key={room._id} value={room._id}>
                                 {room.name}
@@ -231,13 +237,13 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                 {/* Giá vé */}
                 <Form.Item
                     name="defaultPrice"
-                    label="Giá vé mặc định"
+                    label="Giá vé"
                     rules={[{ required: true, message: "Vui lòng chọn giá vé" }]}
                 >
                     <Select placeholder="Chọn giá vé">
-                        <Select.Option value={80000}>80.000 VNĐ</Select.Option>
+                        {/* <Select.Option value={80000}>80.000 VNĐ</Select.Option> */}
                         <Select.Option value={100000}>100.000 VNĐ</Select.Option>
-                        <Select.Option value={120000}>120.000 VNĐ</Select.Option>
+                        {/* <Select.Option value={120000}>120.000 VNĐ</Select.Option> */}
                         <Select.Option value={150000}>150.000 VNĐ</Select.Option>
                     </Select>
                 </Form.Item>

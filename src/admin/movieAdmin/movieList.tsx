@@ -76,7 +76,7 @@ export default function MovieList() {
 
       try {
         const res = await getAllMovies(params);
-        setMovies(res.list);   // getAllMovies trả về res.data, trong đó có list
+        setMovies(res.list);
         setTotal(res.total);
       } catch (err) {
         message.error("Không thể tải danh sách phim");
@@ -99,7 +99,7 @@ export default function MovieList() {
     const fetchCategories = async () => {
       try {
         const res = await getCategories();
-        setCategories(res); // API category trả về { list, total } giống movie
+        setCategories(res);
       } catch (err) {
         message.error("Không thể tải danh mục phim");
       }
@@ -138,12 +138,10 @@ export default function MovieList() {
   const handleSubmit = async (data: any) => {
     setLoading(true);
     try {
-      // Lấy URL banner đầu tiên nếu là mảng, nếu không lấy nguyên giá trị
       const bannerUrl = Array.isArray(data.banner)
         ? data.banner[0]
         : data.banner;
 
-      // Format lại dữ liệu trước khi gửi
       const formattedData = {
         title: data.title?.trim(),
         description: data.description?.trim(),
@@ -172,15 +170,13 @@ export default function MovieList() {
           }
           return [];
         })(),
-        banner: bannerUrl, // Sử dụng banner dạng string
+        banner: bannerUrl,
         poster: data.poster?.trim() || "",
-        // Loại bỏ trường trailer vì server không chấp nhận
+        trailer: data.trailer?.trim() || "",
         status: data.status || "sap_chieu",
         ageRating: data.ageRating || "P",
       };
 
-
-      // Kiểm tra dữ liệu bắt buộc
       if (
         !formattedData.title ||
         !formattedData.description ||
