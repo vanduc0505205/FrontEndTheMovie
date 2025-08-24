@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Form,
   Input,
@@ -26,12 +26,15 @@ const dayOptions = [
   { label: "Thứ 7", value: 6 },
 ];
 
+const MAX_DISCOUNT_VALUE = 1_000_000;
+const MIN_DISCOUNT_VALUE = 1_000;
+const DISCOUNT_STEP = 1_000;
+
 const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [originalData, setOriginalData] = useState(null);
 
-  // Khi initialValues thay đổi (edit mode) → lưu bản gốc
   useEffect(() => {
     if (initialValues) {
       const data = {
@@ -52,10 +55,8 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
 
   const handleCancel = () => {
     if (originalData) {
-      // Edit mode → trả về dữ liệu gốc
       form.setFieldsValue(originalData);
     } else {
-      // Create mode → reset rỗng
       form.resetFields();
       form.setFieldsValue({ isActive: true, allowedDays: [] });
     }
@@ -97,6 +98,47 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
   const numberParser = (value) =>
     value ? parseInt(value.replace(/,/g, ""), 10) || 0 : 0;
 
+  const valueWarnRef = useRef({ tooHigh: false, tooLow: false });
+
+  const handleValueChange = (val: number | null) => {
+    if (val == null) return;
+    if (val > MAX_DISCOUNT_VALUE) {
+      if (!valueWarnRef.current.tooHigh) {
+        message.warning(`Vượt quá tối đa ${MAX_DISCOUNT_VALUE.toLocaleString()}₫`);
+        valueWarnRef.current.tooHigh = true;
+      }
+      return;
+    } else {
+      valueWarnRef.current.tooHigh = false;
+    }
+
+    if (val < MIN_DISCOUNT_VALUE) {
+      if (!valueWarnRef.current.tooLow) {
+        message.warning(`Thấp hơn tối thiểu ${MIN_DISCOUNT_VALUE.toLocaleString()}₫`);
+        valueWarnRef.current.tooLow = true;
+      }
+      return;
+    } else {
+      valueWarnRef.current.tooLow = false;
+    }
+  };
+
+  const handleValueBlur = () => {
+    const raw = form.getFieldValue('value');
+    const num = Number(raw);
+    if (Number.isNaN(num)) return;
+    if (num > MAX_DISCOUNT_VALUE) {
+      form.setFieldsValue({ value: MAX_DISCOUNT_VALUE });
+      message.info(`Đã tự động đặt về tối đa ${MAX_DISCOUNT_VALUE.toLocaleString()}₫`);
+      return;
+    }
+    if (num < MIN_DISCOUNT_VALUE) {
+      form.setFieldsValue({ value: MIN_DISCOUNT_VALUE });
+      message.info(`Đã tự động đặt về tối thiểu ${MIN_DISCOUNT_VALUE.toLocaleString()}₫`);
+      return;
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -105,7 +147,7 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
       title={initialValues ? "Chỉnh sửa mã giảm giá" : "Thêm mã giảm giá"}
       okText={initialValues ? "Cập nhật" : "Tạo mới"}
       confirmLoading={loading}
-      destroyOnClose={false} // để giữ lại form khi đóng
+      destroyOnClose={false}
       width={800}
     >
       <Form layout="vertical" form={form} onFinish={handleFinish}>
@@ -114,7 +156,14 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
             <Form.Item
               name="code"
               label="Mã giảm giá"
-              rules={[{ required: true, message: "Vui lòng nhập mã" }]}
+              normalize={(v) => (typeof v === 'string' ? v.toUpperCase().trim() : v)}
+              rules={[
+                { required: true, message: "Vui lòng nhập mã" },
+                {
+                  pattern: /^[A-Z0-9_-]{3,20}$/,
+                  message: "Mã 3-20 ký tự, chỉ gồm A-Z, 0-9, gạch dưới hoặc gạch ngang",
+                },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -122,21 +171,36 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
             <Form.Item
               label="Số tiền giảm (₫)"
               name="value"
+              validateTrigger={["onChange", "onBlur"]}
               rules={[
                 {
                   required: true,
                   type: "number",
-                  min: 0,
-                  message: "Vui lòng nhập số tiền giảm hợp lệ",
+                  min: MIN_DISCOUNT_VALUE,
+                  max: MAX_DISCOUNT_VALUE,
+                  message: `Giá trị phải từ ${MIN_DISCOUNT_VALUE.toLocaleString()} đến ${MAX_DISCOUNT_VALUE.toLocaleString()}₫`,
+                },
+                {
+                  validator: (_, val) => {
+                    if (val == null || val === '') return Promise.resolve();
+                    const num = Number(val);
+                    if (Number.isNaN(num)) return Promise.reject("Giá trị không hợp lệ");
+                    if (num % DISCOUNT_STEP !== 0) {
+                      return Promise.reject(`Giá trị phải là bội số của ${DISCOUNT_STEP.toLocaleString()}₫`);
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
               <InputNumber
                 style={{ width: "100%" }}
-                min={0}
-                step={10000}
+                step={DISCOUNT_STEP}
+                precision={0}
                 formatter={numberFormatter}
                 parser={numberParser}
+                onChange={handleValueChange}
+                onBlur={handleValueBlur}
               />
             </Form.Item>
 
@@ -146,7 +210,7 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
               tooltip="Để trống = không giới hạn"
               rules={[{ type: "number", min: 1, message: "Số lượt phải >= 1" }]}
             >
-              <InputNumber min={1} style={{ width: "100%" }} />
+              <InputNumber min={1} precision={0} style={{ width: "100%" }} />
             </Form.Item>
           </Col>
 
@@ -154,7 +218,19 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
             <Form.Item
               name="dateRange"
               label="Thời gian áp dụng"
-              rules={[{ required: true, message: "Vui lòng chọn thời gian áp dụng" }]}
+              rules={[
+                { required: true, message: "Vui lòng chọn thời gian áp dụng" },
+                {
+                  validator: (_, value) => {
+                    const [start, end] = value || [];
+                    if (!start || !end) return Promise.resolve();
+                    if (dayjs(end).isBefore(dayjs(start))) {
+                      return Promise.reject("Ngày kết thúc phải sau ngày bắt đầu");
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
             >
               <RangePicker
                 showTime

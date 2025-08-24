@@ -25,9 +25,11 @@ export interface IApplyDiscountRequest {
   code: string;
   total: number;
 }
+
 export interface IApplyDiscountResponse {
-  discountedTotal: number;
   discountAmount: number;
+  finalPrice?: number; 
+  discountedTotal?: number; 
 }
 
 export const applyDiscount = async (

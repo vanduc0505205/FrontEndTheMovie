@@ -11,3 +11,7 @@ export const createPayment = async (payload: { bookingId: string; bankCode?: str
     },
   });
 };
+
+export const checkPaymentStatus = async (bookingId: string) => {
+  return axiosInstance.get("/payment/check", { params: { bookingId } });
+};

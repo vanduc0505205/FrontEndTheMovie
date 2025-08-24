@@ -29,11 +29,17 @@ const Login = () => {
       if (res?.accessToken && res?.user) {
         localStorage.setItem("accessToken", res.accessToken);
         if (res.refreshToken) localStorage.setItem("refreshToken", res.refreshToken);
+        let finalUser: any = res.user;
         try {
           const id = res.user._id || res.user.id;
           if (id) {
             const freshUser = await getUserById(id);
-            localStorage.setItem("user", JSON.stringify(freshUser));
+            if (freshUser) {
+              finalUser = freshUser;
+              localStorage.setItem("user", JSON.stringify(freshUser));
+            } else {
+              localStorage.setItem("user", JSON.stringify(res.user));
+            }
           } else {
             localStorage.setItem("user", JSON.stringify(res.user));
           }
@@ -44,7 +50,16 @@ const Login = () => {
       }
       message.success(res?.message || "Đăng nhập thành công!");
       form.resetFields();
-      navigate("/");
+      try {
+        const stored = localStorage.getItem("user");
+        const user = stored ? JSON.parse(stored) : undefined;
+        const role = user?.role || res?.user?.role;
+        if (role === "admin") navigate("/admin");
+        else if (role === "staff") navigate("/staff");
+        else navigate("/");
+      } catch {
+        navigate("/");
+      }
     } catch (error: any) {
       const msg = error?.message || "Đăng nhập thất bại. Vui lòng thử lại.";
       message.error(msg);
