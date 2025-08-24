@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
-import { Spin, message } from "antd";
-import { bookTicket } from "@/api/booking.api";
+import { Spin, message, Input, Button, Modal } from "antd"; // Thêm Modal
+import { bookTicket, getCombos, checkDiscount } from "@/api/booking.api";
 import { createPayment } from "@/api/payment.api";
+import axios, { AxiosError } from "axios";
+import ComboSelectionModal from "./comboSelectionModal";
+import { CloseCircleOutlined, DeleteOutlined } from "@ant-design/icons";
+import { set } from "date-fns";
 
 export default function Checkout() {
-    useEffect(() => {
-        window.scrollTo(0, 0);
-      }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedCombos, setSelectedCombos] = useState([]);
+  const [discountCode, setDiscountCode] = useState("");
   const bookingData = location.state;
   const { id: movieId } = useParams();
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isComboModalVisible, setIsComboModalVisible] = useState(false);
+  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
 
   const {
     data: movies,
@@ -58,41 +67,103 @@ export default function Checkout() {
 
   const { showtimeId, seatList, totalPrice, movie } = bookingData;
 
-  const handlePayment = async (method: "vnpay" | "cash") => {
+  const discountMutation = useMutation({
+    mutationFn: checkDiscount,
+    onSuccess: (response) => {
+      const discountValue = response.data?.value || 0;
+      setDiscountAmount(discountValue);
+      message.success(
+        `Áp dụng mã giảm giá thành công! Giảm ${discountValue.toLocaleString()} VNĐ`
+      );
+    },
+    onError: (error) => {
+      const err = error as AxiosError<{ message: string }>;
+      setDiscountAmount(0);
+      message.error(err.response?.data?.message || "Mã giảm giá không hợp lệ.");
+    },
+  });
+
+  const handleCancelDiscount = () => {
+    setDiscountCode('');
+    setDiscountAmount(0);
+  };
+
+  const handleApplyDiscount = async () => {
+    // Ngăn chặn việc click liên tục khi đang xử lý
+    if (isApplyingDiscount) {
+      return;
+    }
+
+    if (!discountCode) {
+      message.warning('Vui lòng nhập mã giảm giá.');
+      return;
+    }
+
+    setIsApplyingDiscount(true);
+
+    try {
+      // Gọi API để xác thực mã giảm giá
+      const response = await axios.post('http://localhost:3000/discount/apply', {
+        code: discountCode,
+        total: finalPrice
+      });
+
+      // Nếu API trả về thành công, cập nhật số tiền giảm giá
+      const { discountAmount } = response.data;
+      setDiscountAmount(discountAmount);
+      message.success(`Áp dụng mã giảm giá thành công! Bạn được giảm ${discountAmount.toLocaleString()} VNĐ.`);
+
+    } catch (error) {
+      // Xử lý khi API trả về lỗi
+      console.error('Lỗi khi áp dụng mã giảm giá:', error);
+      setDiscountAmount(0); // Đảm bảo số tiền giảm giá được reset
+
+      const errorMessage = error.response?.data?.message || 'Mã giảm giá không hợp lệ hoặc đã hết lượt sử dụng.';
+      message.error(errorMessage);
+    } finally {
+      setIsApplyingDiscount(false); // Kết thúc quá trình xử lý
+    }
+  };
+
+  // Tính tổng giá tiền của combo đã chọn
+  const totalComboPrice = selectedCombos.reduce((sum, combo) => sum + combo.price, 0);
+  const finalPrice = totalPrice + totalComboPrice - discountAmount;
+
+  const handlePayment = async (method) => {
     setIsLoading(true);
     try {
-      // Validate dữ liệu
       if (!showtimeId || !seatList?.length) {
         throw new Error("Thiếu thông tin đặt vé. Vui lòng thử lại.");
       }
 
-      // Tính lại tổng tiền từ seatList (giá đã đồng bộ)
-      const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
-
       const bookingPayload = {
         showtimeId,
-        seatList: seatList.map((seat: any) => ({
+        seatList: seatList.map((seat) => ({
           seatId: seat.seatId,
           seatType: seat.seatType,
-          price: seat.price
+          price: seat.price,
         })),
-        totalPrice: total,
-        paymentMethod: method === "vnpay" ? "VNPAY" : "COD"
+        comboList: selectedCombos.map((combo) => ({
+          comboId: combo._id,
+          quantity: combo.quantity,
+        })),
+        totalPrice: finalPrice,
+        paymentMethod: method === "vnpay" ? "VNPAY" : "COD",
+        discountCode: discountCode || null,
       };
-
+console.log("Payload gửi đi:", bookingPayload);
       const res = await bookTicket(bookingPayload);
 
       if (method === "vnpay" && res.data.booking?._id) {
         try {
           const vnpayRes = await createPayment({ bookingId: res.data.booking._id });
-
           if (vnpayRes.data?.paymentUrl) {
             window.location.href = vnpayRes.data.paymentUrl;
             return;
           } else {
             throw new Error("Không nhận được URL thanh toán từ VNPay");
           }
-        } catch (vnpayError: any) {
+        } catch (vnpayError) {
           console.error("Lỗi khi tạo URL thanh toán VNPay:", vnpayError);
           throw new Error("Lỗi khi kết nối với cổng thanh toán VNPay");
         }
@@ -121,48 +192,22 @@ export default function Checkout() {
           ),
           duration: 8,
         });
-
         setTimeout(() => {
           navigate("/lichsudatve");
         }, 3000);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Lỗi thanh toán:", error);
-
       let errorMessage = "Có lỗi xảy ra khi xử lý thanh toán";
       let errorDetails = "";
 
       if (error.response) {
-        console.error("Chi tiết lỗi từ server:", {
-          status: error.response.status,
-          data: error.response.data,
-          headers: error.response.headers,
-        });
-
-        errorMessage =
-          error.response.data?.message ||
-          `Lỗi từ server (${error.response.status})`;
-
-        if (error.response.data?.error) {
-          errorDetails = `Chi tiết: ${JSON.stringify(
-            error.response.data.error,
-            null,
-            2
-          )}`;
-        } else if (error.response.data) {
-          errorDetails = `Phản hồi: ${JSON.stringify(
-            error.response.data,
-            null,
-            2
-          )}`;
-        }
+        errorMessage = error.response.data?.message || `Lỗi từ server (${error.response.status})`;
+        errorDetails = `Phản hồi: ${JSON.stringify(error.response.data, null, 2)}`;
       } else if (error.request) {
-        console.error("Không nhận được phản hồi từ server:", error.request);
         errorMessage = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra:";
-        errorDetails =
-          "1. Đảm bảo backend đang chạy\n2. Kiểm tra kết nối mạng\n3. Thử lại sau ít phút";
+        errorDetails = "1. Đảm bảo backend đang chạy\n2. Kiểm tra kết nối mạng\n3. Thử lại sau ít phút";
       } else {
-        console.error("Lỗi khi thiết lập yêu cầu:", error.message);
         errorMessage = `Lỗi: ${error.message}`;
       }
 
@@ -184,6 +229,10 @@ export default function Checkout() {
     }
   };
 
+  const handleComboClick = (combo) => {
+    setSelectedCombos(prev => [...prev, combo]);
+  };
+
   if (isMovieLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -200,12 +249,15 @@ export default function Checkout() {
     );
   }
 
+  const handleRemoveCombo = (comboToRemove) => {
+    setSelectedCombos(prev => prev.filter(combo => combo.id !== comboToRemove.id));
+    message.info(`Đã xóa combo ${comboToRemove.name}`);
+  };
+
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden pt-20">
-
       <div className="relative z-10 flex items-center justify-center py-8 px-4 min-h-screen">
         <div className="max-w-4xl w-full bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-
           {/* Header */}
           <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 text-center relative">
             <div className="absolute inset-0 bg-black/10"></div>
@@ -221,7 +273,6 @@ export default function Checkout() {
               </p>
             </div>
           </div>
-
           <div className="p-8">
             {/* Movie Information */}
             {movies && (
@@ -288,6 +339,65 @@ export default function Checkout() {
               </div>
             )}
 
+            {/* Combo Selection */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12,10A2,2 0 0,0 10,12C10,13.11 10.9,14 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M12,18A6,6 0 0,1 6,12C6,8.68 8.68,6 12,6C15.32,6 18,8.68 18,12A6,6 0 0,1 12,18M12,2A10,10 0 0,0 2,12C2,17.55 6.45,22 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                </svg>
+                Chọn Combo
+              </h2>
+              <Button
+                type="primary"
+                onClick={() => setIsComboModalVisible(true)}
+                className="w-full bg-yellow-600 border-yellow-600 hover:!bg-yellow-700 hover:!border-yellow-700 text-black font-semibold"
+                size="large"
+              >
+                Thêm Combo
+              </Button>
+              <ComboSelectionModal
+                visible={isComboModalVisible}
+                onClose={() => setIsComboModalVisible(false)}
+                selectedCombos={selectedCombos}
+                onUpdateCombos={setSelectedCombos}
+              />
+            </div>
+
+            {/* Discount Code Input */}
+            <div className="mb-8 bg-gray-900/50 p-6 rounded-xl shadow-lg border border-gray-800/50">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                <svg className="w-6 h-6 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19,10V12H18V10H19M15,10V12H16V10H15M11,10V12H12V10H11M7,10V12H8V10H7M5,4A2,2 0 0,0 3,6V18A2,2 0 0,0 5,20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4H5M5,6H19V8H5V6M19,18H5V14H19V18Z" />
+                </svg>
+                Mã giảm giá
+              </h2>
+              <div className="flex gap-4 relative items-center">
+                <Input
+                  placeholder="Nhập mã giảm giá của bạn"
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                  className="bg-black/30 text-white border border-gray-700/50 placeholder-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 rounded-lg py-2.5 px-4 w-full max-w-xs"
+                />
+                <Button
+                  type="primary"
+                  onClick={handleApplyDiscount}
+                  loading={isApplyingDiscount}
+                  disabled={!discountCode}
+                  className="bg-purple-600 border-purple-600 hover:!bg-purple-700 hover:!border-purple-700 text-white rounded-lg font-semibold px-6 py-2.5 transition-all duration-300"
+                >
+                  Áp dụng
+                </Button>
+                {discountAmount > 0 && (
+                  <Button
+                    type="text"
+                    onClick={handleCancelDiscount} 
+                    icon={<CloseCircleOutlined style={{ color: '#ef4444' }} />}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-500 transition-colors duration-200"
+                  />
+                )}
+              </div>
+            </div>
+
             {/* Booking Information */}
             <div className="mb-8">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -306,11 +416,7 @@ export default function Checkout() {
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {seatList.map(
-                      (seat: {
-                        seatId: string;
-                        seatCode: string;
-                        seatType: string;
-                      }) => (
+                      (seat) => (
                         <div
                           key={seat.seatId}
                           className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all duration-200 ${seat.seatType === "VIP"
@@ -333,6 +439,35 @@ export default function Checkout() {
                   </div>
                 </div>
 
+                {/* Combos Added */}
+                {selectedCombos.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12,2A10,10 0 0,1 22,12C22,17.55 17.55,22 12,22C6.45,22 2,17.55 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,16.44 7.56,20 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z" />
+                      </svg>
+                      Combo đã chọn:
+                    </h4>
+                    <div className="flex flex-col gap-2">
+                      {selectedCombos.map((combo) => (
+                        <div key={combo.id} className="flex justify-between items-center text-gray-300">
+                          <span className="font-medium">{combo.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-white">{combo.price.toLocaleString()} VNĐ</span>
+                            {/* Thêm nút hủy cho từng combo */}
+                            <Button
+                              type="text"
+                              onClick={() => handleRemoveCombo(combo)}
+                              icon={<DeleteOutlined style={{ color: '#ef4444' }} />} // Sử dụng icon của Ant Design
+                              className="hover:bg-transparent"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Total Price */}
                 <div className="flex justify-between items-center pt-4 border-t border-white/20">
                   <span className="text-xl font-semibold text-white">
@@ -340,10 +475,10 @@ export default function Checkout() {
                   </span>
                   <div className="text-right">
                     <span className="text-3xl font-bold text-amber-400">
-                      {totalPrice?.toLocaleString()} VNĐ
+                      {finalPrice?.toLocaleString()} VNĐ
                     </span>
                     <p className="text-sm text-gray-400 mt-1">
-                      {seatList.length} ghế đã chọn
+                      {seatList.length} ghế + {selectedCombos.length} combo
                     </p>
                   </div>
                 </div>
@@ -358,9 +493,7 @@ export default function Checkout() {
                 </svg>
                 Chọn phương thức thanh toán
               </h2>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* VNPay Button */}
                 <button
                   onClick={() => handlePayment("vnpay")}
                   disabled={isLoading}
@@ -370,25 +503,9 @@ export default function Checkout() {
                   <div className="relative z-10 flex items-center justify-center gap-3">
                     {isLoading ? (
                       <>
-                        <svg
-                          className="animate-spin h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         <span>Đang chuyển hướng...</span>
                       </>
@@ -403,8 +520,6 @@ export default function Checkout() {
                     )}
                   </div>
                 </button>
-
-                {/* Cash Button */}
                 <button
                   onClick={() => handlePayment("cash")}
                   disabled={isLoading}
@@ -414,25 +529,9 @@ export default function Checkout() {
                   <div className="relative z-10 flex items-center justify-center gap-3">
                     {isLoading ? (
                       <>
-                        <svg
-                          className="animate-spin h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         <span>Đang xử lý...</span>
                       </>
@@ -448,8 +547,6 @@ export default function Checkout() {
                   </div>
                 </button>
               </div>
-
-              {/* Back Button */}
               <div className="flex justify-center">
                 <button
                   onClick={() => navigate(-1)}
@@ -464,11 +561,9 @@ export default function Checkout() {
               </div>
             </div>
           </div>
-
-          {/* Footer */}
           <div className="bg-black/30 border-t border-white/10 p-6 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 0 24 24">
                 <path d="M12 1.5L14.76 8.06L22 9.18L16.88 14.12L18.36 21.5L12 17.82L5.64 21.5L7.12 14.12L2 9.18L9.24 8.06L12 1.5Z" />
               </svg>
               <p className="text-gray-300 text-sm font-medium">

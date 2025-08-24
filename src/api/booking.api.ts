@@ -19,3 +19,13 @@ export const getUserBookings = async (userId: string) => {
 export const updateBookingStatus = async (bookingId: string, status: string) => {
   return axiosInstance.patch(`/booking/${bookingId}/status`, { status });
 };
+
+// Thêm hàm để lấy danh sách combo
+export const getCombos = async () => {
+  return axiosInstance.get("/combo");
+};
+
+// Thêm hàm để kiểm tra mã giảm giá
+export const checkDiscount = async (discountCode: string) => {
+  return axiosInstance.get(`/discount/check/${discountCode}`);
+};
