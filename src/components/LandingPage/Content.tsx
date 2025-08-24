@@ -7,7 +7,10 @@ import Autoplay from "embla-carousel-autoplay";
 import { slideData } from "@/config";
 import { phimMai } from "@/assets/path";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { getAccessToken } from "@/lib/auth";
 
 export default function HomePageContent() {
   // useEffect(() => {
@@ -37,6 +40,17 @@ export default function HomePageContent() {
 
   const nowShowing = movieList.filter((movie) => movie.status === "dang_chieu");
   const comingSoon = movieList.filter((movie) => movie.status === "sap_chieu");
+
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const handleRegisterClick = () => {
+    const token = getAccessToken();
+    if (token) {
+      toast({ title: "Bạn đã đăng nhập", description: "Bạn đã đăng nhập vào hệ thống." });
+      return;
+    }
+    navigate("/dang-ky");
+  };
 
   return (
     <div>
@@ -73,17 +87,18 @@ export default function HomePageContent() {
                       <li>Chọn chỗ ngồi yêu thích</li>
                       <li>Nhận thông báo phim mới & ưu đãi</li>
                     </ul>
+                    <Link to="/lich-chieu" className="inline-block">
                     <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-xl font-semibold px-6 py-3 shadow-lg hover:shadow-red-500/25 transition-all duration-300 border-0">
                       Đặt vé ngay
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Phim đang chiếu */}
           {/* Phim đang chiếu */}
           <section className="py-16">
             <div className="container mx-auto px-4">
@@ -108,7 +123,6 @@ export default function HomePageContent() {
                       />
                     </div>
 
-                    {/* Luôn hiển thị tên phim */}
                     <div className="p-3">
                       <h3 className="font-bold text-base text-white mb-1 line-clamp-2">
                         {movie.title}
@@ -163,14 +177,12 @@ export default function HomePageContent() {
                       />
                     </div>
 
-                    {/* Luôn hiển thị tên phim */}
                     <div className="p-3">
                       <h3 className="font-bold text-base text-white mb-1 line-clamp-2">
                         {movie.title}
                       </h3>
                     </div>
 
-                    {/* Overlay chi tiết (hover mới hiện) */}
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                       <div className="flex flex-col text-xs text-gray-300 space-y-1">
                         <div className="flex items-center justify-between">
@@ -281,7 +293,7 @@ export default function HomePageContent() {
               <p className="text-gray-300 text-base mb-8">
                 Đăng ký tài khoản ngay để nhận nhiều ưu đãi và trải nghiệm dịch vụ tốt nhất!
               </p>
-              <Button className="bg-custom-gradient-button text-white text-xl font-semibold px-8 py-4 hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300">
+              <Button onClick={handleRegisterClick} className="bg-custom-gradient-button text-white text-xl font-semibold px-8 py-4 hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300">
                 Đăng ký ngay
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>

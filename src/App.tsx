@@ -47,6 +47,8 @@ import UserProfile from './pages/UserProfile'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 import ProfilePage from './pages/ProfilePage'
 import { useEffect } from 'react';
+import { enforceLogoutIfExpired } from '@/lib/auth';
+
 import ContactAdmin from './admin/contactAdmin/contact.admin'
 import CategoryStaff from './staff/categoryStaff/CategoryStaff'
 import Showtime from './pages/Showtimes'
@@ -76,6 +78,22 @@ function App() {
   //     document.body.appendChild(script);
   //   }
   // }, []);
+
+  useEffect(() => {
+    enforceLogoutIfExpired();
+
+    const id = setInterval(() => {
+      enforceLogoutIfExpired();
+    }, 60 * 1000);
+
+    const onVisibility = () => enforceLogoutIfExpired();
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
 
   return (
     <Routes>

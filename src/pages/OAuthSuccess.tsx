@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import { getOAuthUser } from "@/api/auth.api";
+import { setLoginAtNow } from "@/lib/auth";
 
 const OAuthSuccess = () => {
     useEffect(() => {
@@ -20,6 +21,7 @@ const OAuthSuccess = () => {
       if (refreshToken) {
         localStorage.setItem("refreshToken", refreshToken);
       }
+      setLoginAtNow();
 
       const user = await getOAuthUser();
       console.log(user);
