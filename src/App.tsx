@@ -54,6 +54,7 @@ import MovieDetailStaff from './staff/movieStaff/movieDetail'
 import NewsList from './admin/newsAdmin/NewsList'
 import NewsListStaff from './staff/newsStaff/NewsList'
 import NewsDetail from './pages/NewsDetail'
+import ComboAdmin from './admin/comboAdmin/comboAdmin'
 
 function App() {
   // useEffect(() => {
@@ -159,6 +160,7 @@ function App() {
         <Route path="dashboard" element={<DashboardAdmin />} />
         <Route path="bookings" element={<BookingAdmin />} />
         <Route path="discounts" element={<DiscountList />} />
+        <Route path="combos" element={<ComboAdmin />} />
         <Route path="lienhe" element={<ContactAdmin />} />
         <Route path="news" element={<NewsList />} />
       </Route>
