@@ -19,3 +19,7 @@ export const getUserBookings = async (userId: string) => {
 export const updateBookingStatus = async (bookingId: string, status: string) => {
   return axiosInstance.patch(`/booking/${bookingId}/status`, { status });
 };
+
+export const getAllBookings = async () => {
+  return axiosInstance.get(`/booking/admin/all`);
+};

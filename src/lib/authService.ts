@@ -17,7 +17,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Global refresh token state
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
@@ -39,7 +38,6 @@ axiosInstance.interceptors.response.use(
       originalRequest.url?.includes("/user/login") ||
       originalRequest.url?.includes("/auth/google");
 
-    // Nếu là login → chỉ show message, không redirect
     if (isLoginRequest) {
       const beMessage =
         error.response?.data?.message || "Đăng nhập thất bại, vui lòng thử lại!";
@@ -47,7 +45,6 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Xử lý refresh token
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve) => {
@@ -90,7 +87,13 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    // Các lỗi khác
+    if (error.response?.status === 403) {
+      clearUserData();
+      message.error(error.response?.data?.message || "Phiên làm việc không hợp lệ hoặc tài khoản bị khóa");
+      window.location.href = "/dang-nhap";
+      return Promise.reject(error);
+    }
+
     const beMessage = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
     message.error(beMessage);
     return Promise.reject(error);

@@ -15,7 +15,6 @@ import {
   Divider,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import axios from "axios";
 import {
   LineChart,
   Line,
@@ -33,7 +32,7 @@ import {
 } from "recharts";
 import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { getUserBookings } from "@/api/booking.api";
+import { getAllBookings } from "@/api/booking.api";
 
 const { RangePicker } = DatePicker;
 
@@ -103,22 +102,6 @@ const CHART_COLORS = [
   "#b6e3ff",
 ];
 
-const getUserIdFromStorage = () => {
-  const rawUser = localStorage.getItem("user");
-  const rawUserId = localStorage.getItem("userId");
-  
-
-  if (rawUserId) return rawUserId;
-  if (!rawUser) return null;
-
-  try {
-    const parsed = JSON.parse(rawUser as string);
-    return parsed?._id || parsed?.id || null;
-  } catch {
-    return rawUser;
-  }
-};
-
 
 const DashboardAdmin: React.FC = () => {
   const [orders, setOrders] = useState<OrderRow[]>([]);
@@ -129,13 +112,10 @@ const DashboardAdmin: React.FC = () => {
   const [filterDateRange, setFilterDateRange] = useState<any[]>([null, null]);
   const [filterMovie, setFilterMovie] = useState<string | null>(null);
 
-  const userId = getUserIdFromStorage();
-
   const fetchOrders = async () => {
-    if (!userId) return;
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/booking/user/${userId}`);
+      const res = await getAllBookings();
       const raw: RawBooking[] = (res.data?.bookings ?? res.data ?? []) as RawBooking[];
 
       const normalized: OrderRow[] = raw.map((b) => {
@@ -163,9 +143,18 @@ const DashboardAdmin: React.FC = () => {
           (b as any).cinemaName ||
           "—";
 
+        const userIdStr = ((): string | undefined => {
+          const uid: any = (b as any).userId;
+          if (!uid) return undefined;
+          if (typeof uid === "string") return uid;
+          if (typeof uid === "object") return uid._id || uid.id || undefined;
+          return undefined;
+        })();
+
         return {
           ...(b as any),
           key: b._id,
+          userId: userIdStr,
           movieTitle,
           cinemaName,
           seats: seatsArr.length > 0 ? seatsArr : ["(Không rõ)"],
@@ -183,14 +172,8 @@ const DashboardAdmin: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!userId) {
-      message.error("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập.");
-      setLoading(false);
-      return;
-    }
     fetchOrders();
-  
-  }, [userId]);
+  }, []);
 
  
   const filteredOrders = useMemo(() => {
@@ -227,8 +210,8 @@ const DashboardAdmin: React.FC = () => {
   );
 
   const uniqueUserIds = useMemo(() => {
-    return new Set(filteredOrders.map((o) => o.userId || (userId as string)));
-  }, [filteredOrders, userId]);
+    return new Set(filteredOrders.map((o) => o.userId).filter(Boolean) as string[]);
+  }, [filteredOrders]);
 
   const totalUsers = uniqueUserIds.size;
 

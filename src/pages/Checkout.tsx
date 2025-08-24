@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
-import { Spin, message } from "antd";
+import { Spin, message, Input, Button } from "antd";
 import { bookTicket } from "@/api/booking.api";
 import { createPayment } from "@/api/payment.api";
+import { applyDiscount } from "@/api/discount.api";
 
 export default function Checkout() {
     useEffect(() => {
@@ -58,16 +59,59 @@ export default function Checkout() {
 
   const { showtimeId, seatList, totalPrice, movie } = bookingData;
 
+  const [discountCode, setDiscountCode] = useState<string>("");
+  const [applying, setApplying] = useState<boolean>(false);
+  const [appliedCode, setAppliedCode] = useState<string>("");
+  const [discountAmount, setDiscountAmount] = useState<number>(0);
+  const [discountedTotal, setDiscountedTotal] = useState<number | null>(null);
+
+  const baseTotal = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
+
+  const onApplyDiscount = async () => {
+    const code = discountCode.trim().toUpperCase();
+    if (!code) {
+      message.warning("Vui lòng nhập mã giảm giá");
+      return;
+    }
+    setApplying(true);
+    try {
+      const res = await applyDiscount({ code, total: baseTotal });
+      setAppliedCode(code);
+      const amt = res.discountAmount || 0;
+      setDiscountAmount(amt);
+      const final =
+        (res as any).finalPrice ??
+        (res as any).discountedTotal ??
+        Math.max(0, baseTotal - amt);
+      setDiscountedTotal(final);
+      message.success("Áp dụng mã giảm giá thành công");
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || "Mã giảm giá không hợp lệ";
+      message.error(msg);
+      setAppliedCode("");
+      setDiscountAmount(0);
+      setDiscountedTotal(null);
+    } finally {
+      setApplying(false);
+    }
+  };
+
+  const clearDiscount = () => {
+    setAppliedCode("");
+    setDiscountAmount(0);
+    setDiscountedTotal(null);
+    setDiscountCode("");
+  };
+
   const handlePayment = async (method: "vnpay" | "cash") => {
     setIsLoading(true);
     try {
-      // Validate dữ liệu
       if (!showtimeId || !seatList?.length) {
         throw new Error("Thiếu thông tin đặt vé. Vui lòng thử lại.");
       }
 
-      // Tính lại tổng tiền từ seatList (giá đã đồng bộ)
       const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
+      const totalToPay = discountedTotal != null ? discountedTotal : total;
 
       const bookingPayload = {
         showtimeId,
@@ -76,7 +120,13 @@ export default function Checkout() {
           seatType: seat.seatType,
           price: seat.price
         })),
-        totalPrice: total,
+        totalPrice: totalToPay,
+        ...(appliedCode
+          ? {
+              discountCode: appliedCode,
+              discountAmount: discountAmount,
+            }
+          : {}),
         paymentMethod: method === "vnpay" ? "VNPAY" : "COD"
       };
 
@@ -333,19 +383,55 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Total Price */}
+                {/* Total Price + Discount */}
                 <div className="flex justify-between items-center pt-4 border-t border-white/20">
                   <span className="text-xl font-semibold text-white">
                     Tổng tiền:
                   </span>
                   <div className="text-right">
-                    <span className="text-3xl font-bold text-amber-400">
-                      {totalPrice?.toLocaleString()} VNĐ
-                    </span>
+                    {appliedCode && discountedTotal != null ? (
+                      <div className="space-y-1">
+                        <div className="text-gray-300 line-through">
+                          {baseTotal.toLocaleString()} VNĐ
+                        </div>
+                        <div className="text-green-400 text-sm">
+                          Giảm (-{discountAmount.toLocaleString()} VNĐ) bằng mã {appliedCode}
+                        </div>
+                        <div className="text-3xl font-bold text-amber-400">
+                          {discountedTotal.toLocaleString()} VNĐ
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-3xl font-bold text-amber-400">
+                        {baseTotal.toLocaleString()} VNĐ
+                      </span>
+                    )}
                     <p className="text-sm text-gray-400 mt-1">
                       {seatList.length} ghế đã chọn
                     </p>
                   </div>
+                </div>
+
+                {/* Discount Code Input */}
+                <div className="mt-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Nhập mã giảm giá (VD: SALE20)"
+                      value={discountCode}
+                      onChange={(e) => setDiscountCode(e.target.value)}
+                      disabled={applying}
+                      allowClear
+                    />
+                  </div>
+                  {!appliedCode ? (
+                    <Button type="primary" loading={applying} onClick={onApplyDiscount}>
+                      Áp dụng
+                    </Button>
+                  ) : (
+                    <Button danger onClick={clearDiscount} disabled={applying}>
+                      Bỏ mã
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

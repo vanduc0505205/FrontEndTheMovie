@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Table, Spin, message, Button, Select, QRCode } from "antd";
-import { getUserBookings, updateBookingStatus } from "@/api/booking.api";
+import { getAllBookings, getUserBookings, updateBookingStatus } from "@/api/booking.api";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -23,28 +23,10 @@ const handleViewDetail = (order) => {
 
 
 
-  const getUserIdFromStorage = () => {
-    const rawUser = localStorage.getItem("user");
-    const rawUserId = localStorage.getItem("userId");
-
-    if (rawUserId) return rawUserId;
-    if (!rawUser) return null;
-
-    try {
-      const parsed = JSON.parse(rawUser);
-      return parsed?._id || parsed?.id || null;
-    } catch {
-      return rawUser;
-    }
-  };
-
-  const userId = getUserIdFromStorage();
-
   const fetchOrders = async () => {
-    if (!userId) return;
     try {
       setLoading(true);
-      const res = await getUserBookings(userId);
+      const res = await getAllBookings();
       const raw = res.data?.bookings ?? res.data ?? [];
 
       const normalized = raw.map((b) => {
@@ -89,15 +71,9 @@ const handleViewDetail = (order) => {
   };
 
   useEffect(() => {
-    if (!userId) {
-      message.error("Không tìm thấy thông tin người dùng. Vui lòng đăng nhập.");
-      setLoading(false);
-      return;
-    }
     fetchOrders();
-  }, [userId]);
+  }, []);
 
-  // Hàm cập nhật trạng thái
   const handleUpdateStatus = async (bookingId, newStatus) => {
     try {
       await updateBookingStatus(bookingId, newStatus);
@@ -109,15 +85,6 @@ const handleViewDetail = (order) => {
       message.error("Cập nhật trạng thái thất bại");
     }
   };
-
-  if (!userId) {
-    return (
-      <div style={{ padding: 20 }}>
-        <h2>Lịch sử đặt vé</h2>
-        <p>Không tìm thấy thông tin người dùng. Vui lòng đăng nhập.</p>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
