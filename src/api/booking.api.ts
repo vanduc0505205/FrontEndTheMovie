@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/authService";
+import axios from "axios";
 
 export const bookTicket = async (bookingPayload: any) => {
   return axiosInstance.post("/booking/book", bookingPayload);
@@ -23,3 +24,8 @@ export const updateBookingStatus = async (bookingId: string, status: string) => 
 export const getAllBookings = async () => {
   return axiosInstance.get(`/booking/admin/all`);
 };
+
+export const getAllPayments = async () => {
+  return axiosInstance.get("/booking/payments/admin/all");
+};
+
