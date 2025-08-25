@@ -13,6 +13,20 @@ import { useToast } from "@/hooks/use-toast";
 import { getAccessToken } from "@/lib/auth";
 
 export default function HomePageContent() {
+     useEffect(() => {
+  if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+    const script = document.createElement("script");
+    script.src = "https://app.preny.ai/embed-global.js";
+    script.async = true;
+    script.defer = true;
+    script.setAttribute("data-name-bot", "bot-demo");
+    script.setAttribute("data-button-style", "width:300px;height:300px;");
+    script.setAttribute("data-language", "vi");
+    script.setAttribute("data-preny-bot-id", "68ac9ed5b5aff4ec6edbd3db");
+    document.body.appendChild(script);
+  }
+}, []);
+
   const autoplay = Autoplay({ delay: 2000, stopOnInteraction: false });
 
   const {
