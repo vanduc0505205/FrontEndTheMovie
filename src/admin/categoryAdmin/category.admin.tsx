@@ -153,8 +153,6 @@ const handleSubmit = async (values: { categoryName: string; description?: string
         </>
       )}
 
-      {userRole !== 'admin' && <Title level={5}>Danh sách danh mục</Title>}
-
       <List
         dataSource={categories || []}
         bordered

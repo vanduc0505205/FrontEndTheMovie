@@ -246,38 +246,38 @@ export default function MovieModal({
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="title" label="Tên phim" rules={[{ required: true }]}>
+            <Form.Item name="title" label="Tên phim" rules={[{ required: true, message: "Vui lòng nhập tên phim" }]}>
               <Input />
             </Form.Item>
 
-            <Form.Item name="duration" label="Thời lượng (phút)" rules={[{ required: true }]}>
+            <Form.Item name="duration" label="Thời lượng (phút)" rules={[{ required: true, message: "Vui lòng nhập thời lượng" }]}>
               <Input type="number" />
             </Form.Item>
 
-            <Form.Item name="releaseDate" label="Ngày khởi chiếu" rules={[{ required: true }]}>
+            <Form.Item name="releaseDate" label="Ngày khởi chiếu" rules={[{ required: true, message: "Vui lòng chọn ngày khởi chiếu" }]}>
               <DatePicker
                 style={{ width: "100%" }}
                 disabledDate={(current) => current && current < dayjs().startOf("day")}
               />
             </Form.Item>
 
-            <Form.Item name="director" label="Đạo diễn" rules={[{ required: true }]}>
+            <Form.Item name="director" label="Đạo diễn" rules={[{ required: true, message: "Vui lòng nhập tên đạo diễn" }]}>
               <Input />
             </Form.Item>
 
             <Form.Item
               name="actors"
               label="Diễn viên (cách nhau bởi dấu phẩy)"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Vui lòng nhập tên diễn viên" }]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item name="description" label="Mô tả" rules={[{ required: true }]}>
+            <Form.Item name="description" label="Mô tả" rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}>
               <TextArea rows={2} />
             </Form.Item>
 
-            <Form.Item name="categories" label="Danh mục" rules={[{ required: true }]}>
+            <Form.Item name="categories" label="Danh mục" rules={[{ required: true, message: "Vui lòng chọn ít nhất một danh mục" }]}>
               <Select mode="multiple">
                 {categories.map((cat) => (
                   <Option key={cat._id} value={cat._id}>
@@ -289,7 +289,7 @@ export default function MovieModal({
           </Col>
 
           <Col span={12}>
-            <Form.Item name="language" label="Quốc gia" rules={[{ required: true }]}>
+            <Form.Item name="language" label="Quốc gia" rules={[{ required: true, message: "Vui lòng chọn quốc gia" }]}>
               <Select>
                 <Option value="Việt Nam">Việt Nam</Option>
                 <Option value="Mỹ">Mỹ</Option>
@@ -297,7 +297,7 @@ export default function MovieModal({
               </Select>
             </Form.Item>
 
-            <Form.Item name="ageRating" label="Độ tuổi" rules={[{ required: true }]}>
+            <Form.Item name="ageRating" label="Độ tuổi" rules={[{ required: true, message: "Vui lòng chọn độ tuổi" }]}>
               <Select>
                 <Option value="C13">C13</Option>
                 <Option value="C16">C16</Option>
@@ -305,7 +305,7 @@ export default function MovieModal({
               </Select>
             </Form.Item>
 
-            <Form.Item name="status" label="Trạng thái" rules={[{ required: true }]}>
+            <Form.Item name="status" label="Trạng thái" rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}>
               <Select>
                 <Option value="sap_chieu">Sắp chiếu</Option>
                 <Option value="dang_chieu">Đang chiếu</Option>
@@ -332,7 +332,7 @@ export default function MovieModal({
                 </div>
               )}
 
-            <Form.Item name="poster" label="Poster" rules={[{ required: true }]}>
+            <Form.Item name="poster" label="Poster" rules={[{ required: true, message: "Vui lòng tải lên poster" }]}>
               <ImgCrop
                 aspect={2 / 3}
                 modalTitle="Cắt ảnh Poster (tỉ lệ 2:3)"
@@ -359,7 +359,7 @@ export default function MovieModal({
               </ImgCrop>
             </Form.Item>
 
-            <Form.Item name="banner" label="Banner" rules={[{ required: true }]}>
+            <Form.Item name="banner" label="Banner" rules={[{ required: true, message: "Vui lòng tải lên banner" }]}>
               <ImgCrop
                 aspect={16 / 9}
                 modalTitle="Cắt ảnh Banner (tỉ lệ 16:9)"

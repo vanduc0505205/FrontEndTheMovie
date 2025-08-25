@@ -30,7 +30,7 @@ export default function CategoryStaff() {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   console.log('user role', user.role);
-  
+
   const userRole = user?.role;
 
   useEffect(() => {
@@ -46,48 +46,48 @@ export default function CategoryStaff() {
     }
   };
 
-const handleSubmit = async (values: { categoryName: string; description?: string }) => {
-  if (!values.categoryName.trim()) {
-    return message.warning('Tên danh mục không được để trống');
-  }
-
-  setLoading(true);
-  try {
-    if (editingId) {
-      await updateCategory(editingId, values);
-      message.success('Cập nhật danh mục thành công');
-    } else {
-      await createCategory(values);
-      message.success('Tạo danh mục mới thành công');
+  const handleSubmit = async (values: { categoryName: string; description?: string }) => {
+    if (!values.categoryName.trim()) {
+      return message.warning('Tên danh mục không được để trống');
     }
-    resetForm();
-    fetchCategories();
-  } catch (err: any) {
-    const messages = err?.response?.data?.message;
 
-    if (Array.isArray(messages)) {
-      // messages.forEach((msg) => {
-      //   message.error(msg);
-      // });
-
-      const nameError = messages.find((msg: string) =>
-        msg.toLowerCase().includes('tên thể loại')
-      );
-      if (nameError) {
-        form.setFields([
-          {
-            name: 'categoryName',
-            errors: [nameError],
-          },
-        ]);
+    setLoading(true);
+    try {
+      if (editingId) {
+        await updateCategory(editingId, values);
+        message.success('Cập nhật danh mục thành công');
+      } else {
+        await createCategory(values);
+        message.success('Tạo danh mục mới thành công');
       }
-    } else {
-      message.error('Đã xảy ra lỗi khi lưu danh mục');
+      resetForm();
+      fetchCategories();
+    } catch (err: any) {
+      const messages = err?.response?.data?.message;
+
+      if (Array.isArray(messages)) {
+        // messages.forEach((msg) => {
+        //   message.error(msg);
+        // });
+
+        const nameError = messages.find((msg: string) =>
+          msg.toLowerCase().includes('tên thể loại')
+        );
+        if (nameError) {
+          form.setFields([
+            {
+              name: 'categoryName',
+              errors: [nameError],
+            },
+          ]);
+        }
+      } else {
+        message.error('Đã xảy ra lỗi khi lưu danh mục');
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleEdit = (cat: ICategory) => {
     form.setFieldsValue({
@@ -155,8 +155,6 @@ const handleSubmit = async (values: { categoryName: string; description?: string
         </>
       )}
 
-      {userRole !== 'admin' && <Title level={5}>Danh sách danh mục</Title>}
-
       <List
         dataSource={categories || []}
         bordered
@@ -164,10 +162,9 @@ const handleSubmit = async (values: { categoryName: string; description?: string
         renderItem={(cat) => (
           <List.Item
             actions={
-              userRole === 'admin'
+              userRole === 'staff'
                 ? [
-                  <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>,
-                  <Button size="small" danger onClick={() => handleDelete(cat._id)}>Xoá</Button>,
+                  <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>
                 ]
                 : undefined
             }

@@ -161,7 +161,7 @@ const SeatList = () => {
     <div className="p-4 max-w-4xl mx-auto">
       <h2 className="text-xl font-semibold mb-4">Quản lý ghế</h2>
       <Form layout="vertical" form={form} onFinish={handleSubmit}>
-        <Form.Item name="roomId" label="Phòng" rules={[{ required: true }]}>
+        <Form.Item name="roomId" label="Phòng" rules={[{ required: true, message: "Vui lòng chọn phòng" }]}>
           <Select
             placeholder="Chọn phòng"
             loading={loadingRooms}
@@ -193,7 +193,7 @@ const SeatList = () => {
               <Form.Item
                 name="rows"
                 label="Số hàng (Không thể thay đổi)"
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: "Vui lòng nhập số hàng" }]}
                 className="flex-1"
               >
                 <InputNumber min={1} max={26} className="w-full" disabled />
@@ -202,7 +202,7 @@ const SeatList = () => {
               <Form.Item
                 name="columns"
                 label="Số cột (Không thể thay đổi)"
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: "Vui lòng nhập số cột" }]}
                 className="flex-1"
               >
                 <InputNumber min={1} className="w-full" disabled />
