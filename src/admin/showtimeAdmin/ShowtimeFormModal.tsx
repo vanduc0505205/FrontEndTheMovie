@@ -199,7 +199,20 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
         } catch (error: any) {
             const { response } = error || {};
             const message = response?.data?.message || "Có lỗi xảy ra khi tạo hàng loạt";
-            notification.error({ message: "Thất bại", description: message, placement: "topRight" });
+            const failures = response?.data?.data?.failures;
+            if (Array.isArray(failures) && failures.length) {
+                const reasons = failures
+                    .slice(0, 8)
+                    .map((f: any) => `Phòng ${f.roomId}: ${f.reason}`)
+                    .join("; ");
+                notification.error({
+                    message: "Không thể tạo suất chiếu cho các phòng",
+                    description: `${failures.length} phòng lỗi. ${reasons}${failures.length > 8 ? '…' : ''}`,
+                    placement: "topRight",
+                });
+            } else {
+                notification.error({ message: "Thất bại", description: message, placement: "topRight" });
+            }
         }
     };
 
