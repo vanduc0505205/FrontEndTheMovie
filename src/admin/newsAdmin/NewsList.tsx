@@ -14,8 +14,8 @@ export default function NewsList() {
     const fetchNews = async () => {
         try {
             setLoading(true);
-            const data = await getAllNews({ all: 1, limit: 200 });
-            setNewsList(data.list);
+            const data = await getAllNews();
+            setNewsList(data.list || []);
         } catch (err) {
             message.error("Lỗi khi tải danh sách tin tức!");
         } finally {

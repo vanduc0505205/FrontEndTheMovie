@@ -1,6 +1,12 @@
 import { getUserBookings } from "@/api/booking.api";
+import { QRCode } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
+
+
 
 const OrderHistoryPage = () => {
   useEffect(() => {
@@ -11,6 +17,28 @@ const OrderHistoryPage = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+   const handleScanQr = (qrValue: string) => {
+  const order = orders.find(o => o._id === qrValue);
+  if (order) {
+    handleViewDetail(order); 
+  } else {
+    alert("Không tìm thấy vé với mã này");
+  }
+};
+
+
+const handleViewDetail = (order) => {
+  const status = (order.status || "").toLowerCase();
+  if (status === "paid" || status === "đã đặt") {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  } else {
+    alert(" Vé này chưa được xác nhận, không thể .");
+  }
+};
+
 
   const getUserIdFromStorage = () => {
     const rawUser = localStorage?.getItem("user") || null;
@@ -206,7 +234,7 @@ const fetchOrders = async () => {
             Xem lại tất cả các giao dịch đặt vé của bạn
           </p>
         </div>
-
+      
         {/* Orders List */}
         {orders.length === 0 ? (
           <div className="max-w-lg mx-auto bg-gray-800 rounded-lg shadow-xl p-10 text-center border border-gray-700">
@@ -351,7 +379,7 @@ const fetchOrders = async () => {
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      <button className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 group">
+                      <button   onClick={() => handleViewDetail(order)} className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 group">
                         <svg
                           className="w-4 h-4 group-hover:text-blue-400"
                           fill="none"
@@ -479,6 +507,49 @@ const fetchOrders = async () => {
                     </button>
                   </div>
                 )}
+                {/* Modal Chi tiết vé */}
+       {isModalOpen && selectedOrder && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    {/* Thân vé */}
+    <div
+      className="bg-gray-800 rounded-lg p-6 w-96 shadow-xl relative"
+      id="ticket-detail"
+    >
+      <h2 className="text-xl font-bold text-white mb-4">
+        Vé vào AlPhaCinnema
+      </h2>
+      <p className="text-gray-300 mb-2">Phim: {selectedOrder.movieTitle}</p>
+      <p className="text-gray-300 mb-2">
+        Ghế: {selectedOrder.seats.join(", ")}
+      </p>
+      <p className="text-gray-300 mb-2">
+        Tổng tiền:{" "}
+        {selectedOrder.totalPrice?.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        })}
+      </p>
+
+      {/* QR Code */}
+      <div className="flex justify-center my-4">
+       <QRCode value={selectedOrder._id} size={160} fgColor="#ef4444" />
+      </div>
+    </div>
+
+    {/* Nút bấm nằm ngoài vé */}
+    <div className="absolute bottom-6 flex justify-between gap-4">
+      <button
+        onClick={() => setIsModalOpen(false)}
+        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+      >
+        Đóng
+      </button>
+    </div>
+  </div>
+)}
+
+
+
               </div>
             </div>
           </>
