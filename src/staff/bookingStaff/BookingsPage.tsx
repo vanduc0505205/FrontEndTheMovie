@@ -158,7 +158,6 @@ const handleViewDetail = (order) => {
 
   ];
 
-
   return (
     <div style={{ padding: 20 }}>
       <h2>Lịch sử đặt vé</h2>

@@ -27,5 +27,6 @@ export const getAllBookings = async () => {
 
 export const getAllPayments = async () => {
   return axiosInstance.get("/booking/payments/admin/all");
+  
 };
 

@@ -181,6 +181,7 @@ function App() {
         <Route path="rooms" element={<RoomStaff />} />
         <Route path="categories" element={<CategoryStaff />} />
         <Route path="news" element={<NewsListStaff />} />
+        
          <Route path="lienhe" element={<ContactAdmin />} />
       </Route>
 

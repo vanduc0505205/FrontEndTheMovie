@@ -36,7 +36,7 @@ const navItemsStaff = [
   { label: 'Phòng chiếu', path: 'rooms', icon: <InsertRowAboveOutlined /> },
   { label: 'Danh mục', path: 'categories', icon: <AppstoreOutlined /> },
   { label: "Quản lý Tin tức", path: "news", icon: <FileTextOutlined /> },
-  { label: "Quản lý Liên hệ", path: "lienhe", icon: <ContactsOutlined /> },
+  { label: "Quản lý Liên hệ", path: "lienhe", icon: <ContactsOutlined /> } ,
 ];
 
 export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {

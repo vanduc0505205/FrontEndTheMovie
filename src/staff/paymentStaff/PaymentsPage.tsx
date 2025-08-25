@@ -11,13 +11,11 @@ const PaymentsPage: React.FC = () => {
     try {
       setLoading(true);
       const res = await getAllPayments();
-
-      // API có thể trả { payments: [...] } hoặc trả thẳng array
       const raw = res.data?.payments ?? res.data ?? [];
 
       const normalized = raw.map((p: any) => ({
         ...p,
-        key: p._id || p.id, // AntD Table cần key
+        key: p._id || p.id,
         customer: p.customerName || p.customer || "—",
         amount: p.amount ?? 0,
         method: p.method || p.paymentMethod || "—",
