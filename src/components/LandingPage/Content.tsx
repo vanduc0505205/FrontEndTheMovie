@@ -8,7 +8,7 @@ import { slideData } from "@/config";
 import { phimMai } from "@/assets/path";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getAccessToken } from "@/lib/auth";
 
@@ -23,9 +23,67 @@ export default function HomePageContent() {
     queryKey: ["movies"],
     queryFn: getAllMoviesSimple,
   });
+  // Client-only filters/sort state
+  const [searchText, setSearchText] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | "">("");
+  const [sortBy, setSortBy] = useState<string | "">("");
 
-  const nowShowing = movieList.filter((movie) => movie.status === "dang_chieu");
-  const comingSoon = movieList.filter((movie) => movie.status === "sap_chieu");
+  // unique categories derived from movies
+  const allCategories = useMemo(() => {
+    const map = new Map<string, { _id: string; categoryName: string }>();
+    for (const m of movieList) {
+      (m.categories || []).forEach((c: any) => {
+        if (c?._id && !map.has(c._id)) map.set(c._id, { _id: c._id, categoryName: c.categoryName });
+      });
+    }
+    return Array.from(map.values()).sort((a, b) => a.categoryName.localeCompare(b.categoryName, "vi"));
+  }, [movieList]);
+
+  const normalize = (s: string) => (s || "").toLowerCase();
+
+  const applyFiltersAndSort = useCallback(
+    (list: any[]) => {
+      let arr = [...list];
+      // search by title
+      if (searchText.trim()) {
+        const q = normalize(searchText.trim());
+        arr = arr.filter((m) => normalize(m.title).includes(q));
+      }
+      // category filter
+      if (selectedCategoryId) {
+        arr = arr.filter((m) => (m.categories || []).some((c: any) => c._id === selectedCategoryId));
+      }
+      // status filter removed as per requirement
+      // sort
+      switch (sortBy) {
+        case "releaseDate_desc":
+          arr.sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
+          break;
+        case "releaseDate_asc":
+          arr.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
+          break;
+        case "title_asc":
+          arr.sort((a, b) => normalize(a.title).localeCompare(normalize(b.title), "vi"));
+          break;
+        case "title_desc":
+          arr.sort((a, b) => normalize(b.title).localeCompare(normalize(a.title), "vi"));
+          break;
+        case "duration_asc":
+          arr.sort((a, b) => (a.duration || 0) - (b.duration || 0));
+          break;
+        case "duration_desc":
+          arr.sort((a, b) => (b.duration || 0) - (a.duration || 0));
+          break;
+      }
+      return arr;
+    },
+    [searchText, selectedCategoryId, sortBy]
+  );
+
+  const nowShowingBase = useMemo(() => movieList.filter((m) => m.status === "dang_chieu"), [movieList]);
+  const comingSoonBase = useMemo(() => movieList.filter((m) => m.status === "sap_chieu"), [movieList]);
+  const nowShowing = useMemo(() => applyFiltersAndSort(nowShowingBase), [applyFiltersAndSort, nowShowingBase]);
+  const comingSoon = useMemo(() => applyFiltersAndSort(comingSoonBase), [applyFiltersAndSort, comingSoonBase]);
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -197,8 +255,48 @@ export default function HomePageContent() {
             <div className="absolute inset-0 opacity-5">
               <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-transparent"></div>
             </div>
-            
+
             <div className="container mx-auto px-4 relative z-10">
+              {/* Filters Bar */}
+              <div className="mb-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <input
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  placeholder="Tìm theo tên phim..."
+                  className="w-full px-4 py-2.5 rounded-lg bg-gray-900/70 border border-gray-700 text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+                />
+                <select
+                  value={selectedCategoryId}
+                  onChange={(e) => setSelectedCategoryId(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg bg-gray-900/70 border border-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="">Tất cả danh mục</option>
+                  {allCategories.map((c) => (
+                    <option key={c._id} value={c._id}>{c.categoryName}</option>
+                  ))}
+                </select>
+                {/* Status select removed */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg bg-gray-900/70 border border-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="">Sắp xếp</option>
+                  <option value="releaseDate_desc">Mới nhất</option>
+                  <option value="releaseDate_asc">Cũ nhất</option>
+                  <option value="title_asc">Tên A-Z</option>
+                  <option value="title_desc">Tên Z-A</option>
+                  <option value="duration_asc">Thời lượng tăng dần</option>
+                  <option value="duration_desc">Thời lượng giảm dần</option>
+                </select>
+                <button
+                  onClick={() => { setSearchText(""); setSelectedCategoryId(""); setSortBy(""); }}
+                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-200 hover:bg-gray-700 transition"
+                >
+                  Xóa bộ lọc
+                </button>
+              </div>
+
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-3 mb-4">
                   <div className="w-12 h-1 bg-gradient-to-r from-transparent to-red-500 rounded-full"></div>
@@ -212,7 +310,7 @@ export default function HomePageContent() {
                   Khám phá những bộ phim hot nhất đang được chiếu tại rạp
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
                 {nowShowing.map((movie, index) => (
                   <div
@@ -227,7 +325,7 @@ export default function HomePageContent() {
                   </div>
                 ))}
               </div>
-              
+
               {nowShowing.length === 0 && (
                 <div className="text-center py-16">
                   <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
@@ -240,27 +338,28 @@ export default function HomePageContent() {
           </section>
 
           {/* Phim sắp chiếu */}
-          <section className="py-20 bg-gradient-to-b from-black to-gray-900 relative overflow-hidden">
+          <section className="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-5">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent"></div>
             </div>
-            
+
             <div className="container mx-auto px-4 relative z-10">
+
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-3 mb-4">
                   <div className="w-12 h-1 bg-gradient-to-r from-transparent to-blue-500 rounded-full"></div>
                   <Calendar className="w-8 h-8 text-blue-500" />
                   <div className="w-12 h-1 bg-gradient-to-l from-transparent to-blue-500 rounded-full"></div>
                 </div>
-                <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-500 via-blue-400 to-cyan-500 bg-clip-text text-transparent mb-4">
+                <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-500 via-blue-400 to-sky-500 bg-clip-text text-transparent mb-4">
                   Phim sắp chiếu
                 </h2>
                 <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                  Đặt trước vé cho những bom tấn sắp ra mắt
+                  Khám phá những bộ phim sắp được chiếu tại rạp
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
                 {comingSoon.map((movie, index) => (
                   <div
@@ -275,7 +374,7 @@ export default function HomePageContent() {
                   </div>
                 ))}
               </div>
-              
+
               {comingSoon.length === 0 && (
                 <div className="text-center py-16">
                   <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
