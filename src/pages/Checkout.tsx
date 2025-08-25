@@ -179,6 +179,48 @@ export default function Checkout() {
     } catch (error: any) {
       console.error("Lỗi thanh toán:", error);
 
+      // Xử lý riêng tài khoản bị khóa (HTTP 403)
+      if (error?.response?.status === 403) {
+        const msg = error?.response?.data?.message || "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin để mở khóa.";
+        message.error({
+          content: (
+            <div>
+              <div className="font-bold">{msg}</div>
+            </div>
+          ),
+          duration: 6,
+        });
+        navigate("/");
+        setIsLoading(false);
+        return;
+      }
+
+      if (error?.response?.status === 409) {
+        const data = error.response.data || {};
+        const codes: string[] | undefined = data.takenSeatCodes;
+        const ids: string[] | undefined = data.takenSeatIds;
+        const list: string[] = Array.isArray(codes) && codes.length ? codes : Array.isArray(ids) ? ids : [];
+
+        message.warning({
+          content: (
+            <div>
+              <div className="font-bold">Một số ghế đã bị người khác giữ/đặt trước đó</div>
+              {list.length > 0 ? (
+                <div className="mt-2 text-sm text-gray-700">
+                  Ghế xung đột: <span className="font-semibold">{list.join(", ")}</span>
+                </div>
+              ) : null}
+              <div className="mt-1 text-xs text-gray-500">Vui lòng quay lại và chọn ghế khác.</div>
+            </div>
+          ),
+          duration: 6,
+        });
+
+        navigate(-1);
+        setIsLoading(false);
+        return;
+      }
+
       let errorMessage = "Có lỗi xảy ra khi xử lý thanh toán";
       let errorDetails = "";
 

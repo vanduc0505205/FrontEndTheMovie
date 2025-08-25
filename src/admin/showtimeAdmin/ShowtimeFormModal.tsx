@@ -1,6 +1,6 @@
 import { Modal, Form, Input, DatePicker, InputNumber, Select, notification } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createShowtime, updateShowtime } from "@/api/showtime.api";
+import { createShowtime, updateShowtime, createShowtimeBatch } from "@/api/showtime.api";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
@@ -128,25 +128,78 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
     });
 
 
-    const handleFinish = (values: any) => {
+    const handleFinish = async (values: any) => {
         const start = dayjs(values.startTime);
         const movieIdValue = values.movieId?.value ?? values.movieId;
         const cinemaIdValue = values.cinemaId?.value ?? values.cinemaId;
-        const roomIdValue = values.roomId?.value ?? values.roomId;
-        const movie = movies.find((m: IMovie) => m._id === movieIdValue);
-        const duration = movie?.duration || 0;
-        const end = start.add(duration, 'minute');
-        const payload = {
-            movieId: movieIdValue,
-            cinemaId: cinemaIdValue,
-            roomId: roomIdValue,
-            defaultPrice: values.defaultPrice,
-            startTime: start.toISOString(),
-        };
+
         if (isEdit) {
+            // Chế độ chỉnh sửa: giữ nguyên chọn 1 phòng (roomId)
+            const roomIdValue = values.roomId?.value ?? values.roomId;
+            const payload = {
+                movieId: movieIdValue,
+                cinemaId: cinemaIdValue,
+                roomId: roomIdValue,
+                defaultPrice: values.defaultPrice,
+                startTime: start.toISOString(),
+            };
             mutationUpdate.mutate({ id: initialData._id, data: payload });
-        } else {
-            mutationCreate.mutate(payload);
+            return;
+        }
+
+        // Chế độ tạo mới: cho phép nhiều phòng (roomIds)
+        const rawRoomIds = values.roomIds as any[];
+        const roomIds: string[] = (rawRoomIds || []).map((r: any) => r?.value ?? r).filter(Boolean);
+        if (!roomIds.length) {
+            notification.error({
+                message: "Thiếu phòng",
+                description: "Vui lòng chọn ít nhất 1 phòng chiếu",
+                placement: "topRight",
+            });
+            return;
+        }
+
+        try {
+            const result = await createShowtimeBatch({
+                movieId: movieIdValue,
+                cinemaId: cinemaIdValue,
+                roomIds,
+                defaultPrice: values.defaultPrice,
+                startTime: start.toISOString(),
+            });
+
+            // Làm tươi danh sách
+            queryClient.invalidateQueries({ queryKey: ["showtimes"] });
+            form.resetFields();
+
+            const successCount = result.successes?.length || 0;
+            const failureCount = result.failures?.length || 0;
+
+            if (successCount > 0) {
+                notification.success({
+                    message: "Thành công",
+                    description: `Đã tạo ${successCount} suất chiếu`,
+                    placement: "topRight",
+                });
+            }
+            if (failureCount > 0) {
+                const reasons = result.failures
+                    .slice(0, 5)
+                    .map((f: any) => `Phòng ${f.roomId}: ${f.reason}`)
+                    .join("; ");
+                notification.warning({
+                    message: "Một số phòng không tạo được",
+                    description: `${failureCount} phòng lỗi. ${reasons}${result.failures.length > 5 ? '…' : ''}`,
+                    placement: "topRight",
+                });
+            }
+
+            onClose();
+            onSuccess?.();
+        } catch (error: any) {
+            const { response } = error || {};
+            const message = response?.data?.message || "Có lỗi xảy ra khi tạo hàng loạt";
+            notification.error({ message: "Thất bại", description: message, placement: "topRight" });
         }
     };
 
@@ -193,19 +246,42 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                 </Form.Item>
 
                 {/* Phòng */}
-                <Form.Item
-                    name="roomId"
-                    label="Phòng"
-                    rules={[{ required: true, message: "Vui lòng chọn phòng chiếu" }]}
-                >
-                    <Select placeholder="Chọn phòng" loading={loadingRooms} showSearch optionFilterProp="children" labelInValue>
-                        {rooms?.map((room) => (
-                            <Select.Option key={room._id} value={room._id}>
-                                {room.name}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                </Form.Item>
+                {isEdit ? (
+                    <Form.Item
+                        name="roomId"
+                        label="Phòng"
+                        rules={[{ required: true, message: "Vui lòng chọn phòng chiếu" }]}
+                    >
+                        <Select placeholder="Chọn phòng" loading={loadingRooms} showSearch optionFilterProp="children" labelInValue>
+                            {rooms?.map((room) => (
+                                <Select.Option key={room._id} value={room._id}>
+                                    {room.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                ) : (
+                    <Form.Item
+                        name="roomIds"
+                        label="Phòng (có thể chọn nhiều)"
+                        rules={[{ required: true, message: "Vui lòng chọn ít nhất 1 phòng" }]}
+                    >
+                        <Select
+                            mode="multiple"
+                            placeholder="Chọn phòng"
+                            loading={loadingRooms}
+                            showSearch
+                            optionFilterProp="children"
+                            labelInValue
+                        >
+                            {rooms?.map((room) => (
+                                <Select.Option key={room._id} value={room._id}>
+                                    {room.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                )}
 
                 {/* Thời gian bắt đầu */}
                 <Form.Item

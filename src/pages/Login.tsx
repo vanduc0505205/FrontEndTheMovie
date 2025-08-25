@@ -3,6 +3,7 @@ import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "@/api/auth.api";
 import { getUserById } from "@/api/user.api";
+import { setLoginAtNow } from "@/lib/auth";
 
 const { Title, Text } = Typography;
 
@@ -29,6 +30,7 @@ const Login = () => {
       if (res?.accessToken && res?.user) {
         localStorage.setItem("accessToken", res.accessToken);
         if (res.refreshToken) localStorage.setItem("refreshToken", res.refreshToken);
+        setLoginAtNow();
         let finalUser: any = res.user;
         try {
           const id = res.user._id || res.user.id;
