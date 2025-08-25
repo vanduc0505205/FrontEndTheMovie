@@ -56,10 +56,16 @@ export default function MovieList() {
   const [total, setTotal] = useState(0);
 
   const [searchTitle, setSearchTitle] = useState("");
+  const [searchInput, setSearchInput] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<
     string | undefined
   >();
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
+
+  useEffect(() => {
+    const t = setTimeout(() => setSearchTitle(searchInput.trim()), 400);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
   const fetchMovies = useCallback(
     async (
@@ -217,25 +223,21 @@ export default function MovieList() {
             Danh sách phim
           </Title>
           <Space wrap>
-            <Input.Search
+            <Input
               placeholder="Tìm theo tên phim"
               allowClear
-              onSearch={(value) => {
-                setSearchTitle(value);
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
                 setCurrentPage(1);
-                fetchMovies(
-                  1,
-                  pageSize,
-                  value,
-                  selectedCategory,
-                  selectedStatus
-                );
               }}
               style={{ width: 200 }}
             />
             <Select
               placeholder="Lọc theo danh mục"
               allowClear
+              showSearch
+              optionFilterProp="label"
               options={categories.map((cat) => ({
                 label: cat.categoryName,
                 value: cat._id,
@@ -244,24 +246,18 @@ export default function MovieList() {
               onChange={(value) => {
                 setSelectedCategory(value);
                 setCurrentPage(1);
-                fetchMovies(1, pageSize, searchTitle, value, selectedStatus);
               }}
               onClear={() => {
                 setSelectedCategory(undefined);
                 setCurrentPage(1);
-                fetchMovies(
-                  1,
-                  pageSize,
-                  searchTitle,
-                  undefined,
-                  selectedStatus
-                );
               }}
               style={{ width: 160 }}
             />
             <Select
               placeholder="Lọc theo trạng thái"
               allowClear
+              showSearch
+              optionFilterProp="label"
               options={Object.entries(statusMap).map(([key, val]) => ({
                 label: val.label,
                 value: key,
@@ -270,21 +266,24 @@ export default function MovieList() {
               onChange={(value) => {
                 setSelectedStatus(value);
                 setCurrentPage(1);
-                fetchMovies(1, pageSize, searchTitle, selectedCategory, value);
               }}
               onClear={() => {
                 setSelectedStatus(undefined);
                 setCurrentPage(1);
-                fetchMovies(
-                  1,
-                  pageSize,
-                  searchTitle,
-                  selectedCategory,
-                  undefined
-                );
               }}
               style={{ width: 160 }}
             />
+            <Button
+              onClick={() => {
+                setSearchTitle("");
+                setSearchInput("");
+                setSelectedCategory(undefined);
+                setSelectedStatus(undefined);
+                setCurrentPage(1);
+              }}
+            >
+              Xoá bộ lọc
+            </Button>
             <Button type="primary" onClick={handleCreate}>
               + Thêm phim
             </Button>

@@ -23,3 +23,14 @@ export const getShowtimeById = async (id: string): Promise<IShowtime> => {
   const { data } = await axiosInstance.get(`/showtime/${id}`);
   return data.data;
 };
+
+export const createShowtimeBatch = async (payload: {
+  movieId: string;
+  cinemaId: string;
+  roomIds: string[];
+  startTime: string; // ISO
+  defaultPrice: number;
+}) => {
+  const { data } = await axiosInstance.post('/showtime/batch', payload);
+  return data.data as { successes: Array<{ roomId: string; showtimeId: string }>; failures: Array<{ roomId: string; reason: string }>; };
+};

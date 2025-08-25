@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAccessToken, getRefreshToken, clearUserData } from "./auth";
+import { getAccessToken, getRefreshToken, clearUserData, isSessionExpired } from "./auth";
 import { message } from "antd";
 
 const axiosInstance = axios.create({
@@ -8,6 +8,13 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    if (isSessionExpired()) {
+      clearUserData();
+      if (typeof window !== "undefined") {
+        window.location.href = "/dang-nhap";
+      }
+      return Promise.reject(new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."));
+    }
     const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -46,6 +53,13 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isSessionExpired()) {
+        clearUserData();
+        if (typeof window !== "undefined") {
+          window.location.href = "/dang-nhap";
+        }
+        return Promise.reject(error);
+      }
       if (isRefreshing) {
         return new Promise((resolve) => {
           addRefreshSubscriber((token) => {
@@ -87,15 +101,13 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    // Với 403, để tầng gọi tự xử lý UI (tránh trùng thông báo)
     if (error.response?.status === 403) {
-      clearUserData();
-      message.error(error.response?.data?.message || "Phiên làm việc không hợp lệ hoặc tài khoản bị khóa");
-      window.location.href = "/dang-nhap";
       return Promise.reject(error);
     }
 
-    const beMessage = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
-    message.error(beMessage);
+    // Không hiển thị message.error() ở interceptor để tránh trùng lặp với màn hình gọi
+    // Tầng gọi sẽ tự thông báo phù hợp ngữ cảnh
     return Promise.reject(error);
   }
 );

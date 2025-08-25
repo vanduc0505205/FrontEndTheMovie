@@ -47,6 +47,8 @@ import UserProfile from './pages/UserProfile'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 import ProfilePage from './pages/ProfilePage'
 import { useEffect } from 'react';
+import { enforceLogoutIfExpired } from '@/lib/auth';
+
 import ContactAdmin from './admin/contactAdmin/contact.admin'
 import CategoryStaff from './staff/categoryStaff/CategoryStaff'
 import Showtime from './pages/Showtimes'
@@ -54,6 +56,7 @@ import MovieDetailStaff from './staff/movieStaff/movieDetail'
 import NewsList from './admin/newsAdmin/NewsList'
 import NewsListStaff from './staff/newsStaff/NewsList'
 import NewsDetail from './pages/NewsDetail'
+import ComboAdmin from './admin/comboAdmin/comboAdmin'
 
 function App() {
   // useEffect(() => {
@@ -75,6 +78,22 @@ function App() {
   //     document.body.appendChild(script);
   //   }
   // }, []);
+
+  useEffect(() => {
+    enforceLogoutIfExpired();
+
+    const id = setInterval(() => {
+      enforceLogoutIfExpired();
+    }, 60 * 1000);
+
+    const onVisibility = () => enforceLogoutIfExpired();
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
 
   return (
     <Routes>
@@ -159,6 +178,7 @@ function App() {
         <Route path="dashboard" element={<DashboardAdmin />} />
         <Route path="bookings" element={<BookingAdmin />} />
         <Route path="discounts" element={<DiscountList />} />
+        <Route path="combos" element={<ComboAdmin />} />
         <Route path="lienhe" element={<ContactAdmin />} />
         <Route path="news" element={<NewsList />} />
       </Route>
@@ -180,7 +200,9 @@ function App() {
         <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="rooms" element={<RoomStaff />} />
         <Route path="categories" element={<CategoryStaff />} />
-        <Route path="news" element={<NewsListStaff />} />
+         <Route path="news" element={<NewsList />} />
+
+         <Route path="lienhe" element={<ContactAdmin />} />
       </Route>
 
       {/* ERROR PAGES */}

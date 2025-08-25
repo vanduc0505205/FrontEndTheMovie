@@ -14,8 +14,8 @@ export default function NewsList() {
     const fetchNews = async () => {
         try {
             setLoading(true);
-            const data = await getAllNews();
-            setNewsList(data);
+            const data = await getAllNews({ all: 1, limit: 200 });
+            setNewsList(data.list);
         } catch (err) {
             message.error("Lỗi khi tải danh sách tin tức!");
         } finally {
@@ -104,7 +104,6 @@ export default function NewsList() {
                                         const newStatus = checked ? "published" : "draft";
                                         await updateNews(record._id, { status: newStatus });
 
-                                        // ✅ Cập nhật local state để Table render lại
                                         setNewsList((prev) =>
                                             prev.map((item) =>
                                                 item._id === record._id ? { ...item, status: newStatus } : item

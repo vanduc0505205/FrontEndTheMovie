@@ -1,4 +1,3 @@
-// pages/admin/CategoryAdmin.tsx
 import { useEffect, useState } from 'react';
 import {
   getCategories,
@@ -27,6 +26,8 @@ export default function CategoryAdmin() {
   const [form] = Form.useForm();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(5);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userRole = user?.role;
@@ -35,10 +36,22 @@ export default function CategoryAdmin() {
     fetchCategories();
   }, []);
 
+  const sortCategories = (list: ICategory[]) => {
+    return [...list].sort((a: any, b: any) => {
+      const at = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bt = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (at !== bt) return bt - at;
+      return (b?._id || '').localeCompare(a?._id || '');
+    });
+  };
+
   const fetchCategories = async () => {
     try {
       const list = await getCategories();
-      setCategories(list);
+      const sorted = sortCategories(list);
+      setCategories(sorted);
+      const maxPage = Math.max(1, Math.ceil(sorted.length / pageSize));
+      if (currentPage > maxPage) setCurrentPage(maxPage);
     } catch (err) {
       message.error('Không thể lấy danh sách danh mục');
     }
@@ -59,15 +72,12 @@ const handleSubmit = async (values: { categoryName: string; description?: string
       message.success('Tạo danh mục mới thành công');
     }
     resetForm();
-    fetchCategories();
+    await fetchCategories();
+    setCurrentPage(1);
   } catch (err: any) {
     const messages = err?.response?.data?.message;
 
     if (Array.isArray(messages)) {
-      // messages.forEach((msg) => {
-      //   message.error(msg);
-      // });
-
       const nameError = messages.find((msg: string) =>
         msg.toLowerCase().includes('tên thể loại')
       );
@@ -97,11 +107,12 @@ const handleSubmit = async (values: { categoryName: string; description?: string
 
   const handleDelete = async (id: string) => {
     try {
-      if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-        await deleteCategory(id);
-        message.success('Xóa danh mục thành công');
-        fetchCategories();
-      }
+      await deleteCategory(id);
+      message.success('Xóa danh mục thành công');
+      const newList = categories.filter((c) => c._id !== id);
+      const maxPage = Math.max(1, Math.ceil(newList.length / pageSize));
+      if (currentPage > maxPage) setCurrentPage(maxPage);
+      await fetchCategories();
     } catch (err) {
       message.error('Không thể xóa danh mục');
     }
@@ -154,16 +165,36 @@ const handleSubmit = async (values: { categoryName: string; description?: string
       )}
 
       <List
-        dataSource={categories || []}
+        dataSource={
+          (categories || []).slice((currentPage - 1) * pageSize, currentPage * pageSize)
+        }
         bordered
         locale={{ emptyText: 'Chưa có danh mục nào' }}
+        pagination={{
+          current: currentPage,
+          pageSize,
+          total: categories.length,
+          showSizeChanger: true,
+          pageSizeOptions: [5, 10, 20, 50],
+          onChange: (page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          },
+        }}
         renderItem={(cat) => (
           <List.Item
             actions={
               userRole === 'admin'
                 ? [
                   <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>,
-                  <Button size="small" danger onClick={() => handleDelete(cat._id)}>Xoá</Button>,
+                  <Popconfirm
+                    title="Bạn có chắc chắn muốn xóa danh mục này?"
+                    onConfirm={() => handleDelete(cat._id)}
+                    okText="Xoá"
+                    cancelText="Huỷ"
+                  >
+                    <Button size="small" danger>Xoá</Button>
+                  </Popconfirm>,
                 ]
                 : undefined
             }

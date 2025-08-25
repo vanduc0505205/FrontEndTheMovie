@@ -22,6 +22,7 @@ const navItemsAdmin = [
   { label: 'Ghế', path: 'seats', icon: <AppstoreOutlined /> },
   { label: 'Phòng', path: 'rooms', icon: <PictureOutlined /> },
   { label: 'Mã giảm giá', path: 'discounts', icon: <AppstoreOutlined /> },
+  { label: 'Combo', path: 'combos', icon: <DollarOutlined /> },
   { label: 'Tài khoản', path: 'users', icon: <TeamOutlined /> },
   { label: 'Quản lý đơn hàng', path: 'bookings', icon: <ShoppingCartOutlined /> },
   { label: "Quản lý Liên hệ", path: "lienhe", icon: <ContactsOutlined /> },
@@ -36,6 +37,7 @@ const navItemsStaff = [
   { label: 'Phòng chiếu', path: 'rooms', icon: <InsertRowAboveOutlined /> },
   { label: 'Danh mục', path: 'categories', icon: <AppstoreOutlined /> },
   { label: "Quản lý Tin tức", path: "news", icon: <FileTextOutlined /> },
+  { label: "Quản lý Liên hệ", path: "lienhe", icon: <ContactsOutlined /> } ,
 ];
 
 export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {
