@@ -180,8 +180,8 @@ function App() {
         <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="rooms" element={<RoomStaff />} />
         <Route path="categories" element={<CategoryStaff />} />
-        <Route path="news" element={<NewsListStaff />} />
-        
+         <Route path="news" element={<NewsList />} />
+
          <Route path="lienhe" element={<ContactAdmin />} />
       </Route>
 
