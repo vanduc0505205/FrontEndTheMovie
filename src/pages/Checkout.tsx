@@ -6,6 +6,8 @@ import { Spin, message, Input, Button } from "antd";
 import { bookTicket } from "@/api/booking.api";
 import { createPayment } from "@/api/payment.api";
 import { applyDiscount } from "@/api/discount.api";
+import { comboApi } from "@/api/combo.api";
+import type { ICombo } from "@/interface/combo";
 
 export default function Checkout() {
     useEffect(() => {
@@ -16,6 +18,10 @@ export default function Checkout() {
   const [isLoading, setIsLoading] = useState(false);
   const bookingData = location.state;
   const { id: movieId } = useParams();
+
+  // Combo states
+  const [combos, setCombos] = useState<ICombo[]>([]);
+  const [selectedCombos, setSelectedCombos] = useState<Record<string, number>>({});
 
   const {
     data: movies,
@@ -65,7 +71,32 @@ export default function Checkout() {
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [discountedTotal, setDiscountedTotal] = useState<number | null>(null);
 
+  // Fetch available combos
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const list = await comboApi.getAvailableCombo();
+        if (mounted) setCombos(list || []);
+      } catch (e) {
+        console.warn("Không thể tải danh sách combo:", e);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
   const baseTotal = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
+
+  // Calculate combo total
+  const comboTotal = Object.entries(selectedCombos).reduce((sum, [comboId, qty]) => {
+    const combo = combos.find(c => c._id === comboId);
+    if (!combo || !combo.isAvailable) return sum;
+    return sum + (combo.price || 0) * (qty || 0);
+  }, 0);
+
+  // Final payable: (seat total - discount) + combo total
+  const finalSeatTotal = discountedTotal != null ? discountedTotal : baseTotal;
+  const finalPayable = Math.max(0, finalSeatTotal + comboTotal);
 
   const onApplyDiscount = async () => {
     const code = discountCode.trim().toUpperCase();
@@ -75,6 +106,7 @@ export default function Checkout() {
     }
     setApplying(true);
     try {
+      // Giảm giá chỉ áp dụng cho tiền ghế
       const res = await applyDiscount({ code, total: baseTotal });
       setAppliedCode(code);
       const amt = res.discountAmount || 0;
@@ -111,7 +143,13 @@ export default function Checkout() {
       }
 
       const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
-      const totalToPay = discountedTotal != null ? discountedTotal : total;
+      // Tổng thanh toán gửi lên: (tiền ghế sau giảm) + comboTotal
+      const totalToPay = Math.max(0, (discountedTotal != null ? discountedTotal : total) + comboTotal);
+
+      // Chuẩn hóa comboList từ lựa chọn
+      const comboList = Object.entries(selectedCombos)
+        .filter(([_, qty]) => qty > 0)
+        .map(([comboId, qty]) => ({ comboId, quantity: qty }));
 
       const bookingPayload = {
         showtimeId,
@@ -121,6 +159,7 @@ export default function Checkout() {
           price: seat.price
         })),
         totalPrice: totalToPay,
+        ...(comboList.length ? { comboList } : {}),
         ...(appliedCode
           ? {
               discountCode: appliedCode,
@@ -163,7 +202,7 @@ export default function Checkout() {
                   </span>
                 </p>
                 <p className="mt-2">
-                  Vui lòng đến quầy vé thanh toán trước 15 phút khi đến xem
+                  Vui lòng đến quầy vé thanh toán trước 20 phút khi đến xem
                   phim.
                 </p>
               </div>
@@ -426,31 +465,49 @@ export default function Checkout() {
                 </div>
 
                 {/* Total Price + Discount */}
-                <div className="flex justify-between items-center pt-4 border-t border-white/20">
+                <div className="flex justify-between items-start gap-6 pt-4 border-t border-white/20">
                   <span className="text-xl font-semibold text-white">
                     Tổng tiền:
                   </span>
-                  <div className="text-right">
-                    {appliedCode && discountedTotal != null ? (
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Ghế */}
+                    <div className="text-right">
+                      {appliedCode && discountedTotal != null ? (
+                        <div className="space-y-1">
+                          <div className="text-gray-300 line-through">
+                            {baseTotal.toLocaleString()} VNĐ
+                          </div>
+                          <div className="text-green-400 text-sm">
+                            Giảm (-{discountAmount.toLocaleString()} VNĐ) bằng mã {appliedCode}
+                          </div>
+                          <div className="text-2xl font-bold text-amber-400">
+                            {discountedTotal.toLocaleString()} VNĐ
+                          </div>
+                          <p className="text-sm text-gray-400 mt-1">
+                            {seatList.length} ghế đã chọn
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <span className="text-2xl font-bold text-amber-400">
+                            {baseTotal.toLocaleString()} VNĐ
+                          </span>
+                          <p className="text-sm text-gray-400 mt-1">
+                            {seatList.length} ghế đã chọn
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Combo */}
+                    <div className="text-right">
                       <div className="space-y-1">
-                        <div className="text-gray-300 line-through">
-                          {baseTotal.toLocaleString()} VNĐ
-                        </div>
-                        <div className="text-green-400 text-sm">
-                          Giảm (-{discountAmount.toLocaleString()} VNĐ) bằng mã {appliedCode}
-                        </div>
-                        <div className="text-3xl font-bold text-amber-400">
-                          {discountedTotal.toLocaleString()} VNĐ
+                        <div className="text-gray-300">Combo: {comboTotal.toLocaleString()} VNĐ</div>
+                        <div className="text-3xl font-bold text-emerald-400">
+                          Tổng thanh toán: {finalPayable.toLocaleString()} VNĐ
                         </div>
                       </div>
-                    ) : (
-                      <span className="text-3xl font-bold text-amber-400">
-                        {baseTotal.toLocaleString()} VNĐ
-                      </span>
-                    )}
-                    <p className="text-sm text-gray-400 mt-1">
-                      {seatList.length} ghế đã chọn
-                    </p>
+                    </div>
                   </div>
                 </div>
 
@@ -475,6 +532,53 @@ export default function Checkout() {
                     </Button>
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* Combo Selection */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 3.25 2.41 5.94 5.5 6.41V22l3.5-3.5 3.5 3.5v-6.59C16.59 14.94 19 12.25 19 9c0-3.87-3.13-7-7-7z"/>
+                </svg>
+                Chọn Combo (tùy chọn)
+              </h2>
+              <div className="bg-black/20 rounded-xl border border-white/10 p-6">
+                {combos.length === 0 ? (
+                  <div className="text-gray-400">Hiện chưa có combo nào đang bán.</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {combos.map((c) => {
+                      const qty = selectedCombos[c._id] || 0;
+                      return (
+                        <div key={c._id} className="flex items-center gap-4 bg-white/5 rounded-lg p-4 border border-white/10">
+                          <div className="flex-1">
+                            <div className="text-white font-semibold">{c.name}</div>
+                            <div className="text-amber-400 font-bold">{c.price.toLocaleString()} VNĐ</div>
+                            {c.description ? (
+                              <div className="text-gray-400 text-sm mt-1 line-clamp-2">{c.description}</div>
+                            ) : null}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              className="px-3 py-1 rounded bg-white/10 text-white hover:bg-white/20"
+                              onClick={() => setSelectedCombos(prev => ({ ...prev, [c._id]: Math.max(0, (prev[c._id] || 0) - 1) }))}
+                            >
+                              -
+                            </button>
+                            <div className="min-w-10 text-center text-white font-semibold">{qty}</div>
+                            <button
+                              className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                              onClick={() => setSelectedCombos(prev => ({ ...prev, [c._id]: (prev[c._id] || 0) + 1 }))}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 
