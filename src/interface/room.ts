@@ -1,4 +1,5 @@
 export interface IRoom {
+  [x: string]: string;
   _id: string;
   name: string;
   rows: number;  

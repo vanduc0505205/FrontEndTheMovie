@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Table,
   Button,
@@ -9,23 +9,20 @@ import {
   message,
   Popconfirm,
   notification,
+  Select,
+  Tag,
+  Space,
 } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getRooms,
-  createRoom,
-  updateRoom,
-  deleteRoom,
-} from "@/api/room.api";
+import { getRooms, createRoom, updateRoom } from "@/api/room.api";
 import { getSeatsByRoom } from "@/api/seat.api";
 import { getUserFromLocalStorage } from "@/lib/auth";
 import { IRoom } from "@/interface/room";
+
 const getUserRole = () => {
   try {
     const userStr = localStorage.getItem("user");
-    if (!userStr) return null;
-    const user = JSON.parse(userStr);
-    return user?.role || null;
+    return userStr ? JSON.parse(userStr)?.role || null : null;
   } catch (err) {
     return null;
   }
@@ -33,14 +30,12 @@ const getUserRole = () => {
 
 const userRole = getUserRole();
 
-
 const RoomList = () => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<IRoom | null>(null);
   const [roomHasSeats, setRoomHasSeats] = useState(false);
-  const user = getUserFromLocalStorage(); // Lấy user từ localStorage
 
   const { data: rooms = [], isLoading } = useQuery({
     queryKey: ["rooms"],
@@ -49,11 +44,12 @@ const RoomList = () => {
 
   const { mutate: handleCreateOrUpdate, isPending } = useMutation({
     mutationFn: async (room: Partial<IRoom>) => {
-      if (editingRoom) {
-        return updateRoom(editingRoom._id, room);
-      } else {
-        return createRoom(room);
+      if (userRole !== "admin") {
+        throw new Error("Bạn không có quyền thực hiện hành động này!");
       }
+      return editingRoom
+        ? updateRoom(editingRoom._id, room)
+        : createRoom(room);
     },
     onSuccess: () => {
       message.success(editingRoom ? "Đã cập nhật phòng" : "Đã tạo phòng");
@@ -62,95 +58,129 @@ const RoomList = () => {
       setIsModalOpen(false);
       setEditingRoom(null);
     },
-    onError: () => {
+    onError: (error) => {
       notification.error({
-        message: "Bạn không có quyền!",
-        description: "Bạn không có quyền cho hành động này!",
+        message: "Thất bại",
+        description: error.message || "Đã xảy ra lỗi, vui lòng thử lại.",
         placement: "topRight",
       });
     },
   });
 
-  const { mutate: handleDelete } = useMutation({
-    mutationFn: deleteRoom,
+  const { mutate: handleToggleStatus } = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      if (userRole !== "admin") {
+        throw new Error("Bạn không có quyền thực hiện hành động này!");
+      }
+      return updateRoom(id, { status });
+    },
     onSuccess: () => {
-      message.success("Đã xoá phòng");
+      message.success("Đã cập nhật trạng thái phòng");
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },
-    onError: () => {
+    onError: (error) => {
       notification.error({
-        message: "Bạn không thể xóa!",
-        description: "Bạn không có quyền cho hành động này!",
+        message: "Thất bại",
+        description: error.message || "Không thể cập nhật trạng thái.",
         placement: "topRight",
       });
     },
   });
 
-  const openModalToEdit = async (room: IRoom) => {
-    setEditingRoom(room);
-    form.setFieldsValue(room);
-    setIsModalOpen(true);
+  const openModalToEdit = useCallback(
+    async (room: IRoom) => {
+      setEditingRoom(room);
+      form.setFieldsValue(room);
+      setIsModalOpen(true);
 
-    try {
-      const seats = await getSeatsByRoom(room._id);
-      setRoomHasSeats(seats.length > 0);
-    } catch (err) {
-      setRoomHasSeats(false);
-    }
-  };
+      try {
+        const seats = await getSeatsByRoom(room._id);
+        setRoomHasSeats(seats?.length > 0);
+      } catch (err) {
+        console.error("Lỗi khi kiểm tra ghế:", err);
+        setRoomHasSeats(false);
+      }
+    },
+    [form]
+  );
 
-  const columns = [
-    {
-      title: "Tên phòng",
-      dataIndex: "name",
-      key: "name",
+  const onFinish = useCallback(
+    (values: any) => {
+      handleCreateOrUpdate(values);
     },
-    {
-      title: "Số hàng",
-      dataIndex: "rows",
-      key: "rows",
-    },
-    {
-      title: "Số cột",
-      dataIndex: "columns",
-      key: "columns",
-    },
-    {
-      title: "Hành động",
-      key: "action",
-      render: (_, room: IRoom) => {
+    [handleCreateOrUpdate]
+  );
 
-        return (
-          <div className="space-x-2">
-            <Button size="small" onClick={() => openModalToEdit(room)}>
-              Sửa
-            </Button>
-            <Popconfirm
-              title="Xác nhận xoá phòng này?"
-              onConfirm={() => handleDelete(room._id)}
-            >
-              {userRole === "admin" && (
-                <Button size="small" danger>
-                  Xoá
-                </Button>
-              )}
-            </Popconfirm>
-          </div>
-        );
+  const columns = useMemo(
+    () => [
+      {
+        title: "Tên phòng",
+        dataIndex: "name",
+        key: "name",
       },
-    },
-  ];
+      {
+        title: "Số hàng",
+        dataIndex: "rows",
+        key: "rows",
+      },
+      {
+        title: "Số cột",
+        dataIndex: "columns",
+        key: "columns",
+      },
+      {
+        title: "Trạng thái",
+        dataIndex: "status",
+        key: "status",
+        render: (status: string) => {
+          const color = status === "open" ? "green" : "red";
+          const text = status === "open" ? "Mở" : "Bảo trì";
+          return <Tag color={color}>{text}</Tag>;
+        },
+      },
+      {
+        title: "Hành động",
+        key: "action",
+        render: (_: any, room: IRoom) => {
+          const isMaintenance = room.status === "maintenance";
+          const newStatus = isMaintenance ? "open" : "maintenance";
+          const buttonText = isMaintenance ? "Mở lại" : "Bảo trì";
 
-  const onFinish = (values: any) => {
-    handleCreateOrUpdate(values);
-  };
+          return (
+            <Space>
+              <Button size="small" onClick={() => openModalToEdit(room)} title="Chỉnh sửa phòng">
+                Sửa
+              </Button>
+              {userRole === "admin" && (
+                <Popconfirm
+                  title={`Xác nhận chuyển trạng thái sang ${buttonText.toLowerCase()}?`}
+                  onConfirm={() =>
+                    handleToggleStatus({ id: room._id, status: newStatus })
+                  }
+                >
+                  <Button
+                    size="small"
+                    danger={!isMaintenance}
+                    type={isMaintenance ? "primary" : "default"}
+                    title={`Chuyển trạng thái sang ${buttonText.toLowerCase()}`}
+                  >
+                    {buttonText}
+                  </Button>
+                </Popconfirm>
+              )}
+            </Space>
+          );
+        },
+      },
+    ],
+    [openModalToEdit, handleToggleStatus]
+  );
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Quản lý phòng chiếu</h2>
-
-        {user?.role === "admin" && ( // 👈 Ẩn nút "Thêm phòng" nếu không phải admin
+        {userRole === "admin" && (
           <Button
             type="primary"
             onClick={() => {
@@ -171,11 +201,16 @@ const RoomList = () => {
         columns={columns}
         dataSource={rooms}
         bordered
+        locale={{ emptyText: "Không có dữ liệu phòng chiếu" }}
       />
 
       <Modal
         open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          setIsModalOpen(false);
+          setEditingRoom(null);
+          form.resetFields();
+        }}
         onOk={() => form.submit()}
         okText={editingRoom ? "Cập nhật" : "Tạo"}
         confirmLoading={isPending}
@@ -191,13 +226,11 @@ const RoomList = () => {
                 validator: (_, value) => {
                   if (!value || !value.trim()) return Promise.resolve();
                   const inputName = value.trim().toLowerCase();
-
                   const isDuplicate = rooms.some(
                     (room) =>
                       room.name.trim().toLowerCase() === inputName &&
                       room._id !== editingRoom?._id
                   );
-
                   return isDuplicate
                     ? Promise.reject("Tên phòng đã tồn tại")
                     : Promise.resolve();
@@ -214,11 +247,11 @@ const RoomList = () => {
             rules={[
               { required: true, message: "Vui lòng nhập số hàng" },
               {
-                validator(_, value) {
+                validator: (_, value) => {
                   if (typeof value !== "number" || !Number.isInteger(value)) {
                     return Promise.reject("Số hàng phải là số nguyên");
                   }
-                  if (value < 1 || value > 10) {
+                  if (value < 1 || value > 20) {
                     return Promise.reject("Số hàng phải từ 1 đến 20");
                   }
                   return Promise.resolve();
@@ -228,7 +261,7 @@ const RoomList = () => {
           >
             <InputNumber
               min={1}
-              max={10}
+              max={20}
               className="w-full"
               disabled={roomHasSeats}
               step={1}
@@ -241,11 +274,11 @@ const RoomList = () => {
             rules={[
               { required: true, message: "Vui lòng nhập số cột" },
               {
-                validator(_, value) {
+                validator: (_, value) => {
                   if (typeof value !== "number" || !Number.isInteger(value)) {
                     return Promise.reject("Số cột phải là số nguyên");
                   }
-                  if (value < 1 || value > 15) {
+                  if (value < 1 || value > 26) {
                     return Promise.reject("Số cột phải từ 1 đến 26");
                   }
                   return Promise.resolve();
@@ -255,19 +288,28 @@ const RoomList = () => {
           >
             <InputNumber
               min={1}
-              max={15}
+              max={26}
               className="w-full"
               disabled={roomHasSeats}
               step={1}
             />
           </Form.Item>
 
+          <Form.Item
+            name="status"
+            label="Trạng thái"
+            rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+          >
+            <Select>
+              <Select.Option value="open">Mở</Select.Option>
+              <Select.Option value="maintenance">Bảo trì</Select.Option>
+            </Select>
+          </Form.Item>
+
           {editingRoom && roomHasSeats && (
-            <Form.Item>
-              <div className="text-yellow-600">
-                ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
-              </div>
-            </Form.Item>
+            <div className="text-yellow-600 mb-4">
+              ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
+            </div>
           )}
         </Form>
       </Modal>
