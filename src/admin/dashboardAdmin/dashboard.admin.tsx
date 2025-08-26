@@ -82,7 +82,8 @@ interface TopUser { id: string; name: string; revenue: number }
 
 
 const VND = (n: number = 0) => Number(n || 0).toLocaleString("vi-VN");
-const formatDate = (d?: string) => (d ? dayjs(d).format("YYYY-MM-DD HH:mm") : "—");
+const formatDate = (d?: string) =>
+  d ? dayjs(d).format("YYYY-MM-DD HH:mm") : "—";
 
 const STATUS_COLORS: Record<string, string> = {
   paid: "green",
@@ -104,18 +105,19 @@ const CHART_COLORS = [
   "#b6e3ff",
 ];
 
-
 const DashboardAdmin: React.FC = () => {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-
+  // Giữ lại state cho các bộ lọc riêng biệt
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [filterDateRange, setFilterDateRange] = useState<[Dayjs | null, Dayjs | null]>([
     null,
     null,
   ]);
   const [filterMovie, setFilterMovie] = useState<string | null>(null);
+  const [filterMonth, setFilterMonth] = useState<dayjs.Dayjs | null>(null);
+  const [filterYear, setFilterYear] = useState<dayjs.Dayjs | null>(null);
 
   const rangePresets = useMemo(
     () => [
@@ -223,11 +225,12 @@ const DashboardAdmin: React.FC = () => {
     fetchOrders();
   }, []);
 
- 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
+      // Lọc theo Trạng thái
       if (filterStatus && order.status !== filterStatus) return false;
 
+      // Lọc theo Phim
       if (filterMovie && order.movieTitle !== filterMovie) return false;
 
       const [start, end] = filterDateRange;
@@ -236,16 +239,31 @@ const DashboardAdmin: React.FC = () => {
         if (start && orderDate.isBefore(start.startOf("day"))) return false;
         if (end && orderDate.isAfter(end.endOf("day"))) return false;
       }
+
+      // Lọc theo Tháng
+      if (filterMonth) {
+        const orderDate = dayjs(order.bookingDate);
+        if (!orderDate.isSame(filterMonth, "month")) {
+          return false;
+        }
+      }
+
+      // Lọc theo Năm
+      if (filterYear) {
+        const orderDate = dayjs(order.bookingDate);
+        if (!orderDate.isSame(filterYear, "year")) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [orders, filterStatus, filterDateRange, filterMovie]);
+  }, [orders, filterStatus, filterDateRange, filterMovie, filterMonth, filterYear]);
 
- 
   const allMovies = useMemo(() => {
     return Array.from(new Set(orders.map((o) => o.movieTitle).filter(Boolean)));
   }, [orders]);
 
-  
   const totalRevenue = useMemo(
     () =>
       filteredOrders
@@ -280,7 +298,6 @@ const DashboardAdmin: React.FC = () => {
     ? ((paidOrdersCount / filteredOrders.length) * 100).toFixed(1)
     : "0";
 
- 
   const revenueByDay: { date: string; revenue: number }[] = useMemo(() => {
     const map: Record<string, number> = {};
     filteredOrders.forEach((o) => {
@@ -346,7 +363,6 @@ const DashboardAdmin: React.FC = () => {
 
   const topMovie: MovieRevenue | null = revenueByMovie[0] || null;
 
-  
   const toCSV = (rows: any[], headers?: string[]) => {
     const csvRows: string[] = [];
     if (headers) csvRows.push(headers.join(","));
@@ -356,7 +372,7 @@ const DashboardAdmin: React.FC = () => {
         vals
           .map((v) => {
             const s = String(v ?? "");
-            if (s.includes(",") || s.includes("\n") || s.includes("\"")) {
+            if (s.includes(",") || s.includes("\n") || s.includes('"')) {
               return '"' + s.replace(/\"/g, '""') + '"';
             }
             return s;
@@ -367,52 +383,48 @@ const DashboardAdmin: React.FC = () => {
     return csvRows.join("\n");
   };
 
- const download = (filename: string, text: string) => {
- 
-  const bom = "\uFEFF";
-  const blob = new Blob([bom + text], { type: "text/csv;charset=utf-8;" });
+  const download = (filename: string, text: string) => {
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + text], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+  const handleExportRevenueByDay = () => {
+    const csv = toCSV(revenueByDay, ["date", "revenue"]);
+    download(`revenue_by_day_${Date.now()}.csv`, csv);
+  };
 
-const handleExportRevenueByDay = () => {
-  const csv = toCSV(revenueByDay, ["date", "revenue"]);
-  download(`revenue_by_day_${Date.now()}.csv`, csv);
-};
+  const handleExportRevenueByMovie = () => {
+    const csv = toCSV(revenueByMovie, ["title", "revenue"]);
+    download(`revenue_by_movie_${Date.now()}.csv`, csv);
+  };
 
-const handleExportRevenueByMovie = () => {
-  const csv = toCSV(revenueByMovie, ["title", "revenue"]);
-  download(`revenue_by_movie_${Date.now()}.csv`, csv);
-};
-
-const handleExportOrders = () => {
-  const rows = filteredOrders.map((o) => ({
-    id: o._id,
-    createdAt: formatDate(o.bookingDate),
-    movieTitle: o.movieTitle,
-    seats: o.seats?.join(" "),
-    totalPrice: o.totalPrice,
-    status: o.status,
-  }));
-  const csv = toCSV(rows, [
-    "id",
-    "createdAt",
-    "movieTitle",
-    "seats",
-    "totalPrice",
-    "status",
-  ]);
-  download(`orders_${Date.now()}.csv`, csv);
-};
-
-
+  const handleExportOrders = () => {
+    const rows = filteredOrders.map((o) => ({
+      id: o._id,
+      createdAt: formatDate(o.bookingDate),
+      movieTitle: o.movieTitle,
+      seats: o.seats?.join(" "),
+      totalPrice: o.totalPrice,
+      status: o.status,
+    }));
+    const csv = toCSV(rows, [
+      "id",
+      "createdAt",
+      "movieTitle",
+      "seats",
+      "totalPrice",
+      "status",
+    ]);
+    download(`orders_${Date.now()}.csv`, csv);
+  };
 
   const revenueByMovieColumns: ColumnsType<MovieRevenue> = [
     { title: "Tên phim", dataIndex: "title", key: "title" },
@@ -472,7 +484,8 @@ const handleExportOrders = () => {
       dataIndex: "bookingDate",
       key: "bookingDate",
       render: (v: string) => formatDate(v),
-      sorter: (a, b) => dayjs(a.bookingDate).valueOf() - dayjs(b.bookingDate).valueOf(),
+      sorter: (a, b) =>
+        dayjs(a.bookingDate).valueOf() - dayjs(b.bookingDate).valueOf(),
       defaultSortOrder: "descend",
     },
     { title: "Phim", dataIndex: "movieTitle", key: "movieTitle" },
@@ -494,12 +507,13 @@ const handleExportOrders = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (st?: string) => <Tag color={STATUS_COLORS[st || ""] || "default"}>{st}</Tag>,
+      render: (st?: string) => (
+        <Tag color={STATUS_COLORS[st || ""] || "default"}>{st}</Tag>
+      ),
       filters: [
         { text: "Đã thanh toán", value: "paid" },
         { text: "Chưa thanh toán", value: "unpaid" },
         { text: "Đã hủy", value: "cancelled" },
-       
       ],
       onFilter: (val: any, rec) => rec.status === val,
     },
@@ -529,7 +543,11 @@ const handleExportOrders = () => {
         </Col>
         <Col xs={24} md={8}>
           <Card>
-            <Statistic title="Số người dùng đặt vé" value={totalUsers} prefix={<UserOutlined />} />
+            <Statistic
+              title="Số người dùng đặt vé"
+              value={totalUsers}
+              prefix={<UserOutlined />}
+            />
           </Card>
         </Col>
         <Col xs={24} md={8}>
@@ -558,10 +576,11 @@ const handleExportOrders = () => {
         </Col>
       </Row>
 
-    
+      {/* Filter and Export Row */}
       <Card style={{ marginTop: 20 }}>
         <Row gutter={[12, 12]} align="middle">
-          <Col xs={24} md={6}>
+          {/* Bộ lọc trạng thái và phim */}
+          <Col xs={24} md={8}>
             <Select
               allowClear
               placeholder="Chọn trạng thái"
@@ -572,7 +591,6 @@ const handleExportOrders = () => {
                 { value: "paid", label: "Đã thanh toán" },
                 { value: "unpaid", label: "Chưa thanh toán" },
                 { value: "cancelled", label: "Đã hủy" },
-               
               ]}
             />
           </Col>
@@ -600,7 +618,37 @@ const handleExportOrders = () => {
               optionFilterProp="label"
             />
           </Col>
-          <Col xs={24} md={4}>
+          {/* Nhóm các bộ lọc ngày tháng năm vào một Space */}
+          <Col xs={24} md={8}>
+            <Space wrap>
+              <RangePicker
+                style={{ width: "100%" }}
+                onChange={(dates) => setFilterDateRange(dates || null)}
+                allowEmpty={[true, true]}
+              />
+              <DatePicker
+                picker="month"
+                style={{ width: "100%" }}
+                placeholder="Chọn tháng"
+                onChange={(date) => {
+                  setFilterMonth(date);
+                  setFilterDateRange(null); // Xóa bộ lọc ngày khi chọn tháng
+                }}
+                allowClear
+              />
+              <DatePicker
+                picker="year"
+                style={{ width: "100%" }}
+                placeholder="Chọn năm"
+                onChange={(date) => {
+                  setFilterYear(date);
+                  setFilterDateRange(null); // Xóa bộ lọc ngày khi chọn năm
+                }}
+                allowClear
+              />
+            </Space>
+          </Col>
+          <Col xs={24}>
             <Space wrap>
               <Button onClick={handleExportOrders}>Xuất đơn hàng</Button>
               <Button onClick={handleExportRevenueByDay}>Xuất doanh thu ngày</Button>
@@ -611,7 +659,7 @@ const handleExportOrders = () => {
         </Row>
       </Card>
 
-     
+      {/* Charts Row 1 */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={14}>
           <Card title="📈 Doanh thu theo ngày">
@@ -619,12 +667,21 @@ const handleExportOrders = () => {
               <p>Không có dữ liệu</p>
             ) : (
               <ResponsiveContainer width="100%" height={320}>
-                <LineChart data={revenueByDay} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <LineChart
+                  data={revenueByDay}
+                  margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip formatter={(v) => VND(Number(v))} />
-                  <Line type="monotone" dataKey="revenue" stroke="#1890ff" strokeWidth={3} dot />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#1890ff"
+                    strokeWidth={3}
+                    dot
+                  />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -647,7 +704,10 @@ const handleExportOrders = () => {
                     label={(e) => `${e.status}: ${e.count}`}
                   >
                     {statusBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={CHART_COLORS[index % CHART_COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Legend />
@@ -659,7 +719,7 @@ const handleExportOrders = () => {
         </Col>
       </Row>
 
-    
+      {/* Charts Row 2 */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={14}>
           <Card title="🎬 Doanh thu theo phim (VNĐ)">
@@ -667,9 +727,18 @@ const handleExportOrders = () => {
               <p>Không có dữ liệu</p>
             ) : (
               <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={revenueByMovie} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <BarChart
+                  data={revenueByMovie}
+                  margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="title" interval={0} angle={-15} textAnchor="end" height={60} />
+                  <XAxis
+                    dataKey="title"
+                    interval={0}
+                    angle={-15}
+                    textAnchor="end"
+                    height={60}
+                  />
                   <YAxis />
                   <Tooltip formatter={(v) => VND(Number(v))} />
                   <Bar dataKey="revenue" fill="#82ca9d" barSize={50} />
@@ -684,9 +753,18 @@ const handleExportOrders = () => {
               <p>Không có dữ liệu</p>
             ) : (
               <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={seatsByMovie} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <BarChart
+                  data={seatsByMovie}
+                  margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="title" interval={0} angle={-15} textAnchor="end" height={60} />
+                  <XAxis
+                    dataKey="title"
+                    interval={0}
+                    angle={-15}
+                    textAnchor="end"
+                    height={60}
+                  />
                   <YAxis />
                   <Tooltip />
                   <Bar dataKey="seats" />
@@ -697,7 +775,7 @@ const handleExportOrders = () => {
         </Col>
       </Row>
 
-   
+      {/* Revenue by Hour Chart */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24}>
           <Card title="🕒 Doanh thu theo giờ (VNĐ)">
@@ -705,7 +783,10 @@ const handleExportOrders = () => {
               <p>Không có dữ liệu</p>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={revenueByHour} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <BarChart
+                  data={revenueByHour}
+                  margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="hour" />
                   <YAxis />
@@ -720,7 +801,7 @@ const handleExportOrders = () => {
 
       <Divider />
 
-     
+      {/* Tables Row */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={10}>
           <Card
@@ -728,7 +809,9 @@ const handleExportOrders = () => {
               <Space>
                 <span>📋 Chi tiết doanh thu theo phim</span>
                 {topMovie && (
-                  <Tag color="green">Top: {topMovie.title} • {VND(topMovie.revenue)} VNĐ</Tag>
+                  <Tag color="green">
+                    Top: {topMovie.title} • {VND(topMovie.revenue)} VNĐ
+                  </Tag>
                 )}
               </Space>
             }
@@ -762,7 +845,9 @@ const handleExportOrders = () => {
           <Card title="🧾 Đơn hàng gần đây">
             <Table
               size="middle"
-              dataSource={[...filteredOrders].sort((a, b) => dayjs(b.bookingDate).valueOf() - dayjs(a.bookingDate).valueOf())}
+              dataSource={[...filteredOrders].sort(
+                (a, b) => dayjs(b.bookingDate).valueOf() - dayjs(a.bookingDate).valueOf()
+              )}
               rowKey={(r) => r._id}
               pagination={{ pageSize: 8 }}
               columns={recentOrdersColumns}
