@@ -94,7 +94,7 @@ const ComboList: React.FC = () => {
         <Space direction="vertical" size="small">
           {record.popcorns && record.popcorns.length > 0 && (
             <div>
-              <strong>Bắp Rang Bơ:</strong>
+              <strong>Đồ ăn:</strong>
               <ul style={{ margin: 0, paddingLeft: 20 }}>
                 {record.popcorns.map((item, index) => (
                   <li key={index}>{item.name} (x{item.quantity})</li>

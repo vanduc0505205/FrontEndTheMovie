@@ -10,6 +10,7 @@ import {
   Tag,
   Pagination,
   Divider,
+  notification,
 } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRooms } from "@/api/room.api";
@@ -64,7 +65,26 @@ const SeatList = () => {
       message.success("Đã cập nhật ghế");
       queryClient.invalidateQueries({ queryKey: ["seats", selectedRoom] });
     },
-    onError: () => message.error("Cập nhật thất bại"),
+    onError: (error: any) => {
+      const status = error?.response?.status;
+      const code = error?.response?.data?.code;
+      const serverMessage =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "Cập nhật thất bại";
+
+      if (status === 409 && code === "SEAT_MAINTENANCE_BLOCKED_BY_ACTIVE_BOOKINGS") {
+        notification.warning({
+          message: "Không thể bật bảo trì ghế",
+          description: serverMessage,
+          placement: "topRight",
+        });
+        return;
+      }
+
+      message.error(serverMessage);
+    },
   });
 
   const handleSubmit = async (values) => {

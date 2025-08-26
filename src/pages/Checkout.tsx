@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
-import { Spin, message, Input, Button } from "antd";
+import { Spin, message, Input, Button, notification } from "antd";
 import { bookTicket } from "@/api/booking.api";
 import { createPayment } from "@/api/payment.api";
 import { applyDiscount } from "@/api/discount.api";
@@ -19,7 +19,6 @@ export default function Checkout() {
   const bookingData = location.state;
   const { id: movieId } = useParams();
 
-  // Combo states
   const [combos, setCombos] = useState<ICombo[]>([]);
   const [selectedCombos, setSelectedCombos] = useState<Record<string, number>>({});
 
@@ -71,7 +70,6 @@ export default function Checkout() {
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [discountedTotal, setDiscountedTotal] = useState<number | null>(null);
 
-  // Fetch available combos
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -87,14 +85,12 @@ export default function Checkout() {
 
   const baseTotal = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
 
-  // Calculate combo total
   const comboTotal = Object.entries(selectedCombos).reduce((sum, [comboId, qty]) => {
     const combo = combos.find(c => c._id === comboId);
     if (!combo || !combo.isAvailable) return sum;
     return sum + (combo.price || 0) * (qty || 0);
   }, 0);
 
-  // Final payable: (seat total - discount) + combo total
   const finalSeatTotal = discountedTotal != null ? discountedTotal : baseTotal;
   const finalPayable = Math.max(0, finalSeatTotal + comboTotal);
 
@@ -106,7 +102,6 @@ export default function Checkout() {
     }
     setApplying(true);
     try {
-      // Giảm giá chỉ áp dụng cho tiền ghế
       const res = await applyDiscount({ code, total: baseTotal });
       setAppliedCode(code);
       const amt = res.discountAmount || 0;
@@ -143,10 +138,8 @@ export default function Checkout() {
       }
 
       const total = seatList.reduce((sum: number, seat: any) => sum + seat.price, 0);
-      // Tổng thanh toán gửi lên: (tiền ghế sau giảm) + comboTotal
       const totalToPay = Math.max(0, (discountedTotal != null ? discountedTotal : total) + comboTotal);
 
-      // Chuẩn hóa comboList từ lựa chọn
       const comboList = Object.entries(selectedCombos)
         .filter(([_, qty]) => qty > 0)
         .map(([comboId, qty]) => ({ comboId, quantity: qty }));
@@ -218,7 +211,6 @@ export default function Checkout() {
     } catch (error: any) {
       console.error("Lỗi thanh toán:", error);
 
-      // Xử lý riêng tài khoản bị khóa (HTTP 403)
       if (error?.response?.status === 403) {
         const msg = error?.response?.data?.message || "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin để mở khóa.";
         message.error({
@@ -236,6 +228,38 @@ export default function Checkout() {
 
       if (error?.response?.status === 409) {
         const data = error.response.data || {};
+        const code = data.code as string | undefined;
+
+        if (code === 'ROOM_IN_MAINTENANCE') {
+          notification.warning({
+            message: 'Phòng đang bảo trì',
+            description: data.message || 'Phòng chiếu đang bảo trì, không thể đặt vé vào lúc này. Vui lòng chọn suất chiếu/phòng khác.',
+            placement: 'topRight',
+          });
+          navigate(-1);
+          setIsLoading(false);
+          return;
+        }
+
+        if (code === 'SEAT_IN_MAINTENANCE') {
+          const seatCodes: string[] = Array.isArray(data.seatCodes) ? data.seatCodes : [];
+          notification.warning({
+            message: 'Ghế đang bảo trì',
+            description: (
+              <div>
+                <div>{data.message || 'Một hoặc nhiều ghế bạn chọn đang bảo trì.'}</div>
+                {seatCodes.length > 0 && (
+                  <div className="mt-1 text-xs">Ghế: <strong>{seatCodes.join(', ')}</strong></div>
+                )}
+              </div>
+            ) as any,
+            placement: 'topRight',
+          });
+          navigate(-1);
+          setIsLoading(false);
+          return;
+        }
+
         const codes: string[] | undefined = data.takenSeatCodes;
         const ids: string[] | undefined = data.takenSeatIds;
         const list: string[] = Array.isArray(codes) && codes.length ? codes : Array.isArray(ids) ? ids : [];

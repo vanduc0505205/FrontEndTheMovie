@@ -116,8 +116,6 @@ const DashboardAdmin: React.FC = () => {
     null,
   ]);
   const [filterMovie, setFilterMovie] = useState<string | null>(null);
-  const [filterMonth, setFilterMonth] = useState<dayjs.Dayjs | null>(null);
-  const [filterYear, setFilterYear] = useState<dayjs.Dayjs | null>(null);
 
   const rangePresets = useMemo(
     () => [
@@ -240,25 +238,10 @@ const DashboardAdmin: React.FC = () => {
         if (end && orderDate.isAfter(end.endOf("day"))) return false;
       }
 
-      // Lọc theo Tháng
-      if (filterMonth) {
-        const orderDate = dayjs(order.bookingDate);
-        if (!orderDate.isSame(filterMonth, "month")) {
-          return false;
-        }
-      }
-
-      // Lọc theo Năm
-      if (filterYear) {
-        const orderDate = dayjs(order.bookingDate);
-        if (!orderDate.isSame(filterYear, "year")) {
-          return false;
-        }
-      }
 
       return true;
     });
-  }, [orders, filterStatus, filterDateRange, filterMovie, filterMonth, filterYear]);
+  }, [orders, filterStatus, filterDateRange, filterMovie]);
 
   const allMovies = useMemo(() => {
     return Array.from(new Set(orders.map((o) => o.movieTitle).filter(Boolean)));
@@ -372,7 +355,7 @@ const DashboardAdmin: React.FC = () => {
         vals
           .map((v) => {
             const s = String(v ?? "");
-            if (s.includes(",") || s.includes("\n") || s.includes('"')) {
+            if (s.includes(",") || s.includes("\n") || s.includes('\"')) {
               return '"' + s.replace(/\"/g, '""') + '"';
             }
             return s;
@@ -617,36 +600,6 @@ const DashboardAdmin: React.FC = () => {
               showSearch
               optionFilterProp="label"
             />
-          </Col>
-          {/* Nhóm các bộ lọc ngày tháng năm vào một Space */}
-          <Col xs={24} md={8}>
-            <Space wrap>
-              <RangePicker
-                style={{ width: "100%" }}
-                onChange={(dates) => setFilterDateRange(dates || null)}
-                allowEmpty={[true, true]}
-              />
-              <DatePicker
-                picker="month"
-                style={{ width: "100%" }}
-                placeholder="Chọn tháng"
-                onChange={(date) => {
-                  setFilterMonth(date);
-                  setFilterDateRange(null); // Xóa bộ lọc ngày khi chọn tháng
-                }}
-                allowClear
-              />
-              <DatePicker
-                picker="year"
-                style={{ width: "100%" }}
-                placeholder="Chọn năm"
-                onChange={(date) => {
-                  setFilterYear(date);
-                  setFilterDateRange(null); // Xóa bộ lọc ngày khi chọn năm
-                }}
-                allowClear
-              />
-            </Space>
           </Col>
           <Col xs={24}>
             <Space wrap>

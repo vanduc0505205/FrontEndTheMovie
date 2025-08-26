@@ -16,7 +16,6 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getRooms, createRoom, updateRoom } from "@/api/room.api";
 import { getSeatsByRoom } from "@/api/seat.api";
-import { getUserFromLocalStorage } from "@/lib/auth";
 import { IRoom } from "@/interface/room";
 
 const getUserRole = () => {
@@ -68,7 +67,7 @@ const RoomList = () => {
   });
 
   const { mutate: handleToggleStatus } = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: IRoom["status"] }) => {
       if (userRole !== "admin") {
         throw new Error("Bạn không có quyền thực hiện hành động này!");
       }
@@ -78,10 +77,27 @@ const RoomList = () => {
       message.success("Đã cập nhật trạng thái phòng");
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const status = error?.response?.status;
+      const code = error?.response?.data?.code;
+      const serverMessage =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "Không thể cập nhật trạng thái.";
+
+      if (status === 409 && code === "ROOM_MAINTENANCE_BLOCKED_BY_ACTIVE_BOOKINGS") {
+        notification.warning({
+          message: "Không thể bật bảo trì",
+          description: serverMessage,
+          placement: "topRight",
+        });
+        return;
+      }
+
       notification.error({
         message: "Thất bại",
-        description: error.message || "Không thể cập nhật trạng thái.",
+        description: serverMessage,
         placement: "topRight",
       });
     },
@@ -143,7 +159,7 @@ const RoomList = () => {
         key: "action",
         render: (_: any, room: IRoom) => {
           const isMaintenance = room.status === "maintenance";
-          const newStatus = isMaintenance ? "open" : "maintenance";
+          const newStatus: IRoom["status"] = isMaintenance ? "open" : "maintenance";
           const buttonText = isMaintenance ? "Mở lại" : "Bảo trì";
 
           return (
@@ -244,15 +260,16 @@ const RoomList = () => {
           <Form.Item
             name="rows"
             label="Số hàng"
+            extra="Giới hạn: 1–15"
             rules={[
               { required: true, message: "Vui lòng nhập số hàng" },
               {
-                validator: (_, value) => {
+                validator(_, value) {
                   if (typeof value !== "number" || !Number.isInteger(value)) {
                     return Promise.reject("Số hàng phải là số nguyên");
                   }
-                  if (value < 1 || value > 20) {
-                    return Promise.reject("Số hàng phải từ 1 đến 20");
+                  if (value < 1 || value > 15) {
+                    return Promise.reject("Số hàng phải từ 1 đến 15");
                   }
                   return Promise.resolve();
                 },
@@ -261,7 +278,7 @@ const RoomList = () => {
           >
             <InputNumber
               min={1}
-              max={20}
+              max={15}
               className="w-full"
               disabled={roomHasSeats}
               step={1}
@@ -271,15 +288,16 @@ const RoomList = () => {
           <Form.Item
             name="columns"
             label="Số cột"
+            extra="Giới hạn: 1–15"
             rules={[
               { required: true, message: "Vui lòng nhập số cột" },
               {
-                validator: (_, value) => {
+                validator(_, value) {
                   if (typeof value !== "number" || !Number.isInteger(value)) {
                     return Promise.reject("Số cột phải là số nguyên");
                   }
-                  if (value < 1 || value > 26) {
-                    return Promise.reject("Số cột phải từ 1 đến 26");
+                  if (value < 1 || value > 15) {
+                    return Promise.reject("Số cột phải từ 1 đến 15");
                   }
                   return Promise.resolve();
                 },
@@ -288,7 +306,7 @@ const RoomList = () => {
           >
             <InputNumber
               min={1}
-              max={26}
+              max={15}
               className="w-full"
               disabled={roomHasSeats}
               step={1}
@@ -307,9 +325,11 @@ const RoomList = () => {
           </Form.Item>
 
           {editingRoom && roomHasSeats && (
-            <div className="text-yellow-600 mb-4">
-              ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
-            </div>
+            <Form.Item>
+              <div className="text-yellow-600">
+                ⚠️ Phòng đã có ghế, không thể thay đổi số hàng và số cột.
+              </div>
+            </Form.Item>
           )}
         </Form>
       </Modal>
