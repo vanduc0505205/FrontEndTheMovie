@@ -32,6 +32,7 @@ import {
 } from "recharts";
 import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
 import { getAllBookings } from "@/api/booking.api";
 
 const { RangePicker } = DatePicker;
@@ -64,6 +65,7 @@ interface OrderRow {
   _id: string;
   key: string;
   userId?: string;
+  userName?: string;
   movieTitle: string;
   cinemaName: string;
   seats: string[];
@@ -72,26 +74,12 @@ interface OrderRow {
   status?: string;
 }
 
-interface MovieRevenue {
-  title: string;
-  revenue: number;
-}
-interface MovieSeats {
-  title: string;
-  seats: number;
-}
-interface HourRevenue {
-  hour: string;
-  revenue: number;
-}
-interface StatusCount {
-  status: string;
-  count: number;
-}
-interface TopUser {
-  id: string;
-  revenue: number;
-}
+interface MovieRevenue { title: string; revenue: number }
+interface MovieSeats { title: string; seats: number }
+interface HourRevenue { hour: string; revenue: number }
+interface StatusCount { status: string; count: number }
+interface TopUser { id: string; name: string; revenue: number }
+
 
 const VND = (n: number = 0) => Number(n || 0).toLocaleString("vi-VN");
 const formatDate = (d?: string) =>
@@ -123,10 +111,46 @@ const DashboardAdmin: React.FC = () => {
 
   // Giữ lại state cho các bộ lọc riêng biệt
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
-  const [filterDateRange, setFilterDateRange] = useState<any[] | null>(null);
+  const [filterDateRange, setFilterDateRange] = useState<[Dayjs | null, Dayjs | null]>([
+    null,
+    null,
+  ]);
   const [filterMovie, setFilterMovie] = useState<string | null>(null);
   const [filterMonth, setFilterMonth] = useState<dayjs.Dayjs | null>(null);
   const [filterYear, setFilterYear] = useState<dayjs.Dayjs | null>(null);
+
+  const rangePresets = useMemo(
+    () => [
+      {
+        label: "Hôm nay",
+        value: [dayjs().startOf("day"), dayjs().endOf("day")] as [Dayjs, Dayjs],
+      },
+      {
+        label: "Hôm qua",
+        value: [
+          dayjs().add(-1, "day").startOf("day"),
+          dayjs().add(-1, "day").endOf("day"),
+        ] as [Dayjs, Dayjs],
+      },
+      {
+        label: "7 ngày qua",
+        value: [dayjs().add(-6, "day").startOf("day"), dayjs().endOf("day")] as [Dayjs, Dayjs],
+      },
+      {
+        label: "30 ngày qua",
+        value: [dayjs().add(-29, "day").startOf("day"), dayjs().endOf("day")] as [Dayjs, Dayjs],
+      },
+      {
+        label: "Tháng này",
+        value: [dayjs().startOf("month"), dayjs().endOf("month")] as [Dayjs, Dayjs],
+      },
+      {
+        label: "Năm nay",
+        value: [dayjs().startOf("year"), dayjs().endOf("year")] as [Dayjs, Dayjs],
+      },
+    ],
+    []
+  );
 
   const fetchOrders = async () => {
     try {
@@ -154,23 +178,33 @@ const DashboardAdmin: React.FC = () => {
           (st && typeof st === "object" && st.title) ||
           "—";
 
-        const cinemaName =
-          (st && typeof st === "object" && (st.cinemaName || st.cinema)) ||
-          (b as any).cinemaName ||
-          "—";
+        const cinemaName = (() => {
+          if (st && typeof st === "object") {
+            const c = (st as any).cinemaId;
+            if (c && typeof c === "object" && c.name) return c.name as string;
+            if ((st as any).cinemaName) return (st as any).cinemaName as string;
+            if ((st as any).cinema) return (st as any).cinema as string;
+          }
+          return (b as any).cinemaName || "—";
+        })();
 
-        const userIdStr = ((): string | undefined => {
+        const { userIdStr, userName } = ((): { userIdStr?: string; userName?: string } => {
           const uid: any = (b as any).userId;
-          if (!uid) return undefined;
-          if (typeof uid === "string") return uid;
-          if (typeof uid === "object") return uid._id || uid.id || undefined;
-          return undefined;
+          if (!uid) return { userIdStr: undefined, userName: undefined };
+          if (typeof uid === "string") return { userIdStr: uid, userName: undefined };
+          if (typeof uid === "object") {
+            const id = uid._id || uid.id || undefined;
+            const name = uid.fullName || uid.email || undefined;
+            return { userIdStr: id, userName: name };
+          }
+          return { userIdStr: undefined, userName: undefined };
         })();
 
         return {
           ...(b as any),
           key: b._id,
           userId: userIdStr,
+          userName,
           movieTitle,
           cinemaName,
           seats: seatsArr.length > 0 ? seatsArr : ["(Không rõ)"],
@@ -199,15 +233,11 @@ const DashboardAdmin: React.FC = () => {
       // Lọc theo Phim
       if (filterMovie && order.movieTitle !== filterMovie) return false;
 
-      // Lọc theo Khoảng ngày
-      if (filterDateRange && filterDateRange[0] && filterDateRange[1]) {
+      const [start, end] = filterDateRange;
+      if (start || end) {
         const orderDate = dayjs(order.bookingDate);
-        if (
-          orderDate.isBefore(filterDateRange[0].startOf("day")) ||
-          orderDate.isAfter(filterDateRange[1].endOf("day"))
-        ) {
-          return false;
-        }
+        if (start && orderDate.isBefore(start.startOf("day"))) return false;
+        if (end && orderDate.isAfter(end.endOf("day"))) return false;
       }
 
       // Lọc theo Tháng
@@ -409,20 +439,35 @@ const DashboardAdmin: React.FC = () => {
   ];
 
   const topUsers: TopUser[] = useMemo(() => {
-    const map: Record<string, number> = {};
+    const map: Record<string, { name?: string; revenue: number }> = {};
     filteredOrders.forEach((o) => {
       if (o.status !== "paid") return;
       const uid = o.userId || "Unknown";
-      map[uid] = (map[uid] || 0) + (Number(o.totalPrice) || 0);
+      if (!map[uid]) map[uid] = { name: o.userName, revenue: 0 };
+      // preserve a non-empty name if encountered later
+      if (!map[uid].name && o.userName) map[uid].name = o.userName;
+      map[uid].revenue += Number(o.totalPrice) || 0;
     });
     return Object.entries(map)
-      .map(([id, revenue]) => ({ id, revenue }))
+      .map(([id, v]) => ({ id, name: v.name || id, revenue: v.revenue }))
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 5);
   }, [filteredOrders]);
 
   const topUsersColumns: ColumnsType<TopUser> = [
-    { title: "User ID", dataIndex: "id", key: "id" },
+    {
+      title: "Khách hàng",
+      dataIndex: "name",
+      key: "name",
+      render: (_: any, r) => {
+        const shortId = r.id?.slice(0, 8);
+        return (
+          <span>
+            {r.name} <Tag style={{ marginLeft: 6 }}>{shortId}</Tag>
+          </span>
+        );
+      },
+    },
     {
       title: "Doanh thu (VNĐ)",
       dataIndex: "revenue",
@@ -549,7 +594,19 @@ const DashboardAdmin: React.FC = () => {
               ]}
             />
           </Col>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={10}>
+            <RangePicker
+              style={{ width: "100%" }}
+              value={filterDateRange}
+              onChange={(dates) => setFilterDateRange((dates as [Dayjs | null, Dayjs | null]) || [null, null])}
+              allowEmpty={[true, true]}
+              inputReadOnly
+              format="YYYY-MM-DD"
+              presets={rangePresets}
+              allowClear
+            />
+          </Col>
+          <Col xs={24} md={4}>
             <Select
               allowClear
               placeholder="Lọc theo phim"
@@ -594,12 +651,9 @@ const DashboardAdmin: React.FC = () => {
           <Col xs={24}>
             <Space wrap>
               <Button onClick={handleExportOrders}>Xuất đơn hàng</Button>
-              <Button onClick={handleExportRevenueByDay}>
-                Xuất doanh thu ngày
-              </Button>
-              <Button onClick={handleExportRevenueByMovie}>
-                Xuất doanh thu phim
-              </Button>
+              <Button onClick={handleExportRevenueByDay}>Xuất doanh thu ngày</Button>
+              <Button onClick={handleExportRevenueByMovie}>Xuất doanh thu phim</Button>
+              <Button onClick={() => setFilterDateRange([null, null])}>Xóa lọc ngày</Button>
             </Space>
           </Col>
         </Row>
