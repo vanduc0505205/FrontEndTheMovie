@@ -508,45 +508,67 @@ const fetchOrders = async () => {
                   </div>
                 )}
                 {/* Modal Chi tiết vé */}
-       {isModalOpen && selectedOrder && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    {/* Thân vé */}
-    <div
-      className="bg-gray-800 rounded-lg p-6 w-96 shadow-xl relative"
-      id="ticket-detail"
-    >
-      <h2 className="text-xl font-bold text-white mb-4">
-        Vé vào AlPhaCinnema
-      </h2>
-      <p className="text-gray-300 mb-2">Phim: {selectedOrder.movieTitle}</p>
-      <p className="text-gray-300 mb-2">
-        Ghế: {selectedOrder.seats.join(", ")}
-      </p>
-      <p className="text-gray-300 mb-2">
-        Tổng tiền:{" "}
-        {selectedOrder.totalPrice?.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })}
-      </p>
-
-      {/* QR Code */}
-      <div className="flex justify-center my-4">
-       <QRCode value={selectedOrder._id} size={160} fgColor="#ef4444" />
-      </div>
-    </div>
-
-    {/* Nút bấm nằm ngoài vé */}
-    <div className="absolute bottom-6 flex justify-between gap-4">
+                {isModalOpen && selectedOrder && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+    <div className="bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-3xl relative">
       <button
         onClick={() => setIsModalOpen(false)}
-        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+        className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl"
       >
-        Đóng
+        ✕
       </button>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* LEFT: Poster + QR */}
+        <div  className="md:w-1/3 flex flex-col items-center bg-gray-800 rounded-lg p-4">
+            <img
+            src={selectedOrder.showtimeId?.movieId?.poster || "/default-poster.jpg"}
+            alt={selectedOrder.showtimeId?.movieId?.title || "Poster"}
+            className="w-full h-64 object-cover rounded-lg"
+          />
+          <QRCode
+            value={selectedOrder._id}
+            size={140}
+            fgColor="#ef4444"
+            className="mb-2"
+          />
+          <p className="text-white text-sm font-semibold">
+            Mã vé: {selectedOrder._id}
+          </p>
+        </div>
+
+        {/* RIGHT: Ticket Info */}
+        <div className="md:w-2/3 text-gray-300">
+          <h2 className="text-2xl font-bold text-white mb-4">
+            {selectedOrder.movieTitle}
+          </h2>
+          <div className="space-y-2 text-sm">
+            <p><span className="font-semibold">Ngày chiếu:</span> {new Date(selectedOrder.showtimeId?.startTime).toLocaleDateString("vi-VN")}</p>
+            <p><span className="font-semibold">Giờ chiếu:</span> {new Date(selectedOrder.showtimeId?.startTime).toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"})} - {new Date(selectedOrder.showtimeId?.endTime).toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"})}</p>
+            <p><strong>Rạp:</strong>ALPHA-CINEMA</p>
+            <p><span className="font-semibold">Địa chỉ:</span> số 13, phố Trịnh Văn Bô, Quận Nam Từ Liêm, Hà Nội, Việt Nam</p>
+            <p><span className="font-semibold">Phòng chiếu:</span> {selectedOrder.showtimeId?.roomId?.name || "N/A"}</p>
+            <p><span className="font-semibold">Ghế:</span> {selectedOrder.seats.join(", ")}</p>
+            {selectedOrder.foodCombos && selectedOrder.foodCombos.length > 0 && (
+              <p><span className="font-semibold">Combo:</span> {selectedOrder.foodCombos.join(", ")}</p>
+            )}
+            <p><span className="font-semibold">Phương thức thanh toán:</span> {selectedOrder.paymentMethod || "Chưa rõ"}</p>
+          </div>
+
+          <div className="mt-4 border-t border-gray-700 pt-4 text-sm space-y-1">
+           <p><strong>Giá vé:</strong> {(selectedOrder.ticketPrice || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</p>
+            <p><strong>Giá combo:</strong> {(selectedOrder.comboPrice || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</p>
+            <p><strong>Giảm giá:</strong> -{(selectedOrder.discountAmount || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</p>
+            <p><strong>Tổng cộng:</strong> {(selectedOrder.totalPrice || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</p>
+
+            <p className="text-lg font-bold text-yellow-400">Tổng cộng: {selectedOrder.totalPrice?.toLocaleString("vi-VN", {style: "currency", currency: "VND"})}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 )}
+
 
 
 
