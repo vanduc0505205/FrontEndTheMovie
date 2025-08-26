@@ -20,6 +20,9 @@ export const clearUserData = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("loginAt");
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("app-logout"));
+  }
 };
 
 // Lấy role user

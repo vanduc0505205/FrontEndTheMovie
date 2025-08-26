@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import backgroundImage from "@/assets/images/contact/backGroundContact.png";
 import backgroundImageMobile from "@/assets/images/contact/bg-about-us-info-mobile.png";
@@ -20,13 +13,13 @@ const ContentContact = () => {
     email: "",
     message: "",
   });
-  const titles = ["Ông", "Bà", "Công Ty"];
+  const titles = ["Ông", "Bà", "Công ty"];
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-    const [userId, setUserId] = useState<string | null>(null);
- useEffect(() => {
-   
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
     const userString = localStorage.getItem("user");
     if (userString) {
       const userObj = JSON.parse(userString);
@@ -43,12 +36,13 @@ const ContentContact = () => {
     try {
       const res = await fetch("http://localhost:3000/contact", {
         method: "POST",
-      headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token") || ""}`
-     },
-     body: JSON.stringify({ ...form, userId }),
-     
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: userId
+          ? JSON.stringify({ ...form, userId })
+          : JSON.stringify({ ...form }),
+        
       });
 
       const data = await res.json();

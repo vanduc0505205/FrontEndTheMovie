@@ -1,9 +1,9 @@
 export interface IRoom {
-  [x: string]: string;
   _id: string;
   name: string;
   rows: number;  
   columns: number;
+  status?: "open" | "maintenance";
   createdAt: string;
   updatedAt: string;
 }

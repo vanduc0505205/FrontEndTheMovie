@@ -5,6 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
 import { Dropdown, Modal } from "antd";
 import { DownOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { clearUserData } from "@/lib/auth";
 
 const Header = () => {
   const isMobile = useIsMobile();
@@ -18,11 +19,26 @@ const Header = () => {
       setUser(storedUser ? JSON.parse(storedUser) : null);
     };
 
+    const handleAppLogout = () => {
+      setUser(null);
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "user" || e.key === "accessToken" || e.key === "refreshToken") {
+        const storedUser = localStorage.getItem("user");
+        setUser(storedUser ? JSON.parse(storedUser) : null);
+      }
+    };
+
     loadUser();
     window.addEventListener("login-success", loadUser);
+    window.addEventListener("app-logout", handleAppLogout);
+    window.addEventListener("storage", handleStorage);
 
     return () => {
       window.removeEventListener("login-success", loadUser);
+      window.removeEventListener("app-logout", handleAppLogout);
+      window.removeEventListener("storage", handleStorage);
     };
   }, []);
 
@@ -46,7 +62,7 @@ const Header = () => {
       okType: "danger",
       cancelText: "Hủy",
       onOk() {
-        localStorage.removeItem("user");
+        clearUserData();
         window.location.href = "/dang-xuat";
       },
     });
