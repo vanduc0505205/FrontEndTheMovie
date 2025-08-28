@@ -62,25 +62,25 @@ import ComboAdmin from './admin/comboAdmin/comboAdmin'
 
 
 function App() {
-  useEffect(() => {
-    if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
-      const script = document.createElement("script");
-      script.src = "https://app.preny.ai/embed-global.js";
-      script.async = true;
-      script.defer = true;
+  // useEffect(() => {
+  //   if (!document.querySelector('script[src="https://app.preny.ai/embed-global.js"]')) {
+  //     const script = document.createElement("script");
+  //     script.src = "https://app.preny.ai/embed-global.js";
+  //     script.async = true;
+  //     script.defer = true;
 
-      script.onload = () => {
-        console.log("Preny script loaded ");
-      };
+  //     script.onload = () => {
+  //       console.log("Preny script loaded ");
+  //     };
 
-      script.setAttribute("data-name-bot", "bot-demo");
-      script.setAttribute("data-button-style", "width:300px;height:300px;");
-      script.setAttribute("data-language", "vi");
-      script.setAttribute("data-preny-bot-id", "68ac9ed5b5aff4ec6edbd3db");
+  //     script.setAttribute("data-name-bot", "bot-demo");
+  //     script.setAttribute("data-button-style", "width:300px;height:300px;");
+  //     script.setAttribute("data-language", "vi");
+  //     script.setAttribute("data-preny-bot-id", "68ac9ed5b5aff4ec6edbd3db");
 
-      document.body.appendChild(script);
-    }
-  }, []);
+  //     document.body.appendChild(script);
+  //   }
+  // }, []);
 
   useEffect(() => {
     enforceLogoutIfExpired();

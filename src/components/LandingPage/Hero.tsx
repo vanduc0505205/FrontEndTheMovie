@@ -1,17 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import banner from "@/assets/images/banner.jpg";
+import Video from "@/assets/video/NA-TRA-MA-DONG-NAO-HAI.mp4";
 
 const Hero = () => {
   return (
     <section className="relative h-screen ">
-      <div className="absolute inset-0 bg-custom-gradient-hero z-30"></div>
-      <img
-          src={banner}
-          className="absolute inset-0 w-full h-full object-cover z-10"
-        >
-        </img>
-      <div className="absolute inset-0 bg-black/30 z-20" />
+      <div className="absolute inset-0 bg-about-us-hero z-30"></div>
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-10"
+      >
+        <source src={Video} type="video/mp4" />
+        Trình duyệt của bạn không hỗ trợ video.
+      </video>
+      {/* <div className="absolute inset-0 bg-black/30 z-20" /> */}
 
       <div className="absolute bottom-4 right-0 w-full z-40 text-main-color-50">
         <div className="container text-center md:text-left items-center md:items-start justify-center md:justify-start">
