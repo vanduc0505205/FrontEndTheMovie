@@ -1,4 +1,3 @@
-// pages/admin/CatrgoryStaff.tsx
 import { useEffect, useState } from 'react';
 import {
   getCategories,
