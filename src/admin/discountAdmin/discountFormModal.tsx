@@ -7,6 +7,7 @@ import {
   DatePicker,
   Switch,
   Checkbox,
+  Select,
   Row,
   Col,
   message,
@@ -49,7 +50,7 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
     } else {
       setOriginalData(null);
       form.resetFields();
-      form.setFieldsValue({ isActive: true, allowedDays: [] });
+      form.setFieldsValue({ isActive: true, allowedDays: [], visibility: 'public' });
     }
   }, [initialValues, form]);
 
@@ -58,7 +59,7 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
       form.setFieldsValue(originalData);
     } else {
       form.resetFields();
-      form.setFieldsValue({ isActive: true, allowedDays: [] });
+      form.setFieldsValue({ isActive: true, allowedDays: [], visibility: 'public' });
     }
     onClose();
   };
@@ -246,6 +247,15 @@ const DiscountFormModal = ({ open, onClose, onRefresh, initialValues }) => {
 
             <Form.Item name="isActive" label="Kích hoạt" valuePropName="checked">
               <Switch />
+            </Form.Item>
+
+            <Form.Item name="visibility" label="Phạm vi" initialValue={'public'}>
+              <Select
+                options={[
+                  { label: 'Công khai (Public) - hiện cho người dùng chọn', value: 'public' },
+                  { label: 'Riêng tư (Private) - không hiển thị, chỉ nhập tay', value: 'private' },
+                ]}
+              />
             </Form.Item>
           </Col>
         </Row>

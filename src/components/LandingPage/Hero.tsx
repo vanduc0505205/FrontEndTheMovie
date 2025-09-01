@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Video from "@/assets/video/NA-TRA-MA-DONG-NAO-HAI.mp4";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -36,13 +37,15 @@ const Hero = () => {
               Hãy cùng khám phá thế giới điện ảnh đa sắc màu.{" "}
             </p>  
 
+            <Link to={`/lich-chieu`}>
             <Button
               size="lg"
-              className="bg-custom-gradient-button hover:bg-green-500 text-white text-xl md:text-3xl py-8 md:py-10 rounded-full whitespace-nowrap"
+              className="bg-custom-gradient-button text-white text-xl md:text-3xl py-8 md:py-10 rounded-full whitespace-nowrap"
             >
               Xem phim ngay
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,15 +1,20 @@
-import banner from "@/assets/images/banner.jpg";
+import Video from "@/assets/video/THANH-GUOM-DIET-QUY-VO-HAN-THANH.mp4";
 
 const Hero = () => {
   return (
     <section className="relative h-screen">
-        <div className="absolute inset-0 bg-contact-hero z-30" />
-        <img
-          src={banner}
-          className="absolute inset-0 w-full h-full object-cover z-10"
-        >
-        </img>
-        <div className="absolute inset-0 bg-black/30 z-20" />
+        <div className="absolute inset-0 bg-about-us-hero z-30"></div>
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-10"
+      >
+        <source src={Video} type="video/mp4" />
+        Trình duyệt của bạn không hỗ trợ video.
+      </video>
+      {/* <div className="absolute inset-0 bg-black/30 z-20" /> */}
 
         <div className="absolute bottom-0 flex justify-center right-0 w-full z-40 main-color-50 pb-16">
           <div className="container px-4 text-center flex flex-col items-center space-y-8">

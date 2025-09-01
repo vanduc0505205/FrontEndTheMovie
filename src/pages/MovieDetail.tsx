@@ -44,7 +44,7 @@ export default function SelectShowtime() {
     );
   }, [showtimes, movieId]);
 
-  
+
   // Nhóm theo ngày
   const groupedByDate = useMemo(() => {
     const map: Record<string, IShowtime[]> = {};
@@ -99,7 +99,7 @@ export default function SelectShowtime() {
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen overflow-hidden">
       {/* Background overlay */}
       {/* <div className="absolute inset-0 bg-black/20"></div> */}
-      
+
       <div className="relative z-10 px-4 py-10 min-h-screen">
         <div className="w-max h-10"></div>
         <div className="max-w-7xl mx-auto pb-10">
@@ -107,7 +107,7 @@ export default function SelectShowtime() {
           <Button
             type="default"
             onClick={() => navigate(-1)}
-            className="mb-8 flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 transition-all duration-300"
+            className="mb-8 flex items-center gap-2 !bg-white/10 hover:!bg-white/20 backdrop-blur-sm text-red-400 border border-white/20 transition-all duration-300"
             icon={<ArrowLeft className="text-red-400" />}
           >
             <span className="text-gray-200">Quay lại danh sách phim</span>
@@ -116,7 +116,7 @@ export default function SelectShowtime() {
           {/* Main Content */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl overflow-hidden mb-10">
             <div className="flex flex-col lg:flex-row gap-8 p-8">
-              
+
               {/* Movie Poster */}
               <div className="flex-shrink-0">
                 <div className="relative group">
@@ -131,7 +131,7 @@ export default function SelectShowtime() {
 
               {/* Movie Details */}
               <div className="flex-1 space-y-6">
-                
+
                 {/* Title */}
                 <div>
                   <h1 className="text-4xl font-bold mb-2 text-white drop-shadow-lg">
@@ -151,7 +151,7 @@ export default function SelectShowtime() {
                       <span className="text-white font-medium">Thời lượng:</span>
                       <span>{movie.duration || "100"} phút</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 text-gray-200">
                       <Calendar className="text-red-400" size={16} />
                       <span className="text-white font-medium">Khởi chiếu:</span>
@@ -161,7 +161,7 @@ export default function SelectShowtime() {
                           : "11/07/2025"}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 text-gray-200">
                       <Film className="text-red-400" size={16} />
                       <span className="text-white font-medium">Giới hạn tuổi:</span>
@@ -179,7 +179,7 @@ export default function SelectShowtime() {
                         <span className="text-gray-300">{movie.director}</span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start gap-3 text-gray-200">
                       <User className="text-red-400 mt-1" size={16} />
                       <div>
@@ -210,8 +210,8 @@ export default function SelectShowtime() {
                         key={date}
                         onClick={() => setSelectedDate(date)}
                         className={`px-4 py-3 rounded-lg border text-sm whitespace-nowrap min-w-[120px] text-center transition-all duration-300 font-medium
-                          ${selectedDate === date 
-                            ? "bg-gradient-to-r from-red-600 to-red-700 text-white border-red-500 shadow-lg shadow-red-500/25" 
+                          ${selectedDate === date
+                            ? "bg-gradient-to-r from-red-600 to-red-700 text-white border-red-500 shadow-lg shadow-red-500/25"
                             : "bg-white/10 text-gray-300 border-white/20 hover:bg-white/20 hover:border-white/30"}`}
                       >
                         <div className="text-xs opacity-80">
@@ -237,7 +237,7 @@ export default function SelectShowtime() {
                         key={s._id}
                         type="default"
                         size="large"
-                        className="bg-white/10 border-green-500/50 text-green-400 hover:bg-green-500/20 hover:border-green-400 hover:text-green-300 transition-all duration-300 font-medium backdrop-blur-sm"
+                        className="bg-white/10 border-green-500/50 text-green-400 hover:border-green-400 hover:text-green-300 transition-all duration-300 font-medium backdrop-blur-sm"
                         onClick={() => handleSelectShowtime(s)}
                       >
                         {dayjs(s.startTime).format("HH:mm")}

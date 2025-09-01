@@ -67,6 +67,11 @@ const DiscountList = () => {
       render: (value: number) => `${value.toLocaleString('vi-VN')} VNĐ`,
     },
     {
+      title: 'Phạm vi',
+      dataIndex: 'visibility',
+      render: (v: IDiscount['visibility']) => v === 'private' ? <Tag color="gold">Private</Tag> : <Tag color="blue">Public</Tag>,
+    },
+    {
       title: 'Số lượt',
       render: (_: any, record: IDiscount) => `${record.usedCount || 0}/${record.quantity ?? '∞'}`,
     },
@@ -148,6 +153,7 @@ const DiscountList = () => {
           <Descriptions column={1} bordered>
             <Descriptions.Item label="Mã">{detailData.code}</Descriptions.Item>
             <Descriptions.Item label="Giá trị">{detailData.value.toLocaleString('vi-VN')} VNĐ</Descriptions.Item>
+            <Descriptions.Item label="Phạm vi">{detailData.visibility === 'private' ? <Tag color="gold">Private</Tag> : <Tag color="blue">Public</Tag>}</Descriptions.Item>
             <Descriptions.Item label="Số lượt">
               {`${detailData.usedCount || 0}/${detailData.quantity ?? '∞'}`}
             </Descriptions.Item>
