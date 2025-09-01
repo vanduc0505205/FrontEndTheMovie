@@ -39,4 +39,20 @@ export const applyDiscount = async (
   return res.data;
 };
 
+export interface IAvailableDiscount {
+  id: string;
+  code: string;
+  description?: string;
+  value: number;
+  startDate?: string;
+  endDate?: string;
+  allowedDays?: number[];
+  remaining: number | null; // null = không giới hạn
+}
+
+export const getAvailableDiscounts = async (): Promise<IAvailableDiscount[]> => {
+  const res = await axios.get("http://localhost:3000/discount/available");
+  return Array.isArray(res.data) ? res.data : [];
+};
+
 export type { IDiscount };

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieById } from "@/api/movie.api";
-import { Spin, message, Input, Button, notification } from "antd";
+import { Spin, message, Input, Button, notification, Select } from "antd";
 import { bookTicket } from "@/api/booking.api";
 import { createPayment } from "@/api/payment.api";
-import { applyDiscount } from "@/api/discount.api";
+import { applyDiscount, getAvailableDiscounts } from "@/api/discount.api";
+import type { IAvailableDiscount } from "@/api/discount.api";
 import { comboApi } from "@/api/combo.api";
 import type { ICombo } from "@/interface/combo";
 
@@ -69,6 +70,8 @@ export default function Checkout() {
   const [appliedCode, setAppliedCode] = useState<string>("");
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [discountedTotal, setDiscountedTotal] = useState<number | null>(null);
+  const [availableDiscounts, setAvailableDiscounts] = useState<IAvailableDiscount[]>([]);
+  const [loadingAvail, setLoadingAvail] = useState<boolean>(false);
 
   useEffect(() => {
     let mounted = true;
@@ -94,8 +97,8 @@ export default function Checkout() {
   const finalSeatTotal = discountedTotal != null ? discountedTotal : baseTotal;
   const finalPayable = Math.max(0, finalSeatTotal + comboTotal);
 
-  const onApplyDiscount = async () => {
-    const code = discountCode.trim().toUpperCase();
+  const onApplyDiscount = async (selectedCode?: string) => {
+    const code = (selectedCode ?? discountCode).trim().toUpperCase();
     if (!code) {
       message.warning("Vui lòng nhập mã giảm giá");
       return;
@@ -122,6 +125,24 @@ export default function Checkout() {
       setApplying(false);
     }
   };
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoadingAvail(true);
+        const list = await getAvailableDiscounts();
+        if (mounted) setAvailableDiscounts(list);
+      } catch (e) {
+        console.warn("Không thể tải danh sách mã giảm giá khả dụng:", e);
+      } finally {
+        setLoadingAvail(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const clearDiscount = () => {
     setAppliedCode("");
@@ -547,7 +568,7 @@ export default function Checkout() {
                     />
                   </div>
                   {!appliedCode ? (
-                    <Button type="primary" loading={applying} onClick={onApplyDiscount}>
+                    <Button type="primary" loading={applying} onClick={() => onApplyDiscount()}>
                       Áp dụng
                     </Button>
                   ) : (
@@ -555,6 +576,30 @@ export default function Checkout() {
                       Bỏ mã
                     </Button>
                   )}
+                </div>
+
+                <div className="mt-3">
+                  <Select
+                    showSearch
+                    placeholder={loadingAvail ? "Đang tải danh sách mã..." : "Chọn mã giảm giá hiện có"}
+                    loading={loadingAvail}
+                    className="w-full"
+                    optionFilterProp="label"
+                    onChange={(code) => onApplyDiscount(code)}
+                    options={[...availableDiscounts]
+                      .sort((a, b) => {
+                        const byValue = (b.value || 0) - (a.value || 0);
+                        if (byValue !== 0) return byValue;
+                        const aEnd = a.endDate ? new Date(a.endDate).getTime() : Infinity;
+                        const bEnd = b.endDate ? new Date(b.endDate).getTime() : Infinity;
+                        return aEnd - bEnd;
+                      })
+                      .map((d) => ({
+                      value: d.code,
+                      label: `${d.code} - giảm ${d.value.toLocaleString()}đ${d.remaining === null ? "" : ` (còn ${d.remaining})`}`,
+                    }))}
+                    allowClear
+                  />
                 </div>
               </div>
             </div>

@@ -4,4 +4,6 @@ export interface ICategory {
   description: string;
   taoLuc?: string;
   capNhatLuc?: string;
+  isDeleted?: boolean;
+  deletedAt?: string | null;
 }

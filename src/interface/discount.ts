@@ -8,6 +8,7 @@ export interface IDiscount {
   startDate?: string;          // ISO date string
   endDate?: string;            // ISO date string
   isActive?: boolean;
+  visibility?: 'public' | 'private';
   allowedDays?: number[];      // ví dụ: [0,6] (Chủ nhật = 0, Thứ 7 = 6)
   createdAt?: string;
   updatedAt?: string;

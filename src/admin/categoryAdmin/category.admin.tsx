@@ -4,6 +4,8 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  restoreCategory,
+  getDeletedCategories,
 } from '@/api/category.api';
 import {
   Card,
@@ -28,18 +30,19 @@ export default function CategoryAdmin() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
+  const [showTrash, setShowTrash] = useState<boolean>(false);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userRole = user?.role;
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [showTrash]);
 
   const sortCategories = (list: ICategory[]) => {
     return [...list].sort((a: any, b: any) => {
-      const at = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bt = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const at = a?.taoLuc ? new Date(a.taoLuc).getTime() : 0;
+      const bt = b?.taoLuc ? new Date(b.taoLuc).getTime() : 0;
       if (at !== bt) return bt - at;
       return (b?._id || '').localeCompare(a?._id || '');
     });
@@ -47,7 +50,7 @@ export default function CategoryAdmin() {
 
   const fetchCategories = async () => {
     try {
-      const list = await getCategories();
+      const list = showTrash ? await getDeletedCategories() : await getCategories();
       const sorted = sortCategories(list);
       setCategories(sorted);
       const maxPage = Math.max(1, Math.ceil(sorted.length / pageSize));
@@ -118,6 +121,36 @@ const handleSubmit = async (values: { categoryName: string; description?: string
     }
   };
 
+  const handleRestore = async (id: string) => {
+    try {
+      await restoreCategory(id);
+      message.success('Khôi phục danh mục thành công');
+      const newList = categories.filter((c) => c._id !== id);
+      const maxPage = Math.max(1, Math.ceil(newList.length / pageSize));
+      if (currentPage > maxPage) setCurrentPage(maxPage);
+      await fetchCategories();
+    } catch (err) {
+      message.error('Không thể khôi phục danh mục');
+    }
+  };
+
+  const handlePurge = async (id: string) => {
+    try {
+      const confirm2 = window.confirm('Hành động này không thể hoàn tác. Bạn chắc chắn muốn xóa vĩnh viễn?');
+      if (!confirm2) return;
+      const { purgeCategory } = await import('@/api/category.api');
+      await purgeCategory(id);
+      message.success('Đã xóa vĩnh viễn');
+      const newList = categories.filter((c) => c._id !== id);
+      const maxPage = Math.max(1, Math.ceil(newList.length / pageSize));
+      if (currentPage > maxPage) setCurrentPage(maxPage);
+      await fetchCategories();
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Không thể xóa vĩnh viễn';
+      message.error(msg);
+    }
+  };
+
   const resetForm = () => {
     form.resetFields();
     setEditingId(null);
@@ -156,15 +189,18 @@ const handleSubmit = async (values: { categoryName: string; description?: string
                     Hủy
                   </Button>
                 )}
+                <Button onClick={() => setShowTrash((v) => !v)}>
+                  {showTrash ? 'Xem danh sách' : 'Xem thùng rác'}
+                </Button>
               </Space>
             </Form.Item>
           </Form>
 
-          <Title level={5}>Danh sách danh mục</Title>
+          <Title level={5}>{showTrash ? 'Thùng rác' : 'Danh sách danh mục'}</Title>
         </>
       )}
 
-      {userRole !== 'admin' && <Title level={5}>Danh sách danh mục</Title>}
+      {userRole !== 'admin' && <Title level={5}>{showTrash ? 'Thùng rác' : 'Danh sách danh mục'}</Title>}
 
       <List
         dataSource={
@@ -188,15 +224,38 @@ const handleSubmit = async (values: { categoryName: string; description?: string
             actions={
               userRole === 'admin'
                 ? [
-                  <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>,
-                  <Popconfirm
-                    title="Bạn có chắc chắn muốn xóa danh mục này?"
-                    onConfirm={() => handleDelete(cat._id)}
-                    okText="Xoá"
-                    cancelText="Huỷ"
-                  >
-                    <Button size="small" danger>Xoá</Button>
-                  </Popconfirm>,
+                  !showTrash && (
+                    <Button size="small" onClick={() => handleEdit(cat)}>Sửa</Button>
+                  ),
+                  !showTrash && (
+                    <Popconfirm
+                      title="Bạn có chắc chắn muốn xóa danh mục này?"
+                      onConfirm={() => handleDelete(cat._id)}
+                      okText="Xoá"
+                      cancelText="Huỷ"
+                    >
+                      <Button size="small" danger>Xoá</Button>
+                    </Popconfirm>
+                  ),
+                  showTrash && (
+                    <Button size="small" type="primary" onClick={() => handleRestore(cat._id)}>
+                      Khôi phục
+                    </Button>
+                  ),
+                  showTrash && (
+                    <Popconfirm
+                      title="Xóa vĩnh viễn danh mục này?"
+                      description="Bạn sẽ KHÔNG thể khôi phục lại."
+                      okText="Xóa vĩnh viễn"
+                      okButtonProps={{ danger: true }}
+                      cancelText="Hủy"
+                      onConfirm={() => handlePurge(cat._id)}
+                    >
+                      <Button size="small" danger>
+                        Xóa vĩnh viễn
+                      </Button>
+                    </Popconfirm>
+                  ),
                 ]
                 : undefined
             }
