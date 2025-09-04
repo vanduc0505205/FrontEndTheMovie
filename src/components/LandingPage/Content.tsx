@@ -20,9 +20,9 @@ export default function HomePageContent() {
 //     script.async = true;
 //     script.defer = true;
 //     script.setAttribute("data-name-bot", "bot-demo");
-//     script.setAttribute("data-button-style", "width:300px;height:300px;");
+//     script.setAttribute("data-button-style", "width:50px;height:50px;");
 //     script.setAttribute("data-language", "vi");
-//     script.setAttribute("data-preny-bot-id", "68ac9ed5b5aff4ec6edbd3db");
+//     script.setAttribute("data-preny-bot-id", "68b99b385ff551842bdd6ba0");
 //     document.body.appendChild(script);
 //   }
 // }, []);

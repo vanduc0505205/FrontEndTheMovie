@@ -2,7 +2,7 @@ import { Modal, Form, Input, DatePicker, InputNumber, Select, notification } fro
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createShowtime, updateShowtime } from "@/api/showtime.api";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { getAllMoviesSimple } from '@/api/movie.api';
 import { getRooms } from '@/api/room.api';
@@ -20,6 +20,7 @@ interface Props {
 
 const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => {
     const [form] = Form.useForm();
+    const [selectedCinemaId, setSelectedCinemaId] = useState<string | undefined>(undefined);
     const queryClient = useQueryClient();
     const isEdit = !!initialData;
 
@@ -35,8 +36,10 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     dayjs(initialData.endTime)
                 ]
             });
+            setSelectedCinemaId(initialData.cinemaId?._id);
         } else {
             form.resetFields();
+            setSelectedCinemaId(undefined);
         }
     }, [open, initialData]);
 
@@ -147,6 +150,14 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
         queryFn: getRooms,
     });
 
+    const filteredRooms = useMemo(() => {
+        if (!selectedCinemaId) return rooms;
+        return rooms.filter((r: any) => {
+            const cid = typeof r.cinemaId === 'string' ? r.cinemaId : r.cinemaId?._id;
+            return cid === selectedCinemaId;
+        });
+    }, [rooms, selectedCinemaId]);
+
     return (
         <Modal
             title={isEdit ? "Chỉnh sửa suất chiếu" : "Thêm suất chiếu mới"}
@@ -178,7 +189,14 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     label="Rạp"
                     rules={[{ required: true, message: "Vui lòng chọn rạp" }]}
                 >
-                    <Select placeholder="Chọn rạp" loading={LoadingCinemas}>
+                    <Select
+                        placeholder="Chọn rạp"
+                        loading={LoadingCinemas}
+                        onChange={(value: string) => {
+                            setSelectedCinemaId(value);
+                            form.setFieldsValue({ roomId: undefined });
+                        }}
+                    >
                         {allCinemas?.map((cinema: ICinema) => (
                             <Select.Option key={cinema._id} value={cinema._id}>
                                 {cinema.name}
@@ -194,7 +212,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     rules={[{ required: true, message: "Vui lòng chọn phòng chiếu" }]}
                 >
                     <Select placeholder="Chọn phòng" loading={loadingRooms}>
-                        {rooms?.map((room) => (
+                        {filteredRooms?.map((room: any) => (
                             <Select.Option key={room._id} value={room._id}>
                                 {room.name}
                             </Select.Option>

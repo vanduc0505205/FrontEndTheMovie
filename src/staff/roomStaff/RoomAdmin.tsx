@@ -9,6 +9,7 @@ import {
   message,
   Popconfirm,
   notification,
+  Select,
 } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -20,6 +21,8 @@ import {
 import { getSeatsByRoom } from "@/api/seat.api";
 import { getUserRole } from "@/lib/auth";
 import { IRoom } from "@/interface/room";
+import { getCinemas } from "@/api/cinema.api";
+import { ICinema } from "@/interface/cinema";
 
 const RoomList = () => {
   const [form] = Form.useForm();
@@ -42,6 +45,13 @@ const RoomList = () => {
     queryKey: ["rooms"],
     queryFn: getRooms,
   });
+
+  // Load cinemas for selection when creating/editing room
+  const { data: cinemaResp } = useQuery({
+    queryKey: ["cinemas", { page: 1, limit: 100 }],
+    queryFn: () => getCinemas(1, 100),
+  });
+  const cinemas: ICinema[] = cinemaResp?.data || [];
 
   const { mutate: handleCreateOrUpdate, isPending } = useMutation({
     mutationFn: async (room: Partial<IRoom>) => {
@@ -206,6 +216,20 @@ const RoomList = () => {
             ]}
           >
             <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="cinemaId"
+            label="Rạp"
+            rules={[{ required: true, message: "Vui lòng chọn rạp" }]}
+          >
+            <Select placeholder="Chọn rạp">
+              {cinemas.map((c) => (
+                <Select.Option key={c._id} value={c._id}>
+                  {c.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item
