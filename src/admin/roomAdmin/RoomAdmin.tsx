@@ -15,6 +15,8 @@ import {
 } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getRooms, createRoom, updateRoom } from "@/api/room.api";
+import { getCinemas } from "@/api/cinema.api";
+import { ICinema } from "@/interface/cinema";
 import { getSeatsByRoom } from "@/api/seat.api";
 import { IRoom } from "@/interface/room";
 
@@ -40,6 +42,13 @@ const RoomList = () => {
     queryKey: ["rooms"],
     queryFn: getRooms,
   });
+
+  // Tải danh sách rạp để người dùng chọn khi tạo phòng
+  const { data: cinemaResp } = useQuery({
+    queryKey: ["cinemas", { page: 1, limit: 100 }],
+    queryFn: () => getCinemas(1, 100),
+  });
+  const cinemas: ICinema[] = cinemaResp?.data || [];
 
   const { mutate: handleCreateOrUpdate, isPending } = useMutation({
     mutationFn: async (room: Partial<IRoom>) => {
@@ -255,6 +264,20 @@ const RoomList = () => {
             ]}
           >
             <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="cinemaId"
+            label="Rạp"
+            rules={[{ required: true, message: "Vui lòng chọn rạp" }]}
+          >
+            <Select placeholder="Chọn rạp">
+              {cinemas.map((c) => (
+                <Select.Option key={c._id} value={c._id}>
+                  {c.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item
