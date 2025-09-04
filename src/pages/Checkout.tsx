@@ -251,6 +251,17 @@ export default function Checkout() {
         const data = error.response.data || {};
         const code = data.code as string | undefined;
 
+        if (code === 'SHOWTIME_CANCELLED') {
+          notification.warning({
+            message: 'Suất chiếu đã bị hủy',
+            description: data.message || 'Suất chiếu này đã bị hủy. Vui lòng chọn suất khác.',
+            placement: 'topRight',
+          });
+          navigate('/lich-chieu');
+          setIsLoading(false);
+          return;
+        }
+
         if (code === 'ROOM_IN_MAINTENANCE') {
           notification.warning({
             message: 'Phòng đang bảo trì',

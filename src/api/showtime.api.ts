@@ -34,3 +34,8 @@ export const createShowtimeBatch = async (payload: {
   const { data } = await axiosInstance.post('/showtime/batch', payload);
   return data.data as { successes: Array<{ roomId: string; showtimeId: string }>; failures: Array<{ roomId: string; reason: string }>; };
 };
+
+export const restoreShowtime = async (id: string) => {
+  const { data } = await axiosInstance.post(`/showtime/${id}/restore`);
+  return data.data as IShowtime;
+};

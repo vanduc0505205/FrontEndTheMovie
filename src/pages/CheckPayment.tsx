@@ -67,6 +67,16 @@ const CheckPayment = () => {
           return;
         }
 
+        if (resultCode === 'showtime_cancelled') {
+          setStatus('error');
+          setPaymentStatus({
+            title: 'Suất chiếu đã bị hủy',
+            message: resultMessage || 'Giao dịch không thể hoàn tất vì suất chiếu đã bị hủy. Vui lòng chọn suất khác.',
+          });
+          message.warning('Suất chiếu đã bị hủy. Vui lòng chọn suất khác.');
+          return;
+        }
+
         if (resultCode === 'user_cancelled') {
           throw new Error(resultMessage || 'Bạn đã hủy thanh toán');
         }
