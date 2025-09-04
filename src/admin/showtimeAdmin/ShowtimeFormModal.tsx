@@ -2,7 +2,7 @@ import { Modal, Form, Input, DatePicker, InputNumber, Select, notification } fro
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createShowtime, updateShowtime, createShowtimeBatch } from "@/api/showtime.api";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { getAllMoviesSimple } from '@/api/movie.api';
 import { getRooms } from '@/api/room.api';
@@ -19,6 +19,7 @@ interface Props {
 
 const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => {
     const [form] = Form.useForm();
+    const [selectedCinemaId, setSelectedCinemaId] = useState<string | undefined>(undefined);
     const queryClient = useQueryClient();
     const isEdit = !!initialData;
 
@@ -40,6 +41,15 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
         queryFn: getRooms,
     });
 
+    // Lọc phòng theo rạp đã chọn; phòng có thể có cinemaId dạng string hoặc object {_id}
+    const filteredRooms = useMemo(() => {
+        if (!selectedCinemaId) return rooms;
+        return rooms.filter((r: any) => {
+            const cid = typeof r.cinemaId === 'string' ? r.cinemaId : r.cinemaId?._id;
+            return cid === selectedCinemaId;
+        });
+    }, [rooms, selectedCinemaId]);
+
     useEffect(() => {
         const optionsLoaded = !loadingMovies && !LoadingCinemas && !loadingRooms;
         if (open && initialData && optionsLoaded) {
@@ -56,8 +66,10 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                 defaultPrice: initialData.defaultPrice,
                 startTime: initialData.startTime ? dayjs(initialData.startTime) : undefined,
             });
+            setSelectedCinemaId(initialData.cinemaId?._id);
         } else if (!open) {
             form.resetFields();
+            setSelectedCinemaId(undefined);
         }
     }, [open, initialData, form, loadingMovies, LoadingCinemas, loadingRooms]);
 
@@ -249,7 +261,23 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                     label="Rạp"
                     rules={[{ required: true, message: "Vui lòng chọn rạp" }]}
                 >
-                    <Select placeholder="Chọn rạp" loading={LoadingCinemas} showSearch optionFilterProp="children" labelInValue>
+                    <Select
+                        placeholder="Chọn rạp"
+                        loading={LoadingCinemas}
+                        showSearch
+                        optionFilterProp="children"
+                        labelInValue
+                        onChange={(val: any) => {
+                            const value = val?.value ?? val;
+                            setSelectedCinemaId(value);
+                            // Reset chọn phòng khi đổi rạp
+                            if (isEdit) {
+                                form.setFieldsValue({ roomId: undefined });
+                            } else {
+                                form.setFieldsValue({ roomIds: [] });
+                            }
+                        }}
+                    >
                         {allCinemas?.map((cinema: ICinema) => (
                             <Select.Option key={cinema._id} value={cinema._id}>
                                 {cinema.name}
@@ -266,7 +294,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                         rules={[{ required: true, message: "Vui lòng chọn phòng chiếu" }]}
                     >
                         <Select placeholder="Chọn phòng" loading={loadingRooms} showSearch optionFilterProp="children" labelInValue>
-                            {rooms?.map((room) => (
+                            {filteredRooms?.map((room: any) => (
                                 <Select.Option key={room._id} value={room._id}>
                                     {room.name}
                                 </Select.Option>
@@ -287,7 +315,7 @@ const ShowtimeFormModal = ({ open, onClose, onSuccess, initialData }: Props) => 
                             optionFilterProp="children"
                             labelInValue
                         >
-                            {rooms?.map((room) => (
+                            {filteredRooms?.map((room: any) => (
                                 <Select.Option key={room._id} value={room._id}>
                                     {room.name}
                                 </Select.Option>
