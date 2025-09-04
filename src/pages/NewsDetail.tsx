@@ -43,7 +43,7 @@ const NewsDetail = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="min-h-screen py-20 bg-gray-900 text-white p-8">
             <div className="max-w-3xl mx-auto">
                 <div className="mb-4">
                     <img
