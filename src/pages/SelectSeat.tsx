@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Monitor, Users, Clock, Ticket, Crown } from "lucide-react";
 import axios from "axios";
 import dayjs from "dayjs";
+import { message, notification } from "antd";
 
 type SeatStatus = "available" | "booked" | "maintenance";
 type SeatType = "NORMAL" | "VIP";
@@ -42,8 +43,20 @@ export default function SeatSelection() {
           `http://localhost:3000/seat/room/${actualRoomId}?showtimeId=${showtimeId}`
         );
         setSeats(res.data);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Lỗi khi lấy danh sách ghế:", err);
+        const code = err?.response?.data?.code;
+        const status = err?.response?.status;
+        if (status === 409 && code === 'SHOWTIME_CANCELLED') {
+          notification.warning({
+            message: 'Suất chiếu đã bị hủy',
+            description: err?.response?.data?.message || 'Suất chiếu này đã bị hủy. Vui lòng chọn suất khác.',
+            placement: 'topRight',
+          });
+          navigate('/lich-chieu');
+          return;
+        }
+        message.error(err?.response?.data?.message || 'Không thể tải danh sách ghế');
       } finally {
         setLoading(false);
       }

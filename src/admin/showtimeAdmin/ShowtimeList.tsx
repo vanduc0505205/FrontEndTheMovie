@@ -12,7 +12,7 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { getShowtimes, deleteShowtime } from "@/api/showtime.api";
+import { getShowtimes, deleteShowtime, restoreShowtime } from "@/api/showtime.api";
 import ShowtimeFormModal from "./ShowtimeFormModal";
 import { IShowtime } from "@/interface/showtime";
 import { getAllMoviesSimple } from "@/api/movie.api";
@@ -100,6 +100,18 @@ const ShowtimeList = () => {
     },
   });
 
+  const mutationRestore = useMutation({
+    mutationFn: (id: string) => restoreShowtime(id),
+    onSuccess: () => {
+      message.success("✅ Đã khôi phục suất chiếu");
+      queryClient.invalidateQueries({ queryKey: ["showtimes"] });
+    },
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || "❌ Khôi phục thất bại";
+      message.error(msg);
+    },
+  });
+
   const handleAdd = () => {
     setSelectedShowtime(null);
     setModalOpen(true);
@@ -161,6 +173,15 @@ const ShowtimeList = () => {
       render: (value: number) => <Tag color="blue">{value.toLocaleString()} VND</Tag>,
     },
     {
+      title: "Trạng thái",
+      key: "status",
+      render: (_: any, record: IShowtime) => (
+        <Tag color={record.status === 'cancelled' ? 'red' : 'green'}>
+          {record.status === 'cancelled' ? 'Đã hủy' : 'Đang hoạt động'}
+        </Tag>
+      ),
+    },
+    {
       title: "Hành động",
       key: "actions",
       render: (_: any, record: IShowtime) => (
@@ -178,6 +199,16 @@ const ShowtimeList = () => {
               Xoá
             </Button>
           </Popconfirm>
+          {record.status === 'cancelled' && (
+            <Popconfirm
+              title="Khôi phục suất chiếu này?"
+              onConfirm={() => mutationRestore.mutate(record._id)}
+              okText="Khôi phục"
+              cancelText="Huỷ"
+            >
+              <Button type="link">Khôi phục</Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },

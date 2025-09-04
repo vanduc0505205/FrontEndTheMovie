@@ -15,6 +15,7 @@ export interface IShowtime {
   startTime: string;
   endTime: string;
   defaultPrice: number;
+  status?: 'active' | 'cancelled';
   createdAt?: string;
   updatedAt?: string;
 }
