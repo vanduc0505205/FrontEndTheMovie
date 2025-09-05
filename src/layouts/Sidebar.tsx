@@ -35,6 +35,7 @@ const navItemsStaff = [
   { label: 'Lịch chiếu', path: 'showtimes', icon: <VideoCameraOutlined /> },
   { label: 'Phim', path: 'movies', icon: <VideoCameraOutlined /> },
   { label: 'Phòng chiếu', path: 'rooms', icon: <InsertRowAboveOutlined /> },
+  { label: 'Ghế', path: 'seats', icon: <AppstoreOutlined /> },
   { label: 'Danh mục', path: 'categories', icon: <AppstoreOutlined /> },
   { label: "Quản lý Tin tức", path: "news", icon: <FileTextOutlined /> },
   { label: "Quản lý Liên hệ", path: "lienhe", icon: <ContactsOutlined /> } ,

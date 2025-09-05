@@ -202,6 +202,7 @@ function App() {
         <Route path="movies" element={<MovieStaff />} />
         <Route path="movies/:id" element={<MovieDetailStaff />} />
         <Route path="rooms" element={<RoomStaff />} />
+        <Route path="seats" element={<SeatList />} />
         <Route path="categories" element={<CategoryStaff />} />
          <Route path="news" element={<NewsList />} />
 

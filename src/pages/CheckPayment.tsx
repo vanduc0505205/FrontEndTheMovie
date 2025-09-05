@@ -214,7 +214,7 @@ const CheckPayment = () => {
                     <div className="space-y-2 text-gray-700">
                       <div className="font-semibold text-gray-800">Hướng dẫn thanh toán tại quầy</div>
                       <ul className="list-disc pl-5 space-y-1 text-sm">
-                        <li>Vui lòng đến quầy vé trước 20 phút so với giờ chiếu để thanh toán và nhận vé.</li>
+                        <li>Vui lòng đến quầy vé trong 20 phút kể từ lúc đặt vé để thanh toán và nhận vé.</li>
                         <li>Chuẩn bị mã đặt vé (Booking ID) và thông tin tài khoản để đối chiếu.</li>
                         <li>Ghế của bạn sẽ được giữ trong khoảng thời gian quy định của rạp cho hình thức COD.</li>
                       </ul>
