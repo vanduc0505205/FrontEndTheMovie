@@ -173,7 +173,7 @@ const handleViewDetail = (order) => {
     className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
     id="full-ticket"
   >
-    <div className="bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-3xl relative">
+    <div className="bg-gray-900 rounded-xl shadow-2xl p-4 w-full max-w-3xl relative">
       <button
         onClick={() => setIsModalOpen(false)}
         className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl"
@@ -182,31 +182,31 @@ const handleViewDetail = (order) => {
       </button>
 
       {/* ✅ Thêm id cho nội dung vé */}
-      <div id="ticket-content" className="flex flex-col md:flex-row gap-6">
+      <div id="ticket-content" className="flex flex-col md:flex-row gap-4 text-xs">
         {/* Poster + QR */}
-        <div className="md:w-1/3 flex flex-col items-center bg-gray-800 rounded-lg p-4">
+        <div className="md:w-1/3 flex flex-col items-center bg-gray-800 rounded-lg p-3">
           <img
             src={selectedOrder.showtimeId?.movieId?.poster || "/default-poster.jpg"}
             alt={selectedOrder.showtimeId?.movieId?.title || "Poster"}
-            className="w-full h-64 object-cover rounded-lg"
+            className="w-full h-48 object-cover rounded-lg"
           />
           <QRCode
             value={selectedOrder._id}
-            size={140}
+            size={110}
             fgColor="#ef4444"
             className="mb-2"
           />
-          <p className="text-white text-sm font-semibold">
+          <p className="text-white text-xs font-semibold">
             Mã vé: {selectedOrder._id}
           </p>
         </div>
 
         {/* Thông tin vé */}
         <div className="md:w-2/3 text-gray-300">
-          <h2 className="text-2xl font-bold text-white mb-4">
+          <h2 className="text-xl font-bold text-white mb-2">
             {selectedOrder.movieTitle}
           </h2>
-          <div className="space-y-2 text-sm">
+          <div className="space-y-1">
             <p>
               <span className="font-semibold">Ngày chiếu:</span>{" "}
               {new Date(selectedOrder.showtimeId?.startTime).toLocaleDateString("vi-VN")}
@@ -236,11 +236,49 @@ const handleViewDetail = (order) => {
             <p>
               <span className="font-semibold">Ghế:</span> {selectedOrder.seats.join(", ")}
             </p>
-            {selectedOrder.foodCombos && selectedOrder.foodCombos.length > 0 && (
+            {Array.isArray(selectedOrder.comboSnapshots) && selectedOrder.comboSnapshots.length > 0 && (
               <p>
                 <span className="font-semibold">Combo:</span>{" "}
-                {selectedOrder.foodCombos.join(", ")}
+                {selectedOrder.comboSnapshots
+                  .map((c: any) => `${c.nameSnapshot} x${c.quantity}`)
+                  .join(", ")}
               </p>
+            )}
+            {Array.isArray(selectedOrder.comboSnapshots) && selectedOrder.comboSnapshots.length > 0 && (
+              <div className="mt-3">
+                <p className="font-semibold">Chi tiết combo:</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left text-gray-300">
+                    <thead>
+                      <tr className="text-gray-400">
+                        <th className="py-1 pr-2">Tên</th>
+                        <th className="py-1 pr-2">Đơn giá</th>
+                        <th className="py-1 pr-2">SL</th>
+                        <th className="py-1 pr-2">Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedOrder.comboSnapshots.map((c: any, idx: number) => (
+                        <tr key={idx} className="border-t border-gray-700">
+                          <td className="py-1 pr-2">{c.nameSnapshot}</td>
+                          <td className="py-1 pr-2">{(c.priceSnapshot || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</td>
+                          <td className="py-1 pr-2">{c.quantity}</td>
+                          <td className="py-1 pr-2">{(c.subtotal || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-2 text-sm">
+                  <span className="font-semibold">Tổng combo:</span>{" "}
+                  {(
+                    (selectedOrder.comboSnapshots || []).reduce(
+                      (sum: number, c: any) => sum + (c.subtotal || 0),
+                      0
+                    ) || selectedOrder.comboPrice || 0
+                  ).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                </p>
+              </div>
             )}
             <p>
               <span className="font-semibold">Phương thức thanh toán:</span>{" "}

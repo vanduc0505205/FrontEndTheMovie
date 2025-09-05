@@ -564,6 +564,26 @@ export default function Checkout() {
                     <div className="text-right">
                       <div className="space-y-1">
                         <div className="text-gray-300">Combo: {comboTotal.toLocaleString()} VNĐ</div>
+                        {comboTotal > 0 && (
+                          <div className="text-xs text-gray-400 mt-1 text-left md:text-right">
+                            {Object.entries(selectedCombos)
+                              .filter(([_, qty]) => (qty as number) > 0)
+                              .map(([comboId, qty]) => {
+                                const c = combos.find((cc) => cc._id === comboId);
+                                if (!c) return null;
+                                const itemText = [...(c.popcorns || []), ...(c.drinks || [])]
+                                  .map((it) => `${it.name}${it.quantity > 1 ? ` x${it.quantity}` : ""}`)
+                                  .join(", ");
+                                const subtotal = (c.price || 0) * (qty as number);
+                                return (
+                                  <div key={comboId} className="mt-1">
+                                    <div>- {c.name}: {qty} x {c.price.toLocaleString()} = {subtotal.toLocaleString()} VNĐ</div>
+                                    {itemText && <div className="opacity-80">  Chi tiết: {itemText}</div>}
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        )}
                         <div className="text-3xl font-bold text-emerald-400">
                           Tổng thanh toán: {finalPayable.toLocaleString()} VNĐ
                         </div>
@@ -643,6 +663,13 @@ export default function Checkout() {
                             {c.description ? (
                               <div className="text-gray-400 text-sm mt-1 line-clamp-2">{c.description}</div>
                             ) : null}
+                            {(Array.isArray(c.popcorns) || Array.isArray(c.drinks)) && (
+                              <div className="text-gray-300 text-xs mt-1">
+                                Gồm: {[...(c.popcorns || []), ...(c.drinks || [])]
+                                  .map((it) => `${it.name}${it.quantity > 1 ? ` x${it.quantity}` : ""}`)
+                                  .join(", ")}
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center gap-2">
                             <button

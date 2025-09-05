@@ -1,11 +1,11 @@
-
+  
 import React, { useEffect, useState } from "react";
 import { Table, Spin, message, Button, Select, QRCode } from "antd";
 import { getAllBookings, getUserBookings, updateBookingStatus } from "@/api/booking.api";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-const BookingAdmin = () => {
+const BookingsPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -168,69 +168,211 @@ const handleViewDetail = (order) => {
         pagination={{ pageSize: 6 }}
       />
       {isModalOpen && selectedOrder && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    {/* Thân vé */}
-    <div
-      className="bg-gray-800 rounded-lg p-6 w-96 shadow-xl relative"
-      id="ticket-detail"
-    >
-      <h2 className="text-xl font-bold text-white mb-4">
-        Vé vào AlphaCinema
-      </h2>
-      <p className="text-gray-300 mb-2">Phim: {selectedOrder.movieTitle}</p>
-      <p className="text-gray-300 mb-2">
-        Ghế: {selectedOrder.seats?.join(", ")}
-      </p>
-      <p className="text-gray-300 mb-2">
-        Tổng tiền:{" "}
-        {selectedOrder.totalPrice?.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })}
-      </p>
-
-      {/* QR Code */}
-      <div className="flex justify-center my-4">
-        <QRCode value={selectedOrder._id} size={160} fgColor="#ef4444" />
-      </div>
-    </div>
-
-    {/* Nút bấm nằm ngoài vé */}
-    <div className="absolute bottom-6 flex justify-between gap-4">
-      <button
-        onClick={async () => {
-          const element = document.getElementById("ticket-detail");
-          if (!element) return;
-
-          const canvas = await html2canvas(element, {
-            scale: 2,
-            backgroundColor: "#1f2937", // giữ nền tối
-          });
-
-          const imgData = canvas.toDataURL("image/png");
-
-          const imgWidth = canvas.width;
-          const imgHeight = canvas.height;
-
-          const pxToMm = (px: number) => (px * 25.4) / 96;
-          const pdfWidth = pxToMm(imgWidth);
-          const pdfHeight = pxToMm(imgHeight);
-
-          const pdf = new jsPDF("p", "mm", [pdfWidth, pdfHeight]);
-          pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-          pdf.save(`ticket_${selectedOrder._id}.pdf`);
-        }}
-        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-      >
-        Xuất vé PDF
-      </button>
-
+  <div
+    className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+    id="full-ticket"
+  >
+    <div className="bg-gray-900 rounded-xl shadow-2xl p-4 w-full max-w-3xl relative">
       <button
         onClick={() => setIsModalOpen(false)}
-        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+        className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl"
       >
-        Đóng
+        ✕
       </button>
+
+      {/* ✅ Nội dung vé chi tiết giống admin, tối ưu cho A6 */}
+      <div id="ticket-content" className="flex flex-col md:flex-row gap-4 text-xs">
+        {/* Poster + QR */}
+        <div className="md:w-1/3 flex flex-col items-center bg-gray-800 rounded-lg p-3">
+          <img
+            src={selectedOrder.showtimeId?.movieId?.poster || "/default-poster.jpg"}
+            alt={selectedOrder.showtimeId?.movieId?.title || "Poster"}
+            className="w-full h-48 object-cover rounded-lg"
+          />
+          <QRCode
+            value={selectedOrder._id}
+            size={110}
+            fgColor="#ef4444"
+            className="mb-2"
+          />
+          <p className="text-white text-xs font-semibold">
+            Mã vé: {selectedOrder._id}
+          </p>
+        </div>
+
+        {/* Thông tin vé */}
+        <div className="md:w-2/3 text-gray-300">
+          <h2 className="text-xl font-bold text-white mb-2">
+            {selectedOrder.movieTitle}
+          </h2>
+          <div className="space-y-1">
+            <p>
+              <span className="font-semibold">Ngày chiếu:</span>{" "}
+              {new Date(selectedOrder.showtimeId?.startTime).toLocaleDateString("vi-VN")}
+            </p>
+            <p>
+              <span className="font-semibold">Giờ chiếu:</span>{" "}
+              {new Date(selectedOrder.showtimeId?.startTime).toLocaleTimeString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}{" "}
+              -{" "}
+              {new Date(selectedOrder.showtimeId?.endTime).toLocaleTimeString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+            <p>
+              <strong>Rạp:</strong> ALPHA-CINEMA
+            </p>
+            <p>
+              <span className="font-semibold">Địa chỉ:</span> số 13, phố Trịnh Văn Bô, Nam Từ Liêm, Hà Nội
+            </p>
+            <p>
+              <span className="font-semibold">Phòng chiếu:</span>{" "}
+              {selectedOrder.showtimeId?.roomId?.name || "N/A"}
+            </p>
+            <p>
+              <span className="font-semibold">Ghế:</span> {selectedOrder.seats.join(", ")}
+            </p>
+            {Array.isArray(selectedOrder.comboSnapshots) && selectedOrder.comboSnapshots.length > 0 && (
+              <p>
+                <span className="font-semibold">Combo:</span>{" "}
+                {selectedOrder.comboSnapshots
+                  .map((c: any) => `${c.nameSnapshot} x${c.quantity}`)
+                  .join(", ")}
+              </p>
+            )}
+            {Array.isArray(selectedOrder.comboSnapshots) && selectedOrder.comboSnapshots.length > 0 && (
+              <div className="mt-3">
+                <p className="font-semibold">Chi tiết combo:</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left text-gray-300">
+                    <thead>
+                      <tr className="text-gray-400">
+                        <th className="py-1 pr-2">Tên</th>
+                        <th className="py-1 pr-2">Đơn giá</th>
+                        <th className="py-1 pr-2">SL</th>
+                        <th className="py-1 pr-2">Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedOrder.comboSnapshots.map((c: any, idx: number) => (
+                        <tr key={idx} className="border-t border-gray-700">
+                          <td className="py-1 pr-2">{c.nameSnapshot}</td>
+                          <td className="py-1 pr-2">{(c.priceSnapshot || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</td>
+                          <td className="py-1 pr-2">{c.quantity}</td>
+                          <td className="py-1 pr-2">{(c.subtotal || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-2 text-sm">
+                  <span className="font-semibold">Tổng combo:</span>{" "}
+                  {(
+                    (selectedOrder.comboSnapshots || []).reduce(
+                      (sum: number, c: any) => sum + (c.subtotal || 0),
+                      0
+                    ) || selectedOrder.comboPrice || 0
+                  ).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                </p>
+              </div>
+            )}
+            <p>
+              <span className="font-semibold">Phương thức thanh toán:</span>{" "}
+              {selectedOrder.paymentMethod || "Chưa rõ"}
+            </p>
+          </div>
+
+          <div className="mt-4 border-t border-gray-700 pt-4 text-sm space-y-1">
+            <p>
+              <strong>Giá vé:</strong>{" "}
+              {(selectedOrder.ticketPrice || 0).toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </p>
+            <p>
+              <strong>Giá combo:</strong>{" "}
+              {(selectedOrder.comboPrice || 0).toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </p>
+            <p>
+              <strong>Giảm giá:</strong>{" "}
+              -{(selectedOrder.discountAmount || 0).toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </p>
+            <p>
+              <strong>Tổng cộng:</strong>{" "}
+              {(selectedOrder.totalPrice || 0).toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </p>
+
+            <p className="text-lg font-bold text-yellow-400">
+              Tổng cộng:{" "}
+              {selectedOrder.totalPrice?.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Nút Xuất PDF + Đóng */}
+      <div className="mt-6 flex justify-between gap-4">
+        <button
+         onClick={async () => {
+  const element = document.getElementById("ticket-content");
+  if (!element) {
+    console.error("Không tìm thấy nội dung vé để xuất PDF");
+    return;
+  }
+
+        const canvas = await html2canvas(element, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: "#111827", 
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a6");
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+      
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+
+        const newWidth = imgWidth * ratio;
+        const newHeight = imgHeight * ratio;
+        const x = (pageWidth - newWidth) / 2;
+        const y = (pageHeight - newHeight) / 2;
+
+        pdf.addImage(imgData, "PNG", x, y, newWidth, newHeight);
+        pdf.save(`ticket_${selectedOrder._id}.pdf`);
+      }}
+
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          In vé
+        </button>
+
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+        >
+          Đóng
+        </button>
+      </div>
     </div>
   </div>
 )}
@@ -239,4 +381,4 @@ const handleViewDetail = (order) => {
   );
 };
 
-export default BookingAdmin;
+export default BookingsPage;
