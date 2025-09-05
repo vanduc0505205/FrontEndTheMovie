@@ -200,6 +200,10 @@ export default function Checkout() {
           throw new Error("Lỗi khi kết nối với cổng thanh toán VNPay");
         }
       } else {
+        /*
+         * Giữ lại để tham chiếu, tránh hiển thị thêm thông báo và nội dung 20 phút.
+         * Nếu cần bật lại, bỏ comment, nhưng mà hơi xấu.
+         
         message.success({
           content: (
             <div>
@@ -216,18 +220,19 @@ export default function Checkout() {
                   </span>
                 </p>
                 <p className="mt-2">
-                  Vui lòng đến quầy vé thanh toán trước 20 phút khi đến xem
-                  phim.
+                  Vui lòng đến quầy vé thanh toán trước 20 phút khi đến xem phim.
                 </p>
               </div>
             </div>
           ),
           duration: 8,
         });
+        */
 
-        setTimeout(() => {
-          navigate("/lichsudatve");
-        }, 3000);
+        // Điều hướng sang trang kết quả thanh toán chung (giao diện giống online)
+        const bookingId = res.data.booking?._id;
+        const msg = encodeURIComponent("Đặt vé thành công (Thanh toán tại quầy)");
+        navigate(`/payment-result?code=cod_success&mode=cod&bookingId=${bookingId}&message=${msg}`);
       }
     } catch (error: any) {
       console.error("Lỗi thanh toán:", error);

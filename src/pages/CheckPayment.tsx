@@ -10,6 +10,7 @@ const CheckPayment = () => {
   }, []);
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'error' | 'success' | 'info'>('info');
+  const [isCODMode, setIsCODMode] = useState<boolean>(false);
   const [paymentStatus, setPaymentStatus] = useState({
     title: 'Đang xử lý thanh toán...',
     message: 'Vui lòng chờ trong giây lát',
@@ -30,6 +31,19 @@ const CheckPayment = () => {
         const redirectCode = params.code as string | undefined;
         const redirectMessage = params.message as string | undefined;
         const bookingId = (params.bookingId as string) || (params.vnp_TxnRef as string);
+
+        // Nếu là COD thì hiển thị thành công ngay, không cần gọi server kiểm tra trạng thái thanh toán
+        const isCOD = params.mode === 'cod' || redirectCode === 'cod_success';
+        if (isCOD) {
+          setIsCODMode(true);
+          setStatus('success');
+          setPaymentStatus({
+            title: 'Đặt vé thành công (Thanh toán tại quầy)',
+            message: `${redirectMessage || 'Bạn sẽ thanh toán trực tiếp tại quầy trước giờ chiếu'}${bookingId ? ` | Booking ID: ${bookingId}` : ''}`,
+          });
+          message.success('Đặt vé thành công. Vui lòng đến quầy thanh toán trước giờ chiếu.');
+          return;
+        }
 
         let resultCode: string | undefined = undefined;
         let resultMessage: string | undefined = undefined;
@@ -192,56 +206,60 @@ const CheckPayment = () => {
               <p className="text-gray-600 leading-relaxed">
                 {paymentStatus.message}
               </p>
+
+              {/* Guidance / Instructions */}
+              {status !== 'info' && (
+                <div className="bg-white/70 rounded-xl p-5 border border-gray-200 mt-6 text-left">
+                  {isCODMode ? (
+                    <div className="space-y-2 text-gray-700">
+                      <div className="font-semibold text-gray-800">Hướng dẫn thanh toán tại quầy</div>
+                      <ul className="list-disc pl-5 space-y-1 text-sm">
+                        <li>Vui lòng đến quầy vé trước 20 phút so với giờ chiếu để thanh toán và nhận vé.</li>
+                        <li>Chuẩn bị mã đặt vé (Booking ID) và thông tin tài khoản để đối chiếu.</li>
+                        <li>Ghế của bạn sẽ được giữ trong khoảng thời gian quy định của rạp cho hình thức COD.</li>
+                      </ul>
+                      <div className="pt-2 text-sm">Cần hỗ trợ? Gọi <span className="font-semibold text-red-600">1900 1234</span>.</div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 text-gray-700">
+                      <div className="font-semibold text-gray-800">Xác nhận thanh toán online</div>
+                      <ul className="list-disc pl-5 space-y-1 text-sm">
+                        <li>Giao dịch đã được ghi nhận. Bạn có thể xem chi tiết trong mục Lịch sử giao dịch.</li>
+                        <li>Vui lòng có mặt đúng giờ chiếu và xuất trình thông tin đặt vé nếu được yêu cầu.</li>
+                      </ul>
+                      <div className="pt-2 text-sm">Cần hỗ trợ? Gọi <span className="font-semibold text-red-600">1900 1234</span>.</div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Ticket details section */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-8 text-left">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-500 font-medium">Trạng thái:</span>
-                  <div className={`inline-block ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                    status === 'success' ? 'bg-green-100 text-green-800' :
-                    status === 'error' ? 'bg-red-100 text-red-800' :
-                    'bg-blue-100 text-blue-800'
-                  }`}>
-                    {status === 'success' ? 'Thành công' : status === 'error' ? 'Thất bại' : 'Đang xử lý'}
-                  </div>
-                </div>
-                <div>
-                  <span className="text-gray-500 font-medium">Thời gian:</span>
-                  <div className="text-gray-800 font-medium ml-2">
-                    {new Date().toLocaleTimeString('vi-VN')}
-                  </div>
-                </div>
+            {/* Action buttons outside ticket */}
+            {status !== 'info' && (
+              <div className="space-y-3">
+                <button
+                  onClick={() => navigate('/')}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-2xl transition-colors duration-200 flex items-center justify-center space-x-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>Về trang chủ</span>
+                </button>
+                
+                <button
+                  onClick={() => navigate('/lichsudatve')}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-4 px-6 rounded-2xl border-2 border-gray-200 transition-colors duration-200 flex items-center justify-center space-x-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>Lịch sử giao dịch</span>
+                </button>
               </div>
-            </div>
-          </div>
+            )}
+      </div>
         </div>
-
-        {/* Action buttons outside ticket */}
-        {status !== 'info' && (
-          <div className="bg-white rounded-b-3xl shadow-2xl px-8 py-6 space-y-3">
-            <button
-              onClick={() => navigate('/')}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-2xl transition-colors duration-200 flex items-center justify-center space-x-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <span>Về trang chủ</span>
-            </button>
-            
-            <button
-              onClick={() => navigate('/lichsudatve')}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-4 px-6 rounded-2xl border-2 border-gray-200 transition-colors duration-200 flex items-center justify-center space-x-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span>Lịch sử giao dịch</span>
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Movie film strip decoration */}
